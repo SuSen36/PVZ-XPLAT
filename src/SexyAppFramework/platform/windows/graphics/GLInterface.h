@@ -12,9 +12,9 @@
 #ifdef WINDOWS
 #include <SDL.h>
 #include <SDL_opengl.h>
-#elif ANDROID
+#elif LINUX
 #include <SDL.h>
-#include <GLES/gl.h>
+#include <SDL_opengl.h>
 #endif
 
 namespace Sexy

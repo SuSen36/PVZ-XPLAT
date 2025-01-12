@@ -17,7 +17,6 @@
 #include "Lawn/System/PlayerInfo.h"
 #include "Lawn/System/PoolEffect.h"
 #include "Lawn/System/ProfileMgr.h"
-#include "Lawn/System/PopDRMComm.h"
 #include "Lawn/Widget/GameButton.h"
 #include "Sexy.TodLib/Reanimator.h"
 #include "Lawn/Widget/UserDialog.h"
@@ -147,7 +146,7 @@ LawnApp::LawnApp()
 	mCrazyDaveBlinkReanimID = ReanimationID::REANIMATIONID_NULL;
 	mCrazyDaveMessageIndex = -1;
 	//mBigArrowCursor = LoadCursor(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDC_CURSOR1));
-	mDRM = nullptr;
+	//mDRM = nullptr;
 }
 
 //0x44EDD0、0x44EDF0
@@ -274,11 +273,6 @@ void LawnApp::Shutdown()
 		UpdateRegisterInfo();
 		SexyAppBase::Shutdown();
 
-		if (mDRM)
-		{
-			delete mDRM;
-		}
-		mDRM = nullptr;
 	}
 }
 
@@ -332,12 +326,12 @@ void LawnApp::GotFocus()
 //0x44F460
 void LawnApp::LostFocus()
 {
-	/*
+
 	if (!mTodCheatKeys && CanPauseNow())
 	{
 		DoPauseDialog();
 	}
-	*/
+
 }
 
 //0x44F480
@@ -1834,7 +1828,7 @@ void LawnApp::PreDisplayHook()
 }
 
 
-void LawnApp::ButtonPress(int) {}
+void LawnApp::OnButtonPress(int) {}
 void LawnApp::ButtonDownTick(int) {}
 void LawnApp::ButtonMouseEnter(int) {}
 void LawnApp::ButtonMouseLeave(int) {}
@@ -3315,8 +3309,8 @@ bool LawnApp::IsTrialStageLocked()
 	if (mDebugTrialLocked)
 		return true;
 
-	if (mDRM && mDRM->QueryData())
-		return false;
+	//if (mDRM && mDRM->QueryData())
+	//	return false;
 
 	return mTrialType == TrialType::TRIALTYPE_STAGELOCKED;
 }
@@ -3324,21 +3318,14 @@ bool LawnApp::IsTrialStageLocked()
 //0x455CC0
 void LawnApp::InitHook()
 {
-#ifdef _DEBUG
-	mDRM = nullptr;
-#else
-	mDRM = new PopDRMComm();
-	mDRM->DoIPC();
 	if (sexystricmp(GetString("MarketingMode", __S("")).c_str(), __S("StageLocked")) == 0)
 	{
 		mTrialType = TrialType::TRIALTYPE_STAGELOCKED;
-		mDRM->EnableLocking();
 	}
 	else
 	{
 		mTrialType = TrialType::TRIALTYPE_NONE;
 	}
-#endif
 }
 
 //0x455E10

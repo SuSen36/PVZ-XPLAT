@@ -265,7 +265,7 @@ public:
 	void							UpdateLayers();
 	virtual void					Draw(Graphics* g);
 	void							DrawBackdrop(Graphics* g);
-	virtual void					ButtonPress  	(int){}
+	virtual void					OnButtonPress  	(int){}
 	virtual void					ButtonDepress	(int){}
 	virtual void					ButtonDownTick	(int){}
 	virtual void					ButtonMouseEnter(int){}

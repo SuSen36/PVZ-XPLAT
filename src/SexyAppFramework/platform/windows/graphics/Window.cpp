@@ -4,6 +4,7 @@
 #include "../graphics/GLInterface.h"
 #include "SexyAppFramework/graphics/GLImage.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
+#include "Sexy.TodLib/TodDebug.h"
 
 using namespace Sexy;
 
@@ -19,7 +20,12 @@ void SexyAppBase::MakeWindow()
 
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+
+#if defined(LINUX)
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_MASK);
+#else
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+#endif
 
 		mWindow = (void*)SDL_CreateWindow(
 			SexyStringToStringFast(mTitle).c_str(),
@@ -27,7 +33,14 @@ void SexyAppBase::MakeWindow()
 			mWidth, mHeight,
 			SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | (!mIsWindowed ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0)
 		);
-
+        // Load icon image
+        SDL_Surface* iconSurface = SDL_LoadBMP("icon.bmp");
+        if (iconSurface) {
+            SDL_SetWindowIcon(static_cast<SDL_Window *>(mWindow), iconSurface);
+            SDL_FreeSurface(iconSurface);
+        } else {
+            TodLog("Icon loading failed: ", SDL_GetError());
+        }
 		mContext = (void*)SDL_GL_CreateContext((SDL_Window*)mWindow);
 		SDL_GL_SetSwapInterval(1);
 	}

@@ -20,6 +20,7 @@ public:
     virtual bool LoadSound(unsigned int theSfxID, const std::string &theFilename) = 0;
     virtual int LoadSound(const std::string &theFilename) = 0;
     virtual void ReleaseSound(unsigned int theSfxID) = 0;
+    virtual void StopSound(unsigned int theSfxID) = 0;
 
     virtual void SetVolume(double theVolume) = 0;
     virtual bool SetBaseVolume(unsigned int theSfxID, double theBaseVolume) = 0;
@@ -30,12 +31,13 @@ public:
     virtual void ReleaseSounds() = 0;
     virtual void ReleaseChannels() = 0;
 
+    virtual void StopSounds() = 0;
+
     virtual double GetMasterVolume() = 0;
     virtual void SetMasterVolume(double theVolume) = 0;
 
     virtual void Flush() = 0;
     //	virtual void			SetCooperativeWindow(HWND theHWnd) = 0;
-    virtual void StopAllSounds() = 0;
     virtual int GetFreeSoundId() = 0;
     virtual int GetNumSounds() = 0;
 };

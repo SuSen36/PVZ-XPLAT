@@ -244,7 +244,7 @@ void ButtonWidget::MouseDown(int theX, int theY, int theBtnNum, int theClickCoun
 {
 	Widget::MouseDown(theX, theY, theBtnNum, theClickCount);
 		
-	mButtonListener->ButtonPress(mId);
+	mButtonListener->OnButtonPress(mId);
 	
 	MarkDirty();
 }

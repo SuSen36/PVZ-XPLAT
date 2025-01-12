@@ -20,6 +20,7 @@ public:
     bool LoadSound(unsigned int theSfxID, const std::string &theFilename) override;
     int LoadSound(const std::string &theFilename) override;
     void ReleaseSound(unsigned int theSfxID) override;
+    void StopSound(unsigned int theSfxID) override;
 
     void SetVolume(double theVolume) override;
     bool SetBaseVolume(unsigned int theSfxID, double theBaseVolume) override;
@@ -31,14 +32,13 @@ public:
 
     void ReleaseChannels() override {}
 
+    void StopSounds() override;
+
     double GetMasterVolume() override { return 1.0; }
 
     void SetMasterVolume(double) override {}
 
     void Flush() override {}
-
-    //  virtual void            SetCooperativeWindow(HWND theHWnd) {}
-    void StopAllSounds() override {}
 
     int GetFreeSoundId() override;
     int GetNumSounds() override;

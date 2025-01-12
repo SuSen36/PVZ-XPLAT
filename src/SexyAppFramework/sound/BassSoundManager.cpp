@@ -251,6 +251,19 @@ void BassSoundManager::ReleaseSounds() {
     }
 }
 
+void BassSoundManager::StopSound(unsigned int theSfxID) {
+    if (Exists(theSfxID)) {
+        BASS_SampleStop(mSourceSounds[theSfxID].value());
+    }
+}
+
+void BassSoundManager::StopSounds() {
+    for (int i = 0; i < MAX_SOURCE_SOUNDS; i++)
+    {
+        StopSound(i);
+    }
+}
+
 inline bool BassSoundManager::Exists(unsigned int theSfxID) const {
     return (theSfxID < MAX_SOURCE_SOUNDS) && (mSourceSounds[theSfxID].has_value());
 }

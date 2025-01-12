@@ -75,7 +75,7 @@ public:
     virtual void                Update();
     virtual void                AddedToManager(WidgetManager* theWidgetManager);
     virtual void                RemovedFromManager(WidgetManager* theWidgetManager);
-    virtual void                ButtonPress(int theId);
+    virtual void                OnButtonPress(int theId);
     /*inline*/ bool             IsPageShown(StorePages thePage);
     virtual void                ButtonDepress(int theId);
     virtual void                KeyChar(char theChar);

@@ -7,7 +7,7 @@
 #include <sys/stat.h>
 #include "TodDebug.h"
 #include "Definition.h"
-#include "zlib.h"
+#include "../SexyAppFramework/imagelib/zlib/zlib.h"
 #include "SexyAppFramework/paklib/PakInterface.h"
 #include "../SexyAppFramework/misc/PerfTimer.h"
 #include "../SexyAppFramework/misc/XMLParser.h"

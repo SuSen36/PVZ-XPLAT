@@ -10,8 +10,6 @@
 #include <dirent.h>
 #include <cstdarg>
 
-
-
 #include "../SexyAppFramework/misc/PerfTimer.h"
 
 #ifdef _WIN32
@@ -128,7 +126,7 @@ std::string Sexy::StringToUpper(const std::string& theString)
 {
 	std::string aString;
 
-	for (unsigned i = 0; i < theString.length(); i++)
+	for (size_t i = 0; i < theString.length(); i++)
 		aString += toupper(theString[i]);
 
 	return aString;
@@ -159,7 +157,7 @@ std::wstring Sexy::StringToLower(const std::wstring& theString)
 	std::wstring aString;
 
 	for (unsigned i = 0; i < theString.length(); ++i)
-		aString += tolower(theString[i]);
+		aString += std::tolower(theString[i]);
 
 	return aString;
 }
@@ -1055,23 +1053,20 @@ std::string Sexy::XMLDecodeString(const std::string& theString)
 {
 	std::string aNewString;
 
-	// unused
-	//int aUTF8Len = 0;
-	//int aUTF8CurVal = 0;
-
-	for (ulong i = 0; i < theString.length(); i++)
+	for (size_t i = 0; i < theString.length(); i++)
 	{
 		char c = theString[i];
 
 		if (c == '&')
 		{
-			int aSemiPos = theString.find(';', i);
-
-			if (aSemiPos != -1)
+			// 查找分号，如果没有找到，则继续处理原始字符串
+			size_t aSemiPos = theString.find(';', i);
+			if (aSemiPos != std::string::npos) // 使用 std::string::npos 进行检查
 			{
-				std::string anEntName = theString.substr(i+1, aSemiPos-i-1);
-				i = aSemiPos;
-											
+				std::string anEntName = theString.substr(i + 1, aSemiPos - i - 1);
+				i = aSemiPos; // 更新 i 到分号的位置
+
+				// 映射 HTML 实体到相应的字符
 				if (anEntName == "lt")
 					c = '<';
 				else if (anEntName == "amp")
@@ -1084,11 +1079,13 @@ std::string Sexy::XMLDecodeString(const std::string& theString)
 					c = '\'';
 				else if (anEntName == "nbsp")
 					c = ' ';
+				// 如果需要处理换行符
 				else if (anEntName == "cr")
 					c = '\n';
 			}
-		}				
-		
+		}
+
+		// 添加当前字符到新的字符串
 		aNewString += c;
 	}
 

@@ -251,7 +251,7 @@ void NewOptionsDialog::KeyDown(Sexy::KeyCode theKey)
 }
 
 //0x45D2F0
-void NewOptionsDialog::ButtonPress(int theId)
+void NewOptionsDialog::OnButtonPress(int theId)
 {
     (void)theId;
     mApp->PlaySample(SOUND_GRAVEBUTTON);

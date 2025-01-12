@@ -21,7 +21,7 @@ file(GLOB SOURCES
 		src/SexyAppFramework/glad/*.c
 		src/SexyAppFramework/imagelib/png/*.c
 		src/SexyAppFramework/imagelib/jpeg/*.c
-		src/SexyAppFramework/zlib/*.c
+		src/SexyAppFramework/imagelib/zlib/*.c
 )
 
 # these files are included and must not be built in the project
@@ -29,7 +29,6 @@ list(REMOVE_ITEM SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/src/Sexy.TodLib/TodDrawTriangle.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/Sexy.TodLib/TodDrawTriangleInc.cpp
 )
-
 
 if(ANDROID)
 	list(APPEND SOURCES
@@ -40,14 +39,23 @@ if(ANDROID)
 	list(APPEND PLAT_INCLUDES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/android
 	)
-else()
+elseif(WIN32)
 	list(APPEND SOURCES
-		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/pc/graphics/Window.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/pc/graphics/GLInterface.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/pc/Input.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/windows/graphics/Window.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/windows/graphics/GLInterface.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/windows/Input.cpp
 	)
 	list(APPEND PLAT_INCLUDES
-		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/pc
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/windows
+	)
+elseif (UNIX AND NOT APPLE)
+	list(APPEND SOURCES
+			${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/linux/graphics/Window.cpp
+			${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/linux/graphics/GLInterface.cpp
+			${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/linux/Input.cpp
+	)
+	list(APPEND PLAT_INCLUDES
+			${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/linux
 	)
 endif()
 
@@ -61,7 +69,7 @@ include(FetchContent)
 
 if (WIN32)
 	set(BASS_SRC http://www.un4seen.com/files/bass24.zip)
-	set(BASS_LIB c/x64/bass.lib)
+	set(BASS_LIB x64/bass.dll)
 	set(BASS_INCLUDE c)
 elseif (UNIX)
 	if (APPLE)
@@ -70,6 +78,7 @@ elseif (UNIX)
 	elseif (LINUX)
 		set(BASS_SRC http://www.un4seen.com/files/bass24-linux.zip)
 		set(BASS_LIB libs/x86_64/libbass.so)
+		set(BASS_INCLUDE ./)
 	elseif (ANDROID)
 		set(BASS_INCLUDE c)
 		# 使用ANDROID_ABI来动态识别当前架构
@@ -96,10 +105,10 @@ endif()  # 结束针对 WIN32 的判断
 
 message(STATUS "Current ABI: ${ANDROID_ABI}")
 
-
 FetchContent_Declare(
 		bass
 		URL ${BASS_SRC}
+		DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 
 FetchContent_GetProperties(bass)
@@ -110,18 +119,21 @@ endif()
 
 get_filename_component(bassfile ${BASS_LIB} NAME)
 
-add_library(bass STATIC IMPORTED GLOBAL)
+if(UNIX AND NOT APPLE)
+    add_library(bass STATIC IMPORTED GLOBAL)
+else ()
+	add_library(bass STATIC IMPORTED GLOBAL)
+endif()
+
 set_target_properties(bass PROPERTIES
 		IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/${bassfile}
 )
 
 if (WIN32)
-	configure_file("${bass_SOURCE_DIR}/x64/bass.dll" ${CMAKE_BINARY_DIR} COPYONLY)
-endif()
-
-if (WIN32)
 	add_executable(re-plants-vs-zombies ${SOURCES})
-else (ANDROID)
+elseif (UNIX AND NOT APPLE)
+	add_executable(re-plants-vs-zombies ${SOURCES})
+elseif (ANDROID)
 	add_library(re-plants-vs-zombies SHARED ${SOURCES})
 endif()
 
@@ -131,8 +143,8 @@ target_include_directories(re-plants-vs-zombies PRIVATE
 	${PLAT_INCLUDES}
 	${bass_SOURCE_DIR}/${BASS_INCLUDE}
 )
-target_compile_definitions(re-plants-vs-zombies PRIVATE _DEBUG)
 
+target_compile_definitions(re-plants-vs-zombies PRIVATE _DEBUG)
 
 target_link_libraries(re-plants-vs-zombies SDL2::SDL2 bass)
 
@@ -147,8 +159,34 @@ if (WIN32)
 elseif (ANDROID)  # 增加安卓平台的支持
     target_link_libraries(re-plants-vs-zombies android log EGL)  # 链接需要的库
 	target_compile_definitions(re-plants-vs-zombies PRIVATE ANDROID)  # 定义ANDROID宏
-else()
+elseif (UNIX AND NOT APPLE)
+	target_link_libraries(re-plants-vs-zombies GL dl pthread X11 EGL)
+	target_compile_definitions(re-plants-vs-zombies PRIVATE LINUX)  # 定义 LINUX 宏
+else ()
 	target_link_libraries(re-plants-vs-zombies GL)
+endif()
+
+if (UNIX AND NOT APPLE)
+	# 确保Linux系统使用相应的包
+	message(STATUS "Linux系统检测到，将尝试安装libx11-dev 和 libxkbcommon-dev")
+
+	execute_process(COMMAND sudo apt-get update
+			RESULT_VARIABLE update_result)
+
+	if (update_result EQUAL 0)
+		execute_process(COMMAND sudo apt-get install -y libx11-dev libxkbcommon-dev
+				RESULT_VARIABLE install_result)
+
+		if(NOT install_result EQUAL 0)
+			message(FATAL_ERROR "无法安装所需的库: libx11-dev 和 libxkbcommon-dev。")
+		else()
+			message(STATUS "成功安装所需的库。")
+		endif()
+	else()
+		message(FATAL_ERROR "无法更新软件包。")
+	endif()
+
+	# 这里继续放置你的其他Linux构建配置代码
 endif()
 
 # 设置资源目录
@@ -178,7 +216,49 @@ if(WIN32)
 		)
 	endforeach()
 endif()
+# Linux 平台资源复制
+if(UNIX AND NOT APPLE)
+	# 获取资源目录下的所有资源文件
+	file(GLOB_RECURSE RESOURCES "${RESOURCE_DIR}/*")
 
+	foreach(RES_FILE ${RESOURCES})
+		# 获取文件的相对路径
+		file(RELATIVE_PATH RELATIVE_PATH "${RESOURCE_DIR}" "${RES_FILE}")
+
+		# 创建目标路径
+		set(TARGET_PATH "${CMAKE_CURRENT_BINARY_DIR}/${RELATIVE_PATH}")
+
+		# 创建目标文件的目录
+		get_filename_component(TARGET_DIR "${TARGET_PATH}" DIRECTORY)
+
+		# 添加目标路径的命令
+		add_custom_command(
+				TARGET re-plants-vs-zombies POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E make_directory "${TARGET_DIR}"
+				COMMAND ${CMAKE_COMMAND} -E copy "${RES_FILE}" "${TARGET_PATH}"
+				COMMENT "Copying resource file ${RELATIVE_PATH} to build directory"
+		)
+	endforeach()
+
+	# 获取资源目录中的所有文件
+	file(GLOB RES_FILES "${CMAKE_CURRENT_SOURCE_DIR}/linux-project/res/*")
+
+	# 复制所有资源文件到构建目录
+	foreach(RES_FILE ${RES_FILES})
+		get_filename_component(FILE_NAME ${RES_FILE} NAME)  # 获取文件名
+		add_custom_command(
+				TARGET re-plants-vs-zombies POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E copy "${RES_FILE}" "${CMAKE_CURRENT_BINARY_DIR}/${FILE_NAME}"
+				COMMENT "Copying ${FILE_NAME} to build directory"
+		)
+	endforeach()
+
+	# 安装所有资源文件到构建目录
+	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/linux-project/res
+			DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+	)
+
+endif()
 # Android 平台资源复制
 if(ANDROID)
 	set(ANDROID_ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android-project/app/src/main/assets")

@@ -103,7 +103,7 @@ public:
     virtual void                RemovedFromManager(WidgetManager* theWidgetManager);
     virtual void                OrderInManagerChanged();
     virtual void                ButtonMouseEnter(int theId);
-    virtual void                ButtonPress(int theId);
+    virtual void                OnButtonPress(int theId);
     virtual void                ButtonDepress(int theId);
     virtual void                ButtonDownTick(int){}
     virtual void                ButtonMouseLeave(int){}

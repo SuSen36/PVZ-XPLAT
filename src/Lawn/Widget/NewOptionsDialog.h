@@ -52,7 +52,7 @@ public:
 	void					Draw(Sexy::Graphics* g);
 	void					SliderVal(int theId, double theVal);
 	void					CheckboxChecked(int theId, bool checked);
-	void					ButtonPress(int theId);
+	void					OnButtonPress(int theId);
 	void					ButtonDepress(int theId);
 	void					KeyDown(Sexy::KeyCode theKey);
 };

@@ -130,21 +130,21 @@ bool ProfileMgr::RenameProfile(const SexyString& theOldName, const SexyString& t
         return false;
     else
     {
-        // ÅÐ¶ÏÐÞ¸ÄÇ°ºóµÄÓÃ»§ÃûÊÇ·ñÒ»ÖÂ£¬Ò»ÖÂÔòÖ±½ÓÔÚÔ­´æµµÖÐ½øÐÐÐÞ¸Ä£¬·ñÔòÐèÒª¶îÍâ²Ù×÷
-        if (_stricmp(theOldName.c_str(), theNewName.c_str()) == 0)
+        // ï¿½Ð¶ï¿½ï¿½Þ¸ï¿½Ç°ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½Ç·ï¿½Ò»ï¿½Â£ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½ï¿½Ô­ï¿½æµµï¿½Ð½ï¿½ï¿½ï¿½ï¿½Þ¸Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        if (stricmp(theOldName.c_str(), theNewName.c_str()) == 0)
             anOldItr->second.mName = theNewName;
         else
         {
-            // Ïò mProfileMap ÖÐ²åÈëÒ»¸öÓÉÐÂÓÃ»§Ãû¼°¾É´æµµ×é³ÉµÄ¶Ô×é
+            // ï¿½ï¿½ mProfileMap ï¿½Ð²ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É´æµµï¿½ï¿½ÉµÄ¶ï¿½ï¿½ï¿½
             auto aRet = mProfileMap.emplace(theNewName, anOldItr->second);  // auto aRet = mProfileMap.insert({theNewName, anOldItr->second});
-            // Í¨¹ý·µ»ØÖµ¼ì²âÐÂÓÃ»§ÃûÊÇ·ñÓëÔ­ÓÐ´æµµÖØ¸´£¬ÖØ¸´Ôò·µ»Ø false£¬²åÈë³É¹¦Ôò¼ÌÐø²Ù×÷
+            // Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Ô­ï¿½Ð´æµµï¿½Ø¸ï¿½ï¿½ï¿½ï¿½Ø¸ï¿½ï¿½ò·µ»ï¿½ falseï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             if (!aRet.second)
                 return false;
             else
             {
-                // É¾³ý mProfileMap ÖÐÔ­ÓÃ»§Ãû¼°¾É´æµµµÄ¼üÖµ¶Ô
+                // É¾ï¿½ï¿½ mProfileMap ï¿½ï¿½Ô­ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É´æµµï¿½Ä¼ï¿½Öµï¿½ï¿½
                 mProfileMap.erase(anOldItr);
-                // ÐÞ¸ÄÐÂ²åÈëµÄ¼üÖµ¶ÔÖÐ´æµµµÄÓÃ»§Ãû
+                // ï¿½Þ¸ï¿½ï¿½Â²ï¿½ï¿½ï¿½Ä¼ï¿½Öµï¿½ï¿½ï¿½Ð´æµµï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½
                 aRet.first->second.mName = theNewName;
             }
         }
@@ -158,12 +158,12 @@ void ProfileMgr::DeleteOldestProfile()
     if (mProfileMap.size() == 0)
         return;
 
-    //½« mUseSeq ×îÐ¡µÄ´æµµµÄËùÔÚÎ»ÖÃ¼ÇÂ¼ÔÚ anOldest µü´úÆ÷ÖÐ
+    //ï¿½ï¿½ mUseSeq ï¿½ï¿½Ð¡ï¿½Ä´æµµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ã¼ï¿½Â¼ï¿½ï¿½ anOldest ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     auto anOldest = mProfileMap.begin();
     for (auto anItr = anOldest; anItr != mProfileMap.end(); anItr++)
         if (anItr->second.mUseSeq < anOldest->second.mUseSeq)
             anOldest = anItr;
-    //É¾³ý¼ÇÂ¼µÄ mUseSeq ×îÐ¡µÄ´æµµ
+    //É¾ï¿½ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ mUseSeq ï¿½ï¿½Ð¡ï¿½Ä´æµµ
     DeleteProfile(anOldest);
 }
 

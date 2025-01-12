@@ -184,7 +184,7 @@ void LawnDialog::Update()
 }
 
 //0x4572E0
-void LawnDialog::ButtonPress(int theId)
+void LawnDialog::OnButtonPress(int theId)
 {
     (void)theId;
     mApp->PlaySample(Sexy::SOUND_GRAVEBUTTON);

@@ -1239,7 +1239,7 @@ void GameSelector::ButtonMouseEnter(int theId)
 
 //0x44C540
 // GOTY @Patoke: 0x44F220
-void GameSelector::ButtonPress(int theId)
+void GameSelector::OnButtonPress(int theId)
 {
 	if (theId == GameSelector::GameSelector_Adventure || theId == GameSelector::GameSelector_Minigame ||
 		theId == GameSelector::GameSelector_Puzzle || theId == GameSelector::GameSelector_Survival ||

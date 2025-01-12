@@ -3,10 +3,6 @@
 #include <stdarg.h>
 #include <stdexcept>
 
-#ifdef __SWITCH__
-#include <switch.h>
-#endif
-
 #include "TodDebug.h"
 #include "TodCommon.h"
 #include "../SexyAppFramework/misc/Debug.h"

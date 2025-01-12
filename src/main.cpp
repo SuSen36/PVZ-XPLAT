@@ -2,6 +2,7 @@
 #include "LawnApp.h"
 #include "Resources.h"
 #include "Sexy.TodLib/TodStringFile.h"
+#include "Sexy.TodLib/TodDebug.h"
 #include <SDL.h>
 #include <iostream>
 #include <memory>
@@ -19,22 +20,13 @@ bool (*gAppCloseRequest)();
 bool (*gAppHasUsedCheatKeys)();
 SexyString (*gGetCurrentLevelName)();
 
-// Logging function
-void log(const std::string& message) {
-#ifdef __ANDROID__
-	__android_log_print(ANDROID_LOG_INFO, "LawnApp", "%s", message.c_str());
-#else
-	std::cout << message << std::endl;
-#endif
-}
-
 // Game run function
 void runGame() {
 	// Initialize SDL
 	SDL_SetMainReady();
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		log("SDL Initialization failed: " + std::string(SDL_GetError()));
+		TodLog("SDL Initialization failed: " , SDL_GetError());
 		return;
 	}
 
@@ -52,7 +44,7 @@ void runGame() {
 		gLawnApp->Start();
 		gLawnApp->Shutdown();
 	} else {
-		log("Failed to create LawnApp instance.");
+		TodLog("Failed to create LawnApp instance.");
 	}
 
 	SDL_Quit();  // Quit SDL
@@ -60,13 +52,11 @@ void runGame() {
 
 // Android JNI implementation
 #ifdef ANDROID
-
 int SDL_main(int argc, char *argv[]) {
 	runGame();  // Run the game on Windows
 	return 0;  // Exit the program
 }
 #else
-
 // Windows entry point
 int main(int argc, char *argv[]) {
 	runGame();  // Run the game on Windows

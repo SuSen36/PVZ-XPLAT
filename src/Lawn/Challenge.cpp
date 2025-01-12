@@ -555,27 +555,27 @@ int Challenge::BeghouledTwistValidMove(int theGridX, int theGridY, BeghouledBoar
 //0x420190
 int Challenge::BeghouledTwistMoveCausesMatch(int theGridX, int theGridY, BeghouledBoardState* theBoardState)
 {
-	if (!BeghouledTwistValidMove(theGridX, theGridY, theBoardState))
-		return false;
+    if (!BeghouledTwistValidMove(theGridX, theGridY, theBoardState))
+        return false;
 
-	SeedType aSeed1 = theBoardState->mSeedType[theGridX][theGridY];
-	SeedType aSeed2 = theBoardState->mSeedType[theGridX + 1][theGridY];
-	SeedType aSeed3 = theBoardState->mSeedType[theGridX][theGridY + 1];
-	SeedType aSeed4 = theBoardState->mSeedType[theGridX + 1][theGridY + 1];
+    SeedType aSeed1 = theBoardState->mSeedType[theGridX][theGridY];
+    SeedType aSeed2 = theBoardState->mSeedType[theGridX + 1][theGridY];
+    SeedType aSeed3 = theBoardState->mSeedType[theGridX][theGridY + 1];
+    SeedType aSeed4 = theBoardState->mSeedType[theGridX + 1][theGridY + 1];
 
-	theBoardState->mSeedType[theGridX + 1][theGridY] = aSeed1;
-	theBoardState->mSeedType[theGridX][theGridY + 1] = aSeed2;
-	theBoardState->mSeedType[theGridX + 1][theGridY + 1] = aSeed3;
-	theBoardState->mSeedType[theGridX][theGridY] = aSeed4;
+    theBoardState->mSeedType[theGridX][theGridY] = aSeed3;
+    theBoardState->mSeedType[theGridX + 1][theGridY] = aSeed1;
+    theBoardState->mSeedType[theGridX][theGridY + 1] = aSeed4;
+    theBoardState->mSeedType[theGridX + 1][theGridY + 1] = aSeed2;
 
-	int aHasMatch = BeghouledBoardHasMatch(theBoardState);
+    bool aHasMatch = BeghouledBoardHasMatch(theBoardState);
 
-	theBoardState->mSeedType[theGridX][theGridY] = aSeed1;
-	theBoardState->mSeedType[theGridX + 1][theGridY] = aSeed2;
-	theBoardState->mSeedType[theGridX][theGridY + 1] = aSeed3;
-	theBoardState->mSeedType[theGridX + 1][theGridY + 1] = aSeed4;
+    theBoardState->mSeedType[theGridX][theGridY] = aSeed1;
+    theBoardState->mSeedType[theGridX + 1][theGridY] = aSeed2;
+    theBoardState->mSeedType[theGridX][theGridY + 1] = aSeed3;
+    theBoardState->mSeedType[theGridX + 1][theGridY + 1] = aSeed4;
 
-	return aHasMatch;
+    return aHasMatch;
 }
 
 //0x420220
@@ -676,16 +676,16 @@ void Challenge::BeghouledDragUpdate(int x, int y)
 		int aGridXFrom = mBoard->PixelToGridX(mBeghouledMouseDownX, mBeghouledMouseDownY);
 		int aGridYFrom = mBoard->PixelToGridY(mBeghouledMouseDownX, mBeghouledMouseDownY);
 		int aGridXTo, aGridYTo;
-		if (aDeltaX > aDeltaY)
-		{
-			aGridXTo = aGridXFrom + (aDeltaX > 0 ? 1 : -1);
-			aGridYTo = aGridYFrom;
-		}
-		else
-		{
-			aGridXTo = aGridXFrom;
-			aGridYTo = aGridYFrom + (aDeltaY > 0 ? 1 : -1);
-		}
+        if (abs(aDeltaX) > abs(aDeltaY))
+        {
+            aGridXTo = aGridXFrom + (aDeltaX > 0 ? 1 : -1);
+            aGridYTo = aGridYFrom;
+        }
+        else
+        {
+            aGridXTo = aGridXFrom;
+            aGridYTo = aGridYFrom + (aDeltaY > 0 ? 1 : -1);
+        }
 
 		BeghouledBoardState aBoardState;
 		LoadBeghouledBoardState(&aBoardState);
@@ -2930,7 +2930,7 @@ int Challenge::UpdateZombieSpawning()
 	if (mApp->IsWhackAZombieLevel())
 	{
 		WhackAZombieSpawning();
-		return 0;
+        return 1;
 	}
 	else return
 		mApp->IsFinalBossLevel() ||
@@ -4403,7 +4403,7 @@ void Challenge::IZombiePlaceZombie(ZombieType theZombieType, int theGridX, int t
 	if (theZombieType == ZOMBIE_BUNGEE)
 	{
 		aZombie->mTargetCol = theGridX;
-		aZombie->SetRow(theGridX);
+		aZombie->SetRow(theGridY);
 		aZombie->mPosX = mBoard->GridToPixelX(theGridX, theGridY);
 		aZombie->mPosY = aZombie->GetPosYBasedOnRow(theGridY);
 		aZombie->mRenderOrder = Board::MakeRenderOrder(RENDER_LAYER_GRAVE_STONE, theGridY, 7);

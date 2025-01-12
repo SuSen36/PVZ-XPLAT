@@ -1,5 +1,5 @@
-#ifndef __BUTTONLISTENER_H__
-#define __BUTTONLISTENER_H__
+#ifndef __BUTTON_LISTENER_H__
+#define __BUTTON_LISTENER_H__
 
 namespace Sexy
 {
@@ -7,7 +7,7 @@ namespace Sexy
 class ButtonListener
 {
 public:
-	virtual void			ButtonPress(int theId) = 0;
+	virtual void			OnButtonPress(int theId) = 0;
 	virtual void			ButtonDepress(int theId) = 0;
 	virtual void			ButtonDownTick(int theId) = 0;
 	virtual void			ButtonMouseEnter(int theId) = 0;
@@ -17,4 +17,4 @@ public:
 
 }
 
-#endif //__BUTTONLISTENER_H__
+#endif //__BUTTON_LISTENER_H__

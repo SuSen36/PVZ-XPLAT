@@ -23,7 +23,6 @@ class ProfileMgr;
 class PlayerInfo;
 class Music;
 class TitleScreen;
-class PopDRMComm;
 class ChallengeScreen;
 class StoreScreen;
 class AlmanacDialog;
@@ -97,7 +96,6 @@ public:
 	SexyString						mCrazyDaveMessageText;							//+0x854
 	int								mAppRandSeed;									//+0x870
 	//HICON							mBigArrowCursor;								//+0x874
-	PopDRMComm*						mDRM;											//+0x878
 	intptr_t						mSessionID;										//+0x87C
 	int								mPlayTimeActiveSession;							//+0x880
 	int								mPlayTimeInactiveSession;						//+0x884
@@ -197,7 +195,7 @@ public:
 	virtual bool					ChangeDirHook(const char* theIntendedPath);
 	virtual bool					NeedRegister();
 	virtual void					UpdateRegisterInfo();
-	virtual void					ButtonPress(int theId);
+	virtual void					OnButtonPress(int theId);
 	virtual void					ButtonDepress(int theId);
 	virtual void					ButtonDownTick(int theId);
 	virtual void					ButtonMouseEnter(int theId);
@@ -283,7 +281,6 @@ public:
 	/*inline*/ bool					EarnedGoldTrophy();
 	inline bool						IsRegistered() { return false; }
 	inline bool						IsExpired() { return false; }
-	inline bool						IsDRMConnected() { return false; }
 	/*inline*/ bool					IsScaryPotterLevel();
 	static /*inline*/ bool			IsEndlessScaryPotter(GameMode theGameMode);
 	/*inline*/ bool					IsSquirrelLevel();

@@ -1695,7 +1695,7 @@ void CreditScreen::KeyDown(KeyCode theKey)
 }
 
 //0x438560
-void CreditScreen::ButtonPress(int theId)
+void CreditScreen::OnButtonPress(int theId)
 {
     if (theId == CreditScreen::Credits_Button_MainMenu)
     {

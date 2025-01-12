@@ -1,18 +1,34 @@
 #include <ctime>
 #include <SDL.h>
 #include "ZenGarden.h"
-#include "BoardInclude.h"
 #include "System/Music.h"
 #include "System/SaveGame.h"
 #include "Widget/LawnDialog.h"
 #include "System/PlayerInfo.h"
 #include "System/PoolEffect.h"
-#include "System/PopDRMComm.h"
 #include "Widget/StoreScreen.h"
 #include "Widget/AwardScreen.h"
 #include "../Sexy.TodLib/Trail.h"
 #include "Widget/ChallengeScreen.h"
-#include "../Sexy.TodLib/TodDebug.h"
+#include "Coin.h"
+#include "Board.h"
+#include "Plant.h"
+#include "Zombie.h"
+#include "Cutscene.h"
+#include "GridItem.h"
+#include "Challenge.h"
+#include "LawnMower.h"
+#include "SeedPacket.h"
+#include "../LawnApp.h"
+#include "Projectile.h"
+#include "../Resources.h"
+#include "CursorObject.h"
+#include "ToolTipWidget.h"
+#include "MessageWidget.h"
+#include "../GameConstants.h"
+#include "Widget/GameButton.h"
+#include "SexyAppFramework/misc/Debug.h"
+#include "SexyAppFramework/graphics/Graphics.h"
 #include "../Sexy.TodLib/TodFoley.h"
 #include "Widget/SeedChooserScreen.h"
 #include "../Sexy.TodLib/Attachment.h"
@@ -2015,10 +2031,12 @@ void Board::DisplayAdvice(const SexyString& theAdvice, MessageStyle theMessageSt
 			return;
 
 		mHelpDisplayed[theHelpIndex] = true;
+        mAdvice->SetLabel(theAdvice, theMessageStyle);
+        mHelpIndex = theHelpIndex;
 	}
 
-	mAdvice->SetLabel(theAdvice, theMessageStyle);
-	mHelpIndex = theHelpIndex;
+
+
 }
 
 //0x40CA10
@@ -4831,10 +4849,6 @@ void Board::MouseUp(int x, int y, int theClickCount)
 			}
 			else if (mApp->mGameMode == GameMode::GAMEMODE_UPSELL)
 			{
-				if (mApp->mDRM)
-				{
-					mApp->mDRM->BuyGame();
-				}
 				mApp->DoBackToMain();
 			}
 		}
@@ -5058,7 +5072,7 @@ void Board::SpawnZombiesFromGraves()
 		return;
 	}
 	
-//	int aZombiePoints = GetGraveStonesCount();
+	//int aZombiePoints = GetGraveStonesCount();
 	GridItem* aGridItem = nullptr;
 	while (IterateGridItems(aGridItem))
 	{
@@ -5079,13 +5093,11 @@ void Board::SpawnZombiesFromGraves()
 		}
 
 		aZombie->RiseFromGrave(aGridItem->mGridX, aGridItem->mGridY);
-		/*
-		aZombiePoints -= GetZombieDefinition(aZombieType).mZombieValue;
-		if (aZombieType < 1)
-		{
-			aZombiePoints = 1;
-		}
-		*/
+		//aZombiePoints -= GetZombieDefinition(aZombieType).mZombieValue;
+		//if (aZombieType < 1)
+		//{
+		//	aZombiePoints = 1;
+		//}
 	}
 }
 
@@ -7827,7 +7839,7 @@ void Board::SetDanceMode(bool theEnableDance)
 	{
 		if (!aZombie->mDead)
 		{
-			aZombie->EnableDance();
+			aZombie->EnableDance(aZombie);
 		}
 	}
 }

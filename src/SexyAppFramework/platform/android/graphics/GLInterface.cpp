@@ -222,7 +222,7 @@ static void CopyImageToTexture4444(MemoryImage *theImage, int offx, int offy, in
 
     if (theImage->mColorTable == NULL)
     {
-        // ����û�е�ɫ��� RGBA ����
+
         uint32_t *srcRow = (uint32_t*)theImage->GetBits() + offy * theImage->GetWidth() + offx;
         uint16_t *dstRow = aDest;
 
@@ -283,7 +283,7 @@ static void CopyImageToTexture4444(MemoryImage *theImage, int offx, int offy, in
         }
     }
 
-    // ����ײ����
+
     if (bottomPad)
     {
         uint16_t *dstrow = aDest + (theDestPitch * theHeight);
@@ -1413,7 +1413,7 @@ int GLInterface::Init(bool IsWindowed)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    // ����ͶӰ����
+
 #ifdef _WIN32
     glOrtho(0.0f, static_cast<GLfloat>(mWidth) - 1.0f, static_cast<GLfloat>(mHeight) - 1.0f, 0.0f, -10.0f, 10.0f);
 #elif defined(ANDROID)

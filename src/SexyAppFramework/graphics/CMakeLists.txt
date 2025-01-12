@@ -1,12 +1,6 @@
 target_sources(${PROJECT_NAME} PRIVATE
 
     Color.h
-    D3D8Helper.cpp
-    D3D8Helper.h
-    D3DInterface.cpp
-    D3DInterface.h
-    D3DTester.cpp
-    D3DTester.h
     DDImage.cpp
     DDImage.h
     DDInterface.cpp

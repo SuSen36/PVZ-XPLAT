@@ -26,7 +26,7 @@
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #else
-typedef void AAssetManager; // 所有平台上都使用 void* 替代 HWND
+typedef void AAssetManager;
 typedef void AAsset;
 #endif
 
@@ -40,7 +40,7 @@ typedef void AAsset;
 #include <cwctype>
 #include <cstring>
 #include <cstdint>
-#define _stricmp strcasecmp
+#define stricmp strcasecmp
 #define _cdecl
 typedef uint8_t BYTE;
 typedef uint16_t WORD;
@@ -63,7 +63,7 @@ typedef WCHAR TCHAR;
 typedef WCHAR* LPWSTR;
 typedef TCHAR* LPTSTR;
 
-typedef void* HWND; // 所有平台上都使用 void* 替代 HWND
+typedef void* HWND;
 
 typedef struct tagRECT {
     LONG left;
@@ -261,7 +261,7 @@ inline void			inlineTrim(std::string &theData, const std::string& theChars = " \
 	inlineLTrim(theData, theChars);
 }
 
-struct StringLessNoCase { bool operator()(const std::string &s1, const std::string &s2) const { return _stricmp(s1.c_str(),s2.c_str())<0; } };
+struct StringLessNoCase { bool operator()(const std::string &s1, const std::string &s2) const { return stricmp(s1.c_str(),s2.c_str())<0; } };
 
 }
 #ifdef ANDROID

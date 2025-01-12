@@ -113,7 +113,7 @@ public:
 	virtual	bool			IsModal();
 	virtual int				WaitForResult(bool autoKill = true);
 
-	virtual void			ButtonPress(int theId);
+	virtual void			OnButtonPress(int theId);
 	virtual void			ButtonDepress(int theId);
 	virtual void			ButtonDownTick(int){}
 	virtual void			ButtonMouseEnter(int){}

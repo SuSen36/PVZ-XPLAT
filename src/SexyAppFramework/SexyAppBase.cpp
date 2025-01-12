@@ -138,6 +138,10 @@ SexyAppBase::SexyAppBase()
 
 #ifdef ANDROID
     mChangeDirTo = "/storage/emulated/0/Android/data/com.popcap.pvz/files/";
+#elifdef WINDOWS
+	mChangeDirTo = "./";
+#elifdef LINUX
+	mChangeDirTo = "./";
 #else
 	mChangeDirTo = "./";
 #endif
@@ -989,9 +993,9 @@ void SexyAppBase::ModalClose()
 void SexyAppBase::DialogButtonPress(int theDialogId, int theButtonId)
 {	
 	if (theButtonId == Dialog::ID_YES)
-		ButtonPress(2000 + theDialogId);
+		OnButtonPress(2000 + theDialogId);
 	else if (theButtonId == Dialog::ID_NO)
-		ButtonPress(3000 + theDialogId);	
+		OnButtonPress(3000 + theDialogId);
 }
 
 void SexyAppBase::DialogButtonDepress(int theDialogId, int theButtonId)
@@ -4181,7 +4185,7 @@ bool SexyAppBase::Process(bool allowSleep)
 		if (mDemoMute)
 		{
 			mDemoMute = false;
-			mSoundManager->StopAllSounds();
+			//mSoundManager->StopSounds();
 			Unmute(true);
 		}
 	}

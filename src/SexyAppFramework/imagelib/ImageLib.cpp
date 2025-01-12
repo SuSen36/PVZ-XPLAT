@@ -3,7 +3,7 @@
 #include "../Common.h"
 #include "ImageLib.h"
 #include "png/png.h"
-#include <math.h>
+#include <cmath>
 #include "SexyAppFramework/paklib/PakInterface.h"
 
 extern "C"

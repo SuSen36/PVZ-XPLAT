@@ -693,9 +693,11 @@ bool XMLParser::NextElement(XMLElement* theElement)
 //			theElement->mAttributes[aAttributeKey] = aAttributeValue;
 
 			AddAttribute(theElement, WStringToSexyString(aAttributeKey), WStringToSexyString(aAttributeValue));
+
+			theElement->mValue = XMLDecodeString(theElement->mValue);
 		}
 
-		theElement->mValue = XMLDecodeString(theElement->mValue);				
+
 
 		// Ignore comments
 		if ((theElement->mType != XMLElement::TYPE_COMMENT) || mAllowComments)
