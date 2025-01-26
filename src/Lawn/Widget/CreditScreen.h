@@ -106,7 +106,7 @@ public:
 	virtual void			MouseUp(int x, int y, int theClickCount);
 	virtual void			AddedToManager(WidgetManager* theWidgetManager);
 	virtual void			RemovedFromManager(WidgetManager* theWidgetManager);
-	virtual void			OnButtonPress(int theId);
+	virtual void			ButtonDown(int theId);
 	virtual void			ButtonDepress(int theId);
 	virtual void			ButtonDownTick(int){}
 	virtual void			ButtonMouseEnter(int){}

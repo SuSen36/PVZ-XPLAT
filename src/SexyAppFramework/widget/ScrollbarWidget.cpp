@@ -220,7 +220,7 @@ void ScrollbarWidget::SetThumbPosition(int thePosition)
 	SetValue(((thePosition-mUpButton->mWidth) * (mMaxValue - mPageSize)) / (GetTrackSize() - GetThumbSize()));				
 }
 	
-void ScrollbarWidget::OnButtonPress(int theId) 
+void ScrollbarWidget::ButtonDown(int theId)
 {
 	mButtonAcc = 0;
 		

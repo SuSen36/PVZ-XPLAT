@@ -799,7 +799,7 @@ void StoreScreen::RemovedFromManager(WidgetManager* theWidgetManager)
 }
 
 //0x48C410
-void StoreScreen::OnButtonPress(int theId)
+void StoreScreen::ButtonDown(int theId)
 {
     if (theId != StoreScreen::StoreScreen_Prev && theId != StoreScreen::StoreScreen_Next)
         mApp->PlaySample(Sexy::SOUND_BUTTONCLICK);

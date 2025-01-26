@@ -1828,7 +1828,7 @@ void LawnApp::PreDisplayHook()
 }
 
 
-void LawnApp::OnButtonPress(int) {}
+void LawnApp::ButtonDown(int) {}
 void LawnApp::ButtonDownTick(int) {}
 void LawnApp::ButtonMouseEnter(int) {}
 void LawnApp::ButtonMouseLeave(int) {}

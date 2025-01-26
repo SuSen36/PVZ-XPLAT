@@ -7,11 +7,11 @@
 #include <sys/stat.h>
 #include "TodDebug.h"
 #include "Definition.h"
-#include "../SexyAppFramework/imagelib/zlib/zlib.h"
+#include "zlib.h"
 #include "SexyAppFramework/paklib/PakInterface.h"
-#include "../SexyAppFramework/misc/PerfTimer.h"
-#include "../SexyAppFramework/misc/XMLParser.h"
-#include "../Resources.h"
+#include "SexyAppFramework/misc/PerfTimer.h"
+#include "SexyAppFramework/misc/XMLParser.h"
+#include "Resources.h"
 
 DefSymbol gTrailFlagDefSymbols[] = {  //0x69E150
     { 0, "Loops" },                 { -1, nullptr }
@@ -164,7 +164,7 @@ void* TodEmitterDefinitionConstructor(void* thePointer)
 {
     if (thePointer)
     {
-        memset(thePointer, 0, sizeof(TodEmitterDefinition));
+        memset(thePointer, NULL, sizeof(TodEmitterDefinition));
         ((TodEmitterDefinition*)thePointer)->mImageFrames = 1;
         ((TodEmitterDefinition*)thePointer)->mEmitterType = EmitterType::EMITTER_BOX;
         ((TodEmitterDefinition*)thePointer)->mName = "";
@@ -532,7 +532,7 @@ uint DefinitionCalcHash(DefMap* theDefMap)
 {
     // Uninitialised!!
     TodList<DefMap*> aProgressMaps = TodList<DefMap*>();
-    uint aResult = DefinitionCalcHashDefMap(crc32(0L, (Bytef*)Z_NULL, 0) + 1, theDefMap, aProgressMaps);
+    uint aResult = DefinitionCalcHashDefMap(crc32(0L, (Bytef*)Z_NULL, NULL) + 1, theDefMap, aProgressMaps);
 
     // TodList destructor is called upon it going out of scope.
     return aResult;
@@ -572,16 +572,16 @@ bool DefinitionReadCompiledFile(const SexyString& theCompiledFilePath, DefMap* t
 {
     PerfTimer aTimer;
     aTimer.Start();
-    FILE* pFile = fopen(theCompiledFilePath.c_str(), "rb");
+    PFILE* pFile = p_fopen(theCompiledFilePath.c_str(), __S("rb"));
     if (!pFile) return false;
 
-    fseek(pFile, 0, 2);  // 将读取位置的指针移动至文件末尾
-    size_t aCompressedSize = ftell(pFile);  // 此时获取到的偏移量即为整个文件的大小
-    fseek(pFile, 0, 0);  // 再把读取位置的指针移回文件开头
+    p_fseek(pFile, 0, 2);  // 将读取位置的指针移动至文件末尾
+    size_t aCompressedSize = p_ftell(pFile);  // 此时获取到的偏移量即为整个文件的大小
+    p_fseek(pFile, 0, 0);  // 再把读取位置的指针移回文件开头
     void* aCompressedBuffer = DefinitionAlloc(aCompressedSize);
     // 读取文件，并判断实际读取的大小是否为完整的文件大小，若不等则判断为读取失败
-    bool aReadCompressedFailed = fread(aCompressedBuffer, sizeof(char), aCompressedSize, pFile) != aCompressedSize;
-    fclose(pFile);  // 关闭资源文件流并释放 pFile 占用的内存
+    bool aReadCompressedFailed = p_fread(aCompressedBuffer, sizeof(char), aCompressedSize, pFile) != aCompressedSize;
+    p_fclose(pFile);  // 关闭资源文件流并释放 pFile 占用的内存
     if (aReadCompressedFailed) { // 判断是否读取成功
         TodTrace(__S("Failed to read compiled file: %s\n"), theCompiledFilePath.c_str());
         free(aCompressedBuffer);
@@ -664,27 +664,11 @@ bool DefinitionIsCompiled(const SexyString& theXMLFilePath)
     time_t aXMLFileTime = attr.st_mtime;
 
     return aXMLFileTime <= aCompiledFileTime;
-
-    /*
-    _WIN32_FILE_ATTRIBUTE_DATA lpFileData;
-    _FILETIME aCompiledFileTime;
-    bool aSucceed = GetFileAttributesEx(aCompiledFilePath.c_str(), _GET_FILEEX_INFO_LEVELS::GetFileExInfoStandard, &lpFileData);
-    if (aSucceed)
-        aCompiledFileTime = lpFileData.ftLastWriteTime;
-    
-    if (!GetFileAttributesEx(theXMLFilePath.c_str(), _GET_FILEEX_INFO_LEVELS::GetFileExInfoStandard, &lpFileData))
-    {
-        TodTrace(__S("Can't file source file to compile '%s'"), theXMLFilePath.c_str());
-        return false;
-    }
-    else
-        return aSucceed && CompareFileTime(&aCompiledFileTime, &lpFileData.ftLastWriteTime) == 1;
-    */
 }
 
 void DefinitionFillWithDefaults(DefMap* theDefMap, void* theDefinition)
 {
-    memset(theDefinition, 0, theDefMap->mDefSize);  // 将 theDefinition 初始化填充为 0
+    memset(theDefinition, NULL, theDefMap->mDefSize);  // 将 theDefinition 初始化填充为 0
     for (DefField* aField = theDefMap->mMapFields; *aField->mFieldName != '\0'; aField++)  // 遍历 theDefinition 的每一个成员变量
         if (aField->mFieldType == DefFieldType::DT_STRING)
             *(char**)((uintptr_t)theDefinition + aField->mFieldOffset) = (char *)"";  // 将所有 char* 类型的成员变量赋值为空字符数组的指针
@@ -737,7 +721,7 @@ bool DefSymbolValueFromString(DefSymbol* theSymbolMap, const char* theName, int*
 {
     while (theSymbolMap->mSymbolName != nullptr)
     {
-        if (strcasecmp(theName, theSymbolMap->mSymbolName) == 0)
+        if (stricmp(theName, theSymbolMap->mSymbolName) == 0)
         {
             *theResultValue = theSymbolMap->mSymbolValue;
             return true;
@@ -1131,7 +1115,7 @@ bool DefinitionReadField(XMLParser* theXmlParser, DefMap* theDefMap, void* theDe
         if (aField->mFieldType == DefFieldType::DT_FLAGS && DefinitionReadFlagField(theXmlParser, aXMLElement.mValue, (uint*)pVar, (DefSymbol*)aField->mExtraData))
             return true;
         
-        if (strcasecmp(aXMLElement.mValue.c_str(), aField->mFieldName) == 0)  // 判断 aXMLElement 定义的是否为该成员变量
+        if (stricmp(aXMLElement.mValue.c_str(), aField->mFieldName) == 0)  // 判断 aXMLElement 定义的是否为该成员变量
         {
             bool aSuccess;
             switch (aField->mFieldType)
@@ -1320,7 +1304,7 @@ bool DefinitionCompileFile(const SexyString theXMLFilePath, const SexyString& th
 //0x4447F0 : (void* def, *defMap, string& xmlFilePath)  //esp -= 0xC
 bool DefinitionCompileAndLoad(const SexyString& theXMLFilePath, DefMap* theDefMap, void* theDefinition)
 {
-    //TODO DedinitionCompileAndLoad
+#ifdef _DEBUG  // 内测版执行的内容
 
     TodHesitationTrace(__S("predef"));
     SexyString aCompiledFilePath = DefinitionGetCompiledFilePathFromXMLFilePath(theXMLFilePath);
@@ -1339,6 +1323,16 @@ bool DefinitionCompileAndLoad(const SexyString& theXMLFilePath, DefMap* theDefMa
         return aResult;
     }
 
+#else  // 原版执行的内容
+
+    SexyString aCompiledFilePath = DefinitionGetCompiledFilePathFromXMLFilePath(theXMLFilePath);
+    if (DefinitionReadCompiledFile(aCompiledFilePath, theDefMap, theDefinition))
+        return true;
+
+    TodErrorMessageBox(StrFormat(__S("missing resource %s"), aCompiledFilePath.c_str()).c_str(), __S("Error"));
+    exit(0);
+    
+#endif
 }
 
 //0x4448E0

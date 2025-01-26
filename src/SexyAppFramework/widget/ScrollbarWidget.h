@@ -73,7 +73,7 @@ public:
 	virtual void			Draw(Graphics *g);
 	virtual void			ClampValue();
 	virtual void			SetThumbPosition(int thePosition);
-	virtual void			OnButtonPress(int theId);
+	virtual void			ButtonDown(int theId);
 	virtual void			ButtonDepress(int theId);
 	virtual void			ButtonDownTick(int theId);
 	virtual void			Update();

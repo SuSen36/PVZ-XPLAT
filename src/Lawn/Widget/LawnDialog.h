@@ -61,7 +61,7 @@ public:
 	int						GetTop();
 	virtual void			SetButtonDelay(int theDelay);
 	virtual void			Update();
-	virtual void			OnButtonPress(int theId);
+	virtual void			ButtonDown(int theId);
 	virtual void			ButtonDepress(int theId);
 	virtual void			CheckboxChecked();
 	virtual void			KeyDown(KeyCode theKey);

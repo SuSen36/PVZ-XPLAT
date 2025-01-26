@@ -7,7 +7,7 @@ namespace Sexy
 class ButtonListener
 {
 public:
-	virtual void			OnButtonPress(int theId) = 0;
+	virtual void			ButtonDown(int theId) = 0;
 	virtual void			ButtonDepress(int theId) = 0;
 	virtual void			ButtonDownTick(int theId) = 0;
 	virtual void			ButtonMouseEnter(int theId) = 0;

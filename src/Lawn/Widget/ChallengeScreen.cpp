@@ -599,7 +599,7 @@ void ChallengeScreen::RemovedFromManager(WidgetManager* theWidgetManager)
 }
 
 //0x42F720
-void ChallengeScreen::OnButtonPress(int theId)
+void ChallengeScreen::ButtonDown(int theId)
 {
 	(void)theId;
 	mApp->PlaySample(Sexy::SOUND_BUTTONCLICK);

@@ -195,7 +195,7 @@ public:
 	virtual bool					ChangeDirHook(const char* theIntendedPath);
 	virtual bool					NeedRegister();
 	virtual void					UpdateRegisterInfo();
-	virtual void					OnButtonPress(int theId);
+	virtual void					ButtonDown(int theId);
 	virtual void					ButtonDepress(int theId);
 	virtual void					ButtonDownTick(int theId);
 	virtual void					ButtonMouseEnter(int theId);

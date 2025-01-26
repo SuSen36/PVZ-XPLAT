@@ -6,31 +6,29 @@ android {
     namespace "com.popcap.pvz"
     compileSdk 33
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 34
+        minSdkVersion 22
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
         externalNativeBuild {
-            ndkBuild {
-                arguments "APP_PLATFORM=android-21"
-                abiFilters 'arm64-v8a' // 确保各个ABI都是字符串，不要用逗号连接
-                //abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86', 'x86_64' // 确保各个ABI都是字符串，不要用逗号连接
-            }
             cmake {
-                arguments "-DANDROID_PLATFORM=android-19", "-DANDROID_STL=c++_static"
-
+                arguments "-DANDROID_PLATFORM=android-21", "-DANDROID_STL=c++_static"
                 abiFilters 'arm64-v8a' // 确保各个ABI都是字符串，不要用逗号连接
                 //abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86', 'x86_64'
             }
         }
     }
     buildTypes {
-        release {
+       // release {
+       //     minifyEnabled false
+       //     proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+       // }
+        debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    applicationVariants.all { variant ->
+    applicationVariants.configureEach { variant ->
         tasks["merge${variant.name.capitalize()}Assets"]
             .dependsOn("externalNativeBuild${variant.name.capitalize()}")
     }
@@ -40,15 +38,9 @@ android {
         }
         externalNativeBuild {
             {
-                if (true) {
-                    cmake {
-                        path '../../CMakeLists.txt'
-                        version '3.22.1' // 使用的CMake版本
-                    }
-                } else {
-                    ndkBuild {
-                        path 'jni/Android.mk'
-                    }
+                cmake {
+                    path '../../CMakeLists.txt'
+                    version '3.22.1' // 使用的CMake版本
                 }
             }
         }

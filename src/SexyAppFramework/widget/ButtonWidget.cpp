@@ -243,8 +243,8 @@ void ButtonWidget::MouseMove(int theX, int theY)
 void ButtonWidget::MouseDown(int theX, int theY, int theBtnNum, int theClickCount)
 {
 	Widget::MouseDown(theX, theY, theBtnNum, theClickCount);
-		
-	mButtonListener->OnButtonPress(mId);
+
+    mButtonListener->ButtonDown(mId);
 	
 	MarkDirty();
 }

@@ -8,6 +8,9 @@ namespace Sexy {
 class BassSoundManager;
 
 class BassSoundInstance : public Sexy::SoundInstance {
+protected:
+    HSAMPLE		              mSourceSoundBuffer;
+    HSTREAM		              mSoundStream;
 public:
     BassSoundInstance(HSAMPLE theSourceSound);
     ~BassSoundInstance() override;

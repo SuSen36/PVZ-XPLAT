@@ -504,7 +504,7 @@ void TitleScreen::RemovedFromManager(Sexy::WidgetManager* theWidgetManager)
 }
 
 //0x48E600
-void TitleScreen::OnButtonPress(int theId)
+void TitleScreen::ButtonDown(int theId)
 {
 	(void)theId;
 	mApp->PlaySample(Sexy::SOUND_BUTTONCLICK);

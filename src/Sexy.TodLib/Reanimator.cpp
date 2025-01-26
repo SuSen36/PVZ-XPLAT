@@ -2,13 +2,13 @@
 #include "TodCommon.h"
 #include "Definition.h"
 #include "Reanimator.h"
-#include "../LawnApp.h"
+#include "LawnApp.h"
 #include "Attachment.h"
 #include "ReanimAtlas.h"
 #include "EffectSystem.h"
-#include "../GameConstants.h"
+#include "GameConstants.h"
 #include "SexyAppFramework/graphics/Font.h"
-#include "../SexyAppFramework/misc/PerfTimer.h"
+#include "SexyAppFramework/misc/PerfTimer.h"
 #include "SexyAppFramework/graphics/MemoryImage.h"
 
 unsigned int gReanimatorDefCount;                     //[0x6A9EE4]
@@ -404,7 +404,7 @@ void Reanimation::Update()
 	if (mFrameCount == 0 || mDead)
 		return;
 
-	TOD_ASSERT(std::isfinite(mAnimRate));
+	TOD_ASSERT(finite(mAnimRate));
 	mLastFrameTime = mAnimTime;  // 更新上一帧的循环率
 	mAnimTime += SECONDS_PER_UPDATE * mAnimRate / mFrameCount;  // 更新当前循环率
 
@@ -489,7 +489,7 @@ void Reanimation::Update()
 			aTrack->mShakeY = RandRangeFloat(-aTrack->mShakeOverride, aTrack->mShakeOverride);
 		}
 
-		if (strncasecmp(mDefinition->mTracks.tracks[aTrackIndex].mName, "attacher__", 10) == 0)  // IsAttacher
+		if (strnicmp(mDefinition->mTracks.tracks[aTrackIndex].mName, "attacher__", 10) == 0)  // IsAttacher
 			UpdateAttacherTrack(aTrackIndex);
 
 		if (aTrack->mAttachmentID != AttachmentID::ATTACHMENTID_NULL)
@@ -647,7 +647,7 @@ bool Reanimation::DrawTrack(Graphics* g, int theTrackIndex, int theRenderGroup, 
 	{
 		aColor = ColorsMultiply(aColor, g->GetColor());  // 将颜色再与 Graphics 的颜色进行正片叠底混合
 	}
-	int aImageAlpha = std::clamp(FloatRoundToInt(aTransform.mAlpha * aColor.mAlpha), 0, 255);
+	int aImageAlpha = ClampInt(FloatRoundToInt(aTransform.mAlpha * aColor.mAlpha), 0, 255);
 	if (aImageAlpha <= 0)  // 当图像完全透明时，返回
 	{
 		return false;
@@ -704,7 +704,7 @@ bool Reanimation::DrawTrack(Graphics* g, int theTrackIndex, int theRenderGroup, 
 	}
 	else
 	{
-		if (strcasecmp(mDefinition->mTracks.tracks[theTrackIndex].mName, "fullscreen"))  // 如果既没有图像也没有文本，且不是全屏轨道
+		if (stricmp(mDefinition->mTracks.tracks[theTrackIndex].mName, "fullscreen"))  // 如果既没有图像也没有文本，且不是全屏轨道
 			return false;  // 无需绘制
 		aFullScreen = true;  // 标记全屏轨道，后续会填充一个屏幕大小的矩形
 	}
@@ -892,7 +892,7 @@ void Reanimation::Draw(Graphics* g)
 int Reanimation::FindTrackIndex(const char* theTrackName)
 {
 	for (int aTrackIndex = 0; aTrackIndex < mDefinition->mTracks.count; aTrackIndex++)
-		if (strcasecmp(mDefinition->mTracks.tracks[aTrackIndex].mName, theTrackName) == 0)
+		if (stricmp(mDefinition->mTracks.tracks[aTrackIndex].mName, theTrackName) == 0)
 			return aTrackIndex;
 
 	TodTrace("Can't find track '%s'", theTrackName);
@@ -1008,7 +1008,7 @@ void Reanimation::SetFramesForLayer(const char* theTrackName)
 bool Reanimation::TrackExists(const char* theTrackName)
 {
 	for (int aTrackIndex = 0; aTrackIndex < mDefinition->mTracks.count; aTrackIndex++)
-		if (strcasecmp(mDefinition->mTracks.tracks[aTrackIndex].mName, theTrackName) == 0)
+		if (stricmp(mDefinition->mTracks.tracks[aTrackIndex].mName, theTrackName) == 0)
 			return true;
 	return false;
 }
@@ -1124,7 +1124,6 @@ void ReanimatorEnsureDefinitionLoaded(ReanimationType theReanimType, bool theIsP
 	if (aReanimDef->mTracks.tracks != nullptr)  // 如果轨道指针不为空指针，说明定义数据已经加载
 		return;
 	ReanimationParams* aReanimParams = &gReanimationParamArray[(int)theReanimType];
-	TodTrace("'%s'\n", aReanimParams->mReanimFileName);
 	if (theIsPreloading)
 	{
 		if (gSexyAppBase->mShutdown || gAppCloseRequest())  // 预加载时若程序退出，则取消加载
@@ -1155,14 +1154,13 @@ void ReanimatorEnsureDefinitionLoaded(ReanimationType theReanimType, bool theIsP
 //0x473750
 void ReanimatorLoadDefinitions(ReanimationParams* theReanimationParamArray, int theReanimationParamArraySize)
 {
-	TodHesitationBracket aHesitation(__S("ReanimatorLoadDefinitions"));
+	TodHesitationBracket aHesitation(_S("ReanimatorLoadDefinitions"));
 	TOD_ASSERT(!gReanimationParamArray && !gReanimatorDefArray);
 	gReanimationParamArraySize = theReanimationParamArraySize;
 	gReanimationParamArray = theReanimationParamArray;
 	gReanimatorDefCount = theReanimationParamArraySize;
 	gReanimatorDefArray = new ReanimatorDefinition[theReanimationParamArraySize];
 
-#ifndef LOW_MEMORY
 	for (unsigned int i = 0; i < gReanimationParamArraySize; i++)
 	{
 		ReanimationParams* aReanimationParams = &theReanimationParamArray[i];
@@ -1170,7 +1168,6 @@ void ReanimatorLoadDefinitions(ReanimationParams* theReanimationParamArray, int 
 		if (DefinitionIsCompiled(StringToSexyString(aReanimationParams->mReanimFileName)))
 			ReanimatorEnsureDefinitionLoaded(aReanimationParams->mReanimationType, true);
 	}
-#endif
 }
 
 //0x473870
@@ -1216,7 +1213,7 @@ void Reanimation::ShowOnlyTrack(const char* theTrackName)
 	for (int i = 0; i < mDefinition->mTracks.count; i++)
 	{
 		// 轨道名与指定名称相同时，设置轨道渲染分组为正常显示，否则设置轨道渲染分组为隐藏
-		mTrackInstances[i].mRenderGroup = strcasecmp(mDefinition->mTracks.tracks[i].mName, theTrackName) == 0 ? RENDER_GROUP_NORMAL : RENDER_GROUP_HIDDEN;
+		mTrackInstances[i].mRenderGroup = stricmp(mDefinition->mTracks.tracks[i].mName, theTrackName) == 0 ? RENDER_GROUP_NORMAL : RENDER_GROUP_HIDDEN;
 	}
 }
 
@@ -1225,7 +1222,7 @@ void Reanimation::ShowOnlyTrack(const char* theTrackName)
 void Reanimation::AssignRenderGroupToTrack(const char* theTrackName, int theRenderGroup)
 {
 	for (int i = 0; i < mDefinition->mTracks.count; i++)
-		if (strcasecmp(mDefinition->mTracks.tracks[i].mName, theTrackName) == 0)
+		if (stricmp(mDefinition->mTracks.tracks[i].mName, theTrackName) == 0)
 		{
 			mTrackInstances[i].mRenderGroup = theRenderGroup;  // 仅设置首个名称恰好为 theTrackName 的轨道
 			return;
@@ -1240,7 +1237,7 @@ void Reanimation::AssignRenderGroupToPrefix(const char* theTrackName, int theRen
 	for (int i = 0; i < mDefinition->mTracks.count; i++)
 	{
 		const char* const aTrackName = mDefinition->mTracks.tracks[i].mName;
-		if (strlen(aTrackName) >= aPrifixLength && !strncasecmp(aTrackName, theTrackName, aPrifixLength))  // 轨道名称长度必须不小于指定前缀长度
+		if (strlen(aTrackName) >= aPrifixLength && !strnicmp(aTrackName, theTrackName, aPrifixLength))  // 轨道名称长度必须不小于指定前缀长度
 			mTrackInstances[i].mRenderGroup = theRenderGroup;
 	}
 }
@@ -1402,7 +1399,7 @@ void Reanimation::UpdateAttacherTrack(int theTrackIndex)
 		for (unsigned int i = 0; i < gReanimationParamArraySize; i++)  // 在动画参数数组中寻找动画文件名对应的动画类型
 		{
 			ReanimationParams* aParams = &gReanimationParamArray[i];
-			if (strcasecmp(aReanimFileName.c_str(), aParams->mReanimFileName) == 0)
+			if (stricmp(aReanimFileName.c_str(), aParams->mReanimFileName) == 0)
 			{
 				aReanimationType = aParams->mReanimationType;
 				break;
@@ -1444,7 +1441,7 @@ void Reanimation::UpdateAttacherTrack(int theTrackIndex)
 	}
 
 	Color aColor = ColorsMultiply(mColorOverride, aTrackInstance->mTrackColor);
-	aColor.mAlpha = std::clamp(FloatRoundToInt(aTransform.mAlpha * aColor.mAlpha), 0, 255);
+	aColor.mAlpha = ClampInt(FloatRoundToInt(aTransform.mAlpha * aColor.mAlpha), 0, 255);
 	AttachmentPropogateColor(aTrackInstance->mAttachmentID, aColor, mEnableExtraAdditiveDraw, mExtraAdditiveColor, mEnableExtraOverlayDraw, mExtraOverlayColor);
 }
 

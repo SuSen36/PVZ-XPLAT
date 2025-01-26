@@ -10401,7 +10401,7 @@ void Zombie::EnableFuture(bool theEnableFuture)
     }
 }
 
-void Zombie::EnableDance(bool theEnableDance)
+void Zombie::EnableDance()
 {
     if (!IsOnBoard())
         return;

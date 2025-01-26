@@ -22,6 +22,8 @@
 #include <cstdint>
 #include <ctime>
 
+#include <SDL.h>
+
 #ifdef ANDROID
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
@@ -40,7 +42,10 @@ typedef void AAsset;
 #include <cwctype>
 #include <cstring>
 #include <cstdint>
+#define _stricmp strcasecmp
 #define stricmp strcasecmp
+#define _strnicmp strncasecmp
+#define strnicmp strncasecmp
 #define _cdecl
 typedef uint8_t BYTE;
 typedef uint16_t WORD;
@@ -94,6 +99,25 @@ typedef struct _GUID {
 #else
 #define unreachable __builtin_unreachable
 #endif
+
+template <typename T, typename U>
+inline typename std::common_type<T, U>::type min(T a, U b) {
+    return (a < b) ? a : b;
+}
+
+template <typename T, typename U>
+inline typename std::common_type<T, U>::type max(T a, U b) {
+    return (a > b) ? a : b;
+}
+
+template <typename T, typename U, typename V>
+inline typename std::common_type<T, U, V>::type clamp(T value, U lower_bound, V upper_bound) {
+    using CommonType = typename std::common_type<T, U, V>::type;
+    CommonType val = static_cast<CommonType>(value);
+    CommonType lower = static_cast<CommonType>(lower_bound);
+    CommonType upper = static_cast<CommonType>(upper_bound);
+    return (val < lower) ? lower : (val > upper) ? upper : val;
+}
 
 // Removed wide string support
 typedef std::string			SexyString;

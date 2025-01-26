@@ -56,9 +56,23 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 
                 int x = event.motion.x;
                 int y = event.motion.y;
+                static float mLastTouchY = -1.0f;
+                static float mLastTouchX = -1.0f;
+                static const float THRESHOLD = 0.05f; // 阈值
+
+                float deltaY = y - mLastTouchY;
+
+                if (std::abs(deltaY) > THRESHOLD) {
+                    int zDelta = (deltaY > 0) ? -1 : 1; // 向下滑动为 -1，向上滑动为 1
+                    mWidgetManager->MouseWheel(zDelta);
+                }
+
+                mLastTouchX = x;
+                mLastTouchY = y;
                 mWidgetManager->RemapMouse(x, y);
 
                 mLastUserInputTick = mLastTimerTime;
+
 
                 mWidgetManager->MouseMove(x, y);
                 break;
@@ -121,7 +135,6 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
                 mLastUserInputTick = mLastTimerTime;
                 mWidgetManager->KeyChar((SexyChar)event.text.text[0]);
                 break;
-
         }
     }
 

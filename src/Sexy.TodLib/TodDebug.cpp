@@ -16,11 +16,8 @@ static char gDebugDataFolder[512];
 //0x514EA0
 void TodErrorMessageBox(const char* theMessage, const char* theTitle)
 {
-#ifdef ANDROID
-	//TODO android ErrorMessageBox
-#else
-	throw std::runtime_error("Error Box\n--" + std::string(theTitle) + "--\n" + theMessage);
-#endif
+    TodTraceAndLog("%s.%s", theMessage, theTitle);
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, theTitle, theMessage, nullptr);
 }
 
 void TodTraceMemory()

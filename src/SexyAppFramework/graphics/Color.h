@@ -20,6 +20,8 @@ public:
 
 	static Color Black;
 	static Color White;
+    static Color Red;
+    static Color Magenta;
 
 public:
 	Color();

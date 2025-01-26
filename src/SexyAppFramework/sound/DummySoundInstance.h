@@ -1,7 +1,7 @@
 #ifndef __DUMMY_SOUND_INSTANCE_H__
 #define __DUMMY_SOUND_INSTANCE_H__
 
-#include "sound/SoundInstance.h"
+#include "SexyAppFramework/sound/SoundInstance.h"
 
 class DummySoundInstance : public Sexy::SoundInstance {
 public:

@@ -39,32 +39,6 @@ PakInterface::~PakInterface()
 //0x5D84D0
 static void FixFileName(const char* theFileName, char* theUpperName)
 {
-#ifdef ANDROID
-    // 在 Android 平台上不使用工作目录，只处理斜杠和大写
-    const char* aSrc = theFileName;
-    char* aDest = theUpperName;
-
-    bool lastSlash = false;
-    for (;;)
-    {
-        char c = *(aSrc++);
-
-        if ((c == '\\') || (c == '/'))
-        {
-            // 统一转为右斜杠，且多个斜杠的情况下只保留一个
-            if (!lastSlash)
-                *(aDest++) = '/';
-            lastSlash = true;
-        }
-        else
-        {
-            *(aDest++) = toupper((uchar)c);
-            if (c == 0)
-                break;
-            lastSlash = false;
-        }
-    }
-#else
     // 检测路径是否为从盘符开始的绝对路径
     if ((theFileName[0] != 0) && (theFileName[1] == ':'))
     {
@@ -111,7 +85,6 @@ static void FixFileName(const char* theFileName, char* theUpperName)
             lastSlash = false;
         }
     }
-#endif
 
     // 结束字符串并确保以 null 结尾
     *aDest = '\0';
@@ -119,18 +92,6 @@ static void FixFileName(const char* theFileName, char* theUpperName)
 
 bool PakInterface::AddPakFile(const std::string& theFileName)
 {
-#ifdef ANDROID
-    // 在 Android 平台上使用 AAssetManager 来打开和读取 PAK 文件
-    AAsset* asset = AAssetManager_open(Sexy::gAssetsManager, theFileName.c_str(), AASSET_MODE_STREAMING);
-    if (!asset) return false;
-
-    off_t aFileSize = AAsset_getLength(asset);
-    mPakCollectionList.emplace_back(aFileSize);
-    PakCollection* aPakCollection = &mPakCollectionList.back();
-
-    AAsset_read(asset, aPakCollection->mDataPtr, aFileSize);
-    AAsset_close(asset);
-#else
     // 在其他平台上使用标准文件操作
     FILE *aFileHandle = fcaseopen(theFileName.c_str(), "rb");
     if (!aFileHandle) return false;
@@ -147,7 +108,6 @@ bool PakInterface::AddPakFile(const std::string& theFileName)
         return false;
     }
     fclose(aFileHandle);
-#endif
 
     // 对读取的数据进行异或处理
     {
@@ -242,45 +202,6 @@ bool PakInterface::AddPakFile(const std::string& theFileName)
 
 bool PakInterface::AddDirectory(const std::string& theFileName)
 {
-#ifdef ANDROID
-    // 在 Android 平台上使用 AAssetManager 来打开和读取文件夹中的资产
-    AAssetManager* assetManager = Sexy::gAssetsManager; // 获取资产管理器
-    AAssetDir* assetDir = AAssetManager_openDir(assetManager, theFileName.c_str());
-    if (!assetDir) return false;
-
-    const char* fileName;
-    while ((fileName = AAssetDir_getNextFileName(assetDir)) != nullptr) {
-        std::string fullPath = theFileName + "/" + fileName;
-        AAsset* asset = AAssetManager_open(assetManager, fullPath.c_str(), AASSET_MODE_STREAMING);
-        if (!asset) {
-            continue; // 如果无法打开资产，跳过
-        }
-
-        off_t fileSize = AAsset_getLength(asset);
-        mPakCollectionList.emplace_back(fileSize);
-        PakCollection* aPakCollection = &mPakCollectionList.back();
-
-        AAsset_read(asset, aPakCollection->mDataPtr, fileSize);
-        AAsset_close(asset);
-
-        // 对读取的数据进行异或处理
-        auto *aDataPtr = static_cast<uint8_t *>(aPakCollection->mDataPtr);
-        for (size_t i = 0; i < fileSize; i++) {
-            *aDataPtr++ ^= 0xF7;
-        }
-
-        // 生成文件记录
-        PakRecordMap::iterator aRecordItr = mPakRecordMap.insert(PakRecordMap::value_type(StringToUpper(fullPath), PakRecord())).first;
-        PakRecord* aPakRecord = &(aRecordItr->second);
-        aPakRecord->mCollection = aPakCollection;
-        aPakRecord->mFileName = fullPath;
-        aPakRecord->mStartPos = 0;
-        aPakRecord->mSize = fileSize;
-        aPakRecord->mFileTime = 0; // Android AssetManager 不提供时间信息
-    }
-
-    AAssetDir_close(assetDir);
-#else
     // 其他平台使用标准文件操作
     std::filesystem::path dirPath(theFileName);
     if (!std::filesystem::exists(dirPath) || !std::filesystem::is_directory(dirPath)) {
@@ -319,7 +240,6 @@ bool PakInterface::AddDirectory(const std::string& theFileName)
             aPakRecord->mFileTime = std::filesystem::last_write_time(entry).time_since_epoch().count();
         }
     }
-#endif
 
     return true;
 }

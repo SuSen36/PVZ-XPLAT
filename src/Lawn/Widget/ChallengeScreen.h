@@ -47,7 +47,7 @@ public:
     virtual void                Update();
     virtual void                AddedToManager(WidgetManager* theWidgetManager);
     virtual void                RemovedFromManager(WidgetManager* theWidgetManager);
-    virtual void                OnButtonPress(int theId);
+    virtual void                ButtonDown(int theId);
     virtual void                ButtonDownTick(int){}
     virtual void                ButtonMouseEnter(int){}
     virtual void                ButtonMouseLeave(int){}

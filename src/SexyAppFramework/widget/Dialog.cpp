@@ -390,7 +390,7 @@ int Dialog::WaitForResult(bool autoKill)
 	return mResult;
 }
 
-void Dialog::OnButtonPress(int theId)
+void Dialog::ButtonDown(int theId)
 {
 	if ((theId == ID_YES) || (theId == ID_NO))
 		mDialogListener->DialogButtonPress(mId, theId);

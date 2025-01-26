@@ -7839,7 +7839,7 @@ void Board::SetDanceMode(bool theEnableDance)
 	{
 		if (!aZombie->mDead)
 		{
-			aZombie->EnableDance(aZombie);
+			aZombie->EnableDance();
 		}
 	}
 }

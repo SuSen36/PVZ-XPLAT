@@ -9,7 +9,6 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <cstdarg>
-
 #include "../SexyAppFramework/misc/PerfTimer.h"
 
 #ifdef _WIN32
@@ -869,28 +868,6 @@ time_t Sexy::GetFileDate(const std::string& theFileName)
 	struct stat attr;
 	if (stat(theFileName.c_str(), &attr) == 0) return 0;
 	return attr.st_mtime;
-
-	/*
-	time_t aFileDate = 0;
-
-	WIN32_FIND_DATAA aFindData;
-	HANDLE aFindHandle = ::FindFirstFileA(theFileName.c_str(), &aFindData);
-
-	if (aFindHandle != INVALID_HANDLE_VALUE)
-	{		
-		FILETIME aFileTime = aFindData.ftLastWriteTime;
-						
-		//FileTimeToUnixTime(&aFileTime, &aFileDate, FALSE);
-
-		LONGLONG ll = (__int64) aFileTime.dwHighDateTime << 32;
-		ll = ll + aFileTime.dwLowDateTime - 116444736000000000;
-		aFileDate = (time_t) (ll/10000000);
-
-		FindClose(aFindHandle);
-	}
-
-	return aFileDate;
-	*/
 }
 
 std::string Sexy::vformat(const char* fmt, va_list argPtr) 
@@ -1351,8 +1328,8 @@ std::wstring Sexy::UTF8StringToWString(const std::string theString)
 
 void Sexy::SMemR(void*& _Src, void* _Dst, size_t _Size)
 {
-	memcpy(_Dst, _Src, _Size);
-	_Src = (void*)((size_t)_Src + _Size);
+    memcpy(_Dst, _Src, _Size);
+    _Src = (void*)((uintptr_t)_Src + _Size);
 }
 
 void Sexy::SMemRStr(void*& _Src, std::string& theString)

@@ -26,8 +26,8 @@ file(GLOB SOURCES
 
 # these files are included and must not be built in the project
 list(REMOVE_ITEM SOURCES
-	${CMAKE_CURRENT_SOURCE_DIR}/src/Sexy.TodLib/TodDrawTriangle.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/Sexy.TodLib/TodDrawTriangleInc.cpp
+        src/Sexy.TodLib/inc/TodDrawTriangle.cpp
+		src/Sexy.TodLib/inc/TodDrawTriangleInc.cpp
 )
 
 if(ANDROID)
@@ -48,7 +48,7 @@ elseif(WIN32)
 	list(APPEND PLAT_INCLUDES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/windows
 	)
-elseif (UNIX AND NOT APPLE)
+elseif (UNIX AND NOT APPLE AND NOT ANDROID)
 	list(APPEND SOURCES
 			${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/linux/graphics/Window.cpp
 			${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/linux/graphics/GLInterface.cpp
@@ -68,31 +68,31 @@ add_subdirectory(Libs/SDL)
 include(FetchContent)
 
 if (WIN32)
-	set(BASS_SRC http://www.un4seen.com/files/bass24.zip)
+	set(BASS_SRC https://www.un4seen.com/files/bass24.zip)
 	set(BASS_LIB x64/bass.dll)
 	set(BASS_INCLUDE c)
 elseif (UNIX)
 	if (APPLE)
-		set(BASS_SRC http://www.un4seen.com/files/bass24-osx.zip)
+		set(BASS_SRC https://www.un4seen.com/files/bass24-osx.zip)
 		set(BASS_LIB libbass.dylib)
 	elseif (LINUX)
-		set(BASS_SRC http://www.un4seen.com/files/bass24-linux.zip)
+		set(BASS_SRC https://www.un4seen.com/files/bass24-linux.zip)
 		set(BASS_LIB libs/x86_64/libbass.so)
 		set(BASS_INCLUDE ./)
 	elseif (ANDROID)
 		set(BASS_INCLUDE c)
 		# 使用ANDROID_ABI来动态识别当前架构
 		if (ANDROID_ABI STREQUAL "arm64-v8a")
-			set(BASS_SRC http://www.un4seen.com/files/bass24-android.zip)
+			set(BASS_SRC https://www.un4seen.com/files/bass24-android.zip)
 			set(BASS_LIB libs/arm64-v8a/libbass.so)
 		elseif (ANDROID_ABI STREQUAL "armeabi-v7a")
-			set(BASS_SRC http://www.un4seen.com/files/bass24-android.zip)
+			set(BASS_SRC https://www.un4seen.com/files/bass24-android.zip)
 			set(BASS_LIB libs/armeabi-v7a/libbass.so)
 		elseif (ANDROID_ABI STREQUAL "x86")
-			set(BASS_SRC http://www.un4seen.com/files/bass24-android.zip)
+			set(BASS_SRC https://www.un4seen.com/files/bass24-android.zip)
 			set(BASS_LIB libs/x86/libbass.so)
 		elseif (ANDROID_ABI STREQUAL "x86_64")
-			set(BASS_SRC http://www.un4seen.com/files/bass24-android.zip)
+			set(BASS_SRC https://www.un4seen.com/files/bass24-android.zip)
 			set(BASS_LIB libs/x86_64/libbass.so)
 		else()
 			message(FATAL_ERROR "不支持的Android架构: ${ANDROID_ABI}.")
@@ -108,7 +108,7 @@ message(STATUS "Current ABI: ${ANDROID_ABI}")
 FetchContent_Declare(
 		bass
 		URL ${BASS_SRC}
-		DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+		#DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 
 FetchContent_GetProperties(bass)
@@ -119,7 +119,7 @@ endif()
 
 get_filename_component(bassfile ${BASS_LIB} NAME)
 
-if(UNIX AND NOT APPLE)
+if(UNIX AND NOT APPLE AND NOT ANDROID)
     add_library(bass STATIC IMPORTED GLOBAL)
 else ()
 	add_library(bass STATIC IMPORTED GLOBAL)
@@ -131,10 +131,10 @@ set_target_properties(bass PROPERTIES
 
 if (WIN32)
 	add_executable(re-plants-vs-zombies ${SOURCES})
-elseif (UNIX AND NOT APPLE)
-	add_executable(re-plants-vs-zombies ${SOURCES})
 elseif (ANDROID)
 	add_library(re-plants-vs-zombies SHARED ${SOURCES})
+elseif (UNIX AND NOT APPLE AND NOT ANDROID)
+	add_executable(re-plants-vs-zombies ${SOURCES})
 endif()
 
 target_include_directories(re-plants-vs-zombies PRIVATE
@@ -159,14 +159,14 @@ if (WIN32)
 elseif (ANDROID)  # 增加安卓平台的支持
     target_link_libraries(re-plants-vs-zombies android log EGL)  # 链接需要的库
 	target_compile_definitions(re-plants-vs-zombies PRIVATE ANDROID)  # 定义ANDROID宏
-elseif (UNIX AND NOT APPLE)
+elseif (UNIX AND NOT APPLE AND NOT ANDROID)
 	target_link_libraries(re-plants-vs-zombies GL dl pthread X11 EGL)
 	target_compile_definitions(re-plants-vs-zombies PRIVATE LINUX)  # 定义 LINUX 宏
 else ()
 	target_link_libraries(re-plants-vs-zombies GL)
 endif()
 
-if (UNIX AND NOT APPLE)
+if (UNIX AND NOT APPLE AND NOT ANDROID)
 	# 确保Linux系统使用相应的包
 	message(STATUS "Linux系统检测到，将尝试安装libx11-dev 和 libxkbcommon-dev")
 
@@ -183,7 +183,7 @@ if (UNIX AND NOT APPLE)
 			message(STATUS "成功安装所需的库。")
 		endif()
 	else()
-		message(FATAL_ERROR "无法更新软件包。")
+		#message(FATAL_ERROR "无法更新软件包。")
 	endif()
 
 	# 这里继续放置你的其他Linux构建配置代码
@@ -217,7 +217,7 @@ if(WIN32)
 	endforeach()
 endif()
 # Linux 平台资源复制
-if(UNIX AND NOT APPLE)
+if(UNIX AND NOT APPLE AND NOT ANDROID)
 	# 获取资源目录下的所有资源文件
 	file(GLOB_RECURSE RESOURCES "${RESOURCE_DIR}/*")
 

@@ -993,9 +993,9 @@ void SexyAppBase::ModalClose()
 void SexyAppBase::DialogButtonPress(int theDialogId, int theButtonId)
 {	
 	if (theButtonId == Dialog::ID_YES)
-		OnButtonPress(2000 + theDialogId);
+        ButtonDown(2000 + theDialogId);
 	else if (theButtonId == Dialog::ID_NO)
-		OnButtonPress(3000 + theDialogId);
+        ButtonDown(3000 + theDialogId);
 }
 
 void SexyAppBase::DialogButtonDepress(int theDialogId, int theButtonId)
@@ -5040,7 +5040,7 @@ void SexyAppBase::Init()
 	strcat(aPath, "/savedata/");
 	SetAppDataFolder(aPath);
 
-	gPakInterface->AddPakFile("main.pak");
+	//gPakInterface->AddPakFile("main.pak");
 
     //gPakInterface->AddDirectory("main");
 	// Create a message we can use to talk to ourselves inter-process
@@ -5766,7 +5766,7 @@ void SexyAppBase::PlaySample(int theSoundNum)
 		return;
 
 	SoundInstance* aSoundInstance = mSoundManager->GetSoundInstance(theSoundNum);
-	if (aSoundInstance != NULL)
+	if (aSoundInstance != nullptr)
 	{
 		aSoundInstance->Play(false, true);
 	}
@@ -5779,7 +5779,7 @@ void SexyAppBase::PlaySample(int theSoundNum, int thePan)
 		return;
 
 	SoundInstance* aSoundInstance = mSoundManager->GetSoundInstance(theSoundNum);
-	if (aSoundInstance != NULL)
+	if (aSoundInstance != nullptr)
 	{
 		aSoundInstance->SetPan(thePan);
 		aSoundInstance->Play(false, true);

@@ -380,7 +380,7 @@ public:
     bool                            IsFireResistant();
     /*inline*/ void                 EnableMustache(bool theEnableMustache);
     /*inline*/ void                 EnableFuture(bool theEnableFuture);
-    /*inline*/ void                 EnableDance(bool theEnableDance);
+    /*inline*/ void EnableDance();
     void                            BungeeDropPlant();
     void                            RemoveButter();
     void                            BalloonPropellerHatSpin(bool theSpinning);
