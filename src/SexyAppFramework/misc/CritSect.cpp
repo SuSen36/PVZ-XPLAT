@@ -8,12 +8,12 @@ using namespace Sexy;
 
 CritSect::CritSect(void)
 {
-	pthread_mutex_init(&mCriticalSection, 0);
+	mCriticalSection = SDL_CreateMutex();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 CritSect::~CritSect(void)
 {
-	pthread_mutex_destroy(&mCriticalSection);
+	SDL_DestroyMutex(mCriticalSection);
 }

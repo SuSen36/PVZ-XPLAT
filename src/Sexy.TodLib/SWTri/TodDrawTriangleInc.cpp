@@ -5,21 +5,21 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #undef TRI4
@@ -27,21 +27,21 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #undef TRI4
@@ -51,21 +51,21 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #undef TRI4
@@ -73,21 +73,21 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 // #################################################################################################### //
 
@@ -101,28 +101,28 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
@@ -131,36 +131,36 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
@@ -171,36 +171,36 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
@@ -209,36 +209,36 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 // #################################################################################################### //
@@ -253,28 +253,28 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
@@ -283,36 +283,36 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
@@ -323,36 +323,36 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
@@ -361,36 +361,36 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #define NAME_ADDITIVE
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 #undef NAME_ADDITIVE
 
 // #################################################################################################### //
@@ -405,21 +405,21 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #undef TRI4
@@ -427,21 +427,21 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #undef TRI4
@@ -451,21 +451,21 @@
 #define TRI3 0
 #define TRI4 0
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #undef TRI4
@@ -473,21 +473,21 @@
 #define TRI3 1
 #define TRI4 0
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #undef TRI4
 #define TRI4 1
 #define TRI5 0
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #define TRI5 1
-#include "TodDrawTriangle.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangle.cpp"
 
 #undef TRI5
 #undef TRI4

@@ -11,14 +11,6 @@
 #include "SexyAppFramework/graphics/SharedImage.h"
 #include "../SexyAppFramework/misc/Ratio.h"
 
-/*
-extern HMODULE gDDrawDLL;
-extern HMODULE gDSoundDLL;
-extern HMODULE gVersionDLL;
-
-extern bool gD3DInterfacePreDrawError;
-*/
-
 namespace ImageLib
 {
 	class Image;
@@ -353,7 +345,7 @@ protected:
 	
 	// Loading thread methods	
 	virtual void			LoadingThreadCompleted();
-	static void*			LoadingThreadProcStub(void *theArg);	
+	static int			    LoadingThreadProcStub(void *theArg);
 
 	// Cursor thread methods
 	void					CursorThreadProc();
@@ -464,8 +456,8 @@ public:
 	void					MirrorImage(Image* theImage);
 	void					FlipImage(Image* theImage);
 	void					RotateImageHue(Sexy::MemoryImage *theImage, int theDelta);
-	uint32_t					HSLToRGB(int h, int s, int l);
-	uint32_t					RGBToHSL(int r, int g, int b);
+	uint32_t				HSLToRGB(int h, int s, int l);
+	uint32_t				RGBToHSL(int r, int g, int b);
 	void					HSLToRGB(const uint32_t* theSource, uint32_t* theDest, int theSize);
 	void					RGBToHSL(const uint32_t* theSource, uint32_t* theDest, int theSize);
 

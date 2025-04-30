@@ -4,6 +4,20 @@ set(CMAKE_CXX_STANDARD 17)  # 设置 C++ 标准为 C++17
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(re-plants-vs-zombies LANGUAGES C CXX ASM)
 
+# 启用并行编译
+set(CMAKE_JOB_POOL_COMPILE compile_job_pool)
+set(CMAKE_JOB_POOL_LINK link_job_pool)
+set_property(GLOBAL PROPERTY JOB_POOLS compile_job_pool=8 link_job_pool=2)
+
+# 添加编译优化选项
+if(MSVC)
+	add_compile_options(/MP)  # 启用多处理器编译
+	add_compile_options(/O2)  # 优化级别
+else()
+	add_compile_options(-O2)  # 优化级别
+	add_compile_options(-fPIC)  # 位置无关代码
+endif()
+
 file(GLOB SOURCES
 		src/*.cpp
 		src/SexyAppFramework/*.cpp
@@ -11,7 +25,6 @@ file(GLOB SOURCES
 		src/SexyAppFramework/imagelib/*.cpp
 		src/SexyAppFramework/misc/*.cpp
 		src/SexyAppFramework/paklib/*.cpp
-		src/SexyAppFramework/modlib/*.cpp
 		src/SexyAppFramework/sound/*.cpp
 		src/SexyAppFramework/widget/*.cpp
 		src/SexyAppFramework/fcaseopen/*.c
@@ -52,7 +65,6 @@ else()
 	)
 endif()
 
-
 set(SDL_STATIC OFF CACHE BOOL "Build static library of SDL" FORCE)
 set(SDL_SHARED ON CACHE BOOL "Build shared library of SDL" FORCE)
 
@@ -61,30 +73,31 @@ add_subdirectory(Libs/SDL)
 include(FetchContent)
 
 if (WIN32)
-	set(BASS_SRC http://www.un4seen.com/files/bass24.zip)
-	set(BASS_LIB c/x64/bass.lib)
+	set(BASS_SRC https://www.un4seen.com/files/bass24.zip)
+	set(BASS_LIB x64/bass.dll)
 	set(BASS_INCLUDE c)
 elseif (UNIX)
 	if (APPLE)
-		set(BASS_SRC http://www.un4seen.com/files/bass24-osx.zip)
+		set(BASS_SRC https://www.un4seen.com/files/bass24-osx.zip)
 		set(BASS_LIB libbass.dylib)
 	elseif (LINUX)
-		set(BASS_SRC http://www.un4seen.com/files/bass24-linux.zip)
+		set(BASS_SRC https://www.un4seen.com/files/bass24-linux.zip)
 		set(BASS_LIB libs/x86_64/libbass.so)
+		set(BASS_INCLUDE ./)
 	elseif (ANDROID)
 		set(BASS_INCLUDE c)
 		# 使用ANDROID_ABI来动态识别当前架构
 		if (ANDROID_ABI STREQUAL "arm64-v8a")
-			set(BASS_SRC http://www.un4seen.com/files/bass24-android.zip)
+			set(BASS_SRC https://www.un4seen.com/files/bass24-android.zip)
 			set(BASS_LIB libs/arm64-v8a/libbass.so)
 		elseif (ANDROID_ABI STREQUAL "armeabi-v7a")
-			set(BASS_SRC http://www.un4seen.com/files/bass24-android.zip)
+			set(BASS_SRC https://www.un4seen.com/files/bass24-android.zip)
 			set(BASS_LIB libs/armeabi-v7a/libbass.so)
 		elseif (ANDROID_ABI STREQUAL "x86")
-			set(BASS_SRC http://www.un4seen.com/files/bass24-android.zip)
+			set(BASS_SRC https://www.un4seen.com/files/bass24-android.zip)
 			set(BASS_LIB libs/x86/libbass.so)
 		elseif (ANDROID_ABI STREQUAL "x86_64")
-			set(BASS_SRC http://www.un4seen.com/files/bass24-android.zip)
+			set(BASS_SRC https://www.un4seen.com/files/bass24-android.zip)
 			set(BASS_LIB libs/x86_64/libbass.so)
 		else()
 			message(FATAL_ERROR "不支持的Android架构: ${ANDROID_ABI}.")
@@ -97,10 +110,10 @@ endif()  # 结束针对 WIN32 的判断
 
 message(STATUS "Current ABI: ${ANDROID_ABI}")
 
-
 FetchContent_Declare(
 		bass
 		URL ${BASS_SRC}
+		#DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 
 FetchContent_GetProperties(bass)
@@ -111,20 +124,24 @@ endif()
 
 get_filename_component(bassfile ${BASS_LIB} NAME)
 
-add_library(bass STATIC IMPORTED GLOBAL)
+if(UNIX AND NOT APPLE AND NOT ANDROID)
+	add_library(bass STATIC IMPORTED GLOBAL)
+else ()
+	add_library(bass STATIC IMPORTED GLOBAL)
+endif()
+
 set_target_properties(bass PROPERTIES
 		IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/${bassfile}
 )
 
 if (WIN32)
-	configure_file("${bass_SOURCE_DIR}/x64/bass.dll" ${CMAKE_BINARY_DIR} COPYONLY)
+	add_executable(re-plants-vs-zombies ${SOURCES})
+elseif (ANDROID)
+	add_library(re-plants-vs-zombies SHARED ${SOURCES})
+elseif (UNIX AND NOT APPLE AND NOT ANDROID)
+	add_executable(re-plants-vs-zombies ${SOURCES})
 endif()
 
-if(WIN32)
-add_executable(re-plants-vs-zombies ${SOURCES})
-else (ANDROID)
-add_library(re-plants-vs-zombies SHARED ${SOURCES})
-endif ()
 
 target_include_directories(re-plants-vs-zombies PRIVATE
 	${PROJECT_SOURCE_DIR}/src
@@ -150,59 +167,4 @@ elseif (ANDROID)  # 增加安卓平台的支持
 	target_compile_definitions(re-plants-vs-zombies PRIVATE ANDROID)  # 定义ANDROID宏
 else()
 	target_link_libraries(re-plants-vs-zombies GL)
-endif()
-
-# 设置资源目录
-set(RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Resources)
-
-# Windows 平台处理
-#if(WIN32)
-#	# 获取资源目录下的所有资源文件
-#	file(GLOB_RECURSE RESOURCES "${RESOURCE_DIR}/*")
-#
-#	foreach(RES_FILE ${RESOURCES})
-#		# 获取文件的相对路径
-#		file(RELATIVE_PATH RELATIVE_PATH "${RESOURCE_DIR}" "${RES_FILE}")
-#
-#		# 创建目标路径
-#		set(TARGET_PATH "${CMAKE_CURRENT_BINARY_DIR}/${RELATIVE_PATH}")
-#
-#		# 创建目标文件的目录
-#		get_filename_component(TARGET_DIR "${TARGET_PATH}" DIRECTORY)
-#
-#		# 添加目标路径的命令
-#		add_custom_command(
-#				TARGET re-plants-vs-zombies POST_BUILD
-#				COMMAND ${CMAKE_COMMAND} -E make_directory "${TARGET_DIR}"
-#				COMMAND ${CMAKE_COMMAND} -E copy "${RES_FILE}" "${TARGET_PATH}"
-#				COMMENT "Copying resource file ${RELATIVE_PATH} to build directory"
-#		)
-#	endforeach()
-#endif()
-
-# Android 平台处理
-if(ANDROID)
-	set(ANDROID_ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android-project/app/src/main/assets")
-
-	# 获取资源目录下的所有资源文件
-	file(GLOB_RECURSE RESOURCES "${RESOURCE_DIR}/*")
-
-	foreach(RES_FILE ${RESOURCES})
-		# 获取文件的相对路径
-		file(RELATIVE_PATH RELATIVE_PATH "${RESOURCE_DIR}" "${RES_FILE}")
-
-		# 创建目标路径
-		set(TARGET_PATH "${ANDROID_ASSETS_DIR}/${RELATIVE_PATH}")
-
-		# 创建目标文件的目录
-		get_filename_component(TARGET_DIR "${TARGET_PATH}" DIRECTORY)
-
-		# 添加目标路径的命令
-		add_custom_command(
-				TARGET re-plants-vs-zombies POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E make_directory "${TARGET_DIR}"
-				COMMAND ${CMAKE_COMMAND} -E copy "${RES_FILE}" "${TARGET_PATH}"
-				COMMENT "Copying resource file ${RELATIVE_PATH} to assets directory"
-		)
-	endforeach()
 endif()

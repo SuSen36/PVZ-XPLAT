@@ -9,23 +9,24 @@ namespace Sexy
 
 class AutoCrit
 {
-	pthread_mutex_t*		mCritSec;
+	SDL_mutex* mCritSec;
+
 public:
-	AutoCrit(pthread_mutex_t* theCritSec) : 
+	AutoCrit(SDL_mutex* theCritSec) : 
 		mCritSec(theCritSec)
 	{
-		pthread_mutex_trylock(mCritSec);
+		SDL_LockMutex(mCritSec);
 	}
 
 	AutoCrit(CritSect& theCritSect) : 
-		mCritSec(&theCritSect.mCriticalSection)
+		mCritSec(theCritSect.mCriticalSection)
 	{
-		pthread_mutex_trylock(mCritSec);
+		SDL_LockMutex(mCritSec);
 	}
 
 	~AutoCrit()
 	{
-		pthread_mutex_unlock(mCritSec);
+		SDL_UnlockMutex(mCritSec);
 	}
 };
 

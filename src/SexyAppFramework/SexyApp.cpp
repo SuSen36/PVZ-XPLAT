@@ -342,11 +342,6 @@ bool SexyApp::OpenHTMLTemplate(const std::string& theTemplateFile, const Defines
 
 bool SexyApp::OpenRegisterPage(DefinesMap theStatsMap)
 {
-#ifdef ZYLOM
-	ZylomGS_StandAlone_ShowBuyPage();
-	return true;
-#endif
-
 	// Insert standard defines 
 	DefinesMap aDefinesMap;
 	
@@ -393,9 +388,6 @@ bool SexyApp::ShouldCheckForUpdate()
 	if (mDontUpdate)
 		return false;
 
-#ifdef ZYLOM
-	return ZylomUpdateCheckNeeded();
-#else
 	time_t aTimeNow;
 	time(&aTimeNow);
 
@@ -404,7 +396,6 @@ bool SexyApp::ShouldCheckForUpdate()
 		(!mLastShutdownWasGraceful) ||
 		((mLastVerCheckQueryTime != 0) && 
 		(aTimeNow - mLastVerCheckQueryTime > 7*24*60*60)));
-#endif
 }
 
 void SexyApp::UpdateCheckQueried()
@@ -489,15 +480,11 @@ bool SexyApp::CheckSignature(const Buffer& theBuffer, const std::string& theFile
 
 void SexyApp::PreTerminate()
 {
-#ifdef ZYLOM
-	ZylomShowAd();
-#else
 	//if ((!mSkipAd) && 
 	//	((((!mIsRegistered) || (mInternetManager->HasNewAds())) && ((Rand()%2) == 0))))
 	//{
 	//	mInternetManager->TryShowAd();
 	//}
-#endif
 }
 
 void SexyApp::OpenUpdateURL()

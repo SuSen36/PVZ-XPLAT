@@ -1,5 +1,5 @@
-#ifndef __BASS_SOUND_MANAGER_H__
-#define __BASS_SOUND_MANAGER_H__
+#ifndef __BASSSOUNDMANAGER_H__
+#define __BASSSOUNDMANAGER_H__
 
 #include "BassMusicInterface.h"
 #include "BassSoundInstance.h"
@@ -8,11 +8,24 @@
 #include <bass.h>
 #include <memory>
 #include <optional>
+#include <SDL2/SDL_mutex.h>
+#include <string>
+#include <unordered_map>
 
 namespace Sexy {
+
+class SoundMutex;  // 前向声明
+
 class BassSoundManager : public Sexy::SoundManager {
+private:
+    std::unique_ptr<SoundMutex> mMutex;  // 使用SDL互斥量
+    std::array<std::optional<std::unique_ptr<BassSoundInstance>>, MAX_CHANNELS> mPlayingSounds;
+    std::array<std::string, MAX_SOURCE_SOUNDS> mSourceFileNames;
+    std::array<std::optional<HSAMPLE>, MAX_SOURCE_SOUNDS> mSourceSounds;
+
 public:
     BassSoundManager(HWND theHWnd);
+    virtual ~BassSoundManager() override;
     static double PanDBToNorm(int dbpan);
 
     bool Initialized() override { return Sexy::BassMusicInterface::gBassLoaded; }
@@ -44,10 +57,6 @@ public:
     int GetNumSounds() override;
 
 private:
-    std::array<std::optional<std::unique_ptr<BassSoundInstance>>, MAX_CHANNELS> mPlayingSounds;
-    std::array<std::string, MAX_SOURCE_SOUNDS> mSourceFileNames;
-    std::array<std::optional<HSAMPLE>, MAX_SOURCE_SOUNDS> mSourceSounds;
-
     bool LoadCompatibleSound(unsigned int theSfxID, const std::string &theFilename);
     bool LoadAUSound(unsigned int theSfxID, const std::string &theFilename);
     inline bool Exists(unsigned int theSfxID) const;
@@ -58,4 +67,4 @@ private:
 };
 } // namespace Sexy
 
-#endif // __BASS_SOUND_MANAGER_H__
+#endif // __BASSSOUNDMANAGER_H__

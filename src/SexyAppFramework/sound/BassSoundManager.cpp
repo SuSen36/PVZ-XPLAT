@@ -8,12 +8,56 @@
 #include <cstring>
 #include <fcntl.h>
 #include <memory>
-#include <mutex>
 #include <optional>
 #include <valarray>
+#include <SDL2/SDL_mutex.h>
 
 namespace Sexy {
-BassSoundManager::BassSoundManager(HWND theHWnd) { BassMusicInterface::InitBass(theHWnd); }
+
+class SoundMutex {
+private:
+    SDL_mutex* mutex;
+public:
+    SoundMutex() {
+        mutex = SDL_CreateMutex();
+        if (!mutex) {
+            // Handle error
+            printf("SDL_CreateMutex failed: %s\n", SDL_GetError());
+        }
+    }
+    
+    ~SoundMutex() {
+        if (mutex) {
+            SDL_DestroyMutex(mutex);
+        }
+    }
+    
+    void lock() {
+        if (mutex) {
+            SDL_LockMutex(mutex);
+        }
+    }
+    
+    void unlock() {
+        if (mutex) {
+            SDL_UnlockMutex(mutex);
+        }
+    }
+    
+    bool try_lock() {
+        return mutex && (SDL_TryLockMutex(mutex) == 0);
+    }
+};
+
+BassSoundManager::BassSoundManager(HWND theHWnd) : 
+    mMutex(std::make_unique<SoundMutex>()) 
+{ 
+    BassMusicInterface::InitBass(theHWnd); 
+}
+
+BassSoundManager::~BassSoundManager() {
+    ReleaseSounds();
+}
 
 bool BassSoundManager::LoadCompatibleSound(unsigned int theSfxID, const std::string &theFilename) {
     PFILE *aFile = p_fopen(theFilename.c_str(), "rb");

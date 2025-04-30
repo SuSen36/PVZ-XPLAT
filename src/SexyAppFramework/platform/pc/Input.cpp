@@ -145,14 +145,10 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 				mWidgetManager->KeyChar((SexyChar)event.text.text[0]);
 				break;
 
-			/*
-			case WM_MOUSEWHEEL:
-				{
-					char aZDelta = ((short)HIWORD(wParam)) / 120;
-					mWidgetManager->MouseWheel(aZDelta);
-				}
-				break;
-			*/
+            case SDL_MOUSEWHEEL:
+                int aZDelta = event.wheel.y;
+                mWidgetManager->MouseWheel(aZDelta);
+                break;
 		}
 	}
 

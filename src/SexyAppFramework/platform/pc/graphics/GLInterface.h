@@ -199,7 +199,6 @@ public:
 public:
 	void					AddGLImage(GLImage* theDDImage);
 	void					RemoveGLImage(GLImage* theDDImage);
-	void					Remove3DData(MemoryImage* theImage); // for 3d texture cleanup
 
 public:
 	GLInterface(SexyAppBase* theApp);
@@ -235,6 +234,8 @@ public:
 	void					DrawTrianglesTex(const TriVertex theVertices[][3], int theNumTriangles, const Color &theColor, int theDrawMode, Image *theTexture, float tx = 0, float ty = 0, bool blend = true);
 	void					DrawTrianglesTexStrip(const TriVertex theVertices[], int theNumTriangles, const Color &theColor, int theDrawMode, Image *theTexture, float tx = 0, float ty = 0, bool blend = true);
 	void					FillPoly(const Point theVertices[], int theNumVertices, const Rect *theClipRect, const Color &theColor, int theDrawMode, int tx, int ty);
+
+	void Remove3DData(MemoryImage* theImage);
 };
 
 }

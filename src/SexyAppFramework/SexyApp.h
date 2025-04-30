@@ -19,9 +19,9 @@ public:
 	std::string				mBetaSupportProdNameOverride;
 	std::string				mReferId;
 	std::string				mVariation;
-	ulong					mDownloadId;
+	unsigned long			mDownloadId;
 	std::string				mRegSource;
-	ulong					mLastVerCheckQueryTime;
+	unsigned long			mLastVerCheckQueryTime;
 	bool					mSkipAd;
 	bool					mDontUpdate;	
 

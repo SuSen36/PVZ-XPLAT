@@ -1230,14 +1230,7 @@ void GLInterface::RemoveGLImage(GLImage* theGLImage)
 
 void GLInterface::Remove3DData(MemoryImage* theImage)
 {
-	if (theImage->mD3DData != NULL)
-	{
-		delete (TextureData*)theImage->mD3DData;
-		theImage->mD3DData = NULL;
-
-		AutoCrit aCrit(mCritSect); // Make images thread safe
-		mImageSet.erase(theImage);
-	}
+	// 移除3D数据清理代码
 }
 
 GLImage* GLInterface::GetScreenImage()

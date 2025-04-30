@@ -7,6 +7,11 @@
 #include <iostream>
 #include <memory>
 
+#ifdef ANDROID
+#include <android/log.h>  // Android logging
+#include <jni.h>
+#include <android/asset_manager_jni.h>
+#endif
 
 using namespace Sexy;
 
@@ -15,34 +20,33 @@ bool (*gAppCloseRequest)();
 bool (*gAppHasUsedCheatKeys)();
 SexyString (*gGetCurrentLevelName)();
 
-// Game run function
 void runGame() {
-	// Initialize SDL
-	SDL_SetMainReady();
+    // Initialize SDL
+    SDL_SetMainReady();
 
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         TodLog("SDL Initialization failed: " , SDL_GetError());
-		return;
-	}
+        return;
+    }
 
-	// Initialize necessary settings
-	TodStringListSetColors(gLawnStringFormats, gLawnStringFormatCount);
-	gGetCurrentLevelName = LawnGetCurrentLevelName;
-	gAppCloseRequest = LawnGetCloseRequest;
-	gAppHasUsedCheatKeys = LawnHasUsedCheatKeys;
-	gExtractResourcesByName = Sexy::ExtractResourcesByName;
+    // Initialize necessary settings
+    TodStringListSetColors(gLawnStringFormats, gLawnStringFormatCount);
+    gGetCurrentLevelName = LawnGetCurrentLevelName;
+    gAppCloseRequest = LawnGetCloseRequest;
+    gAppHasUsedCheatKeys = LawnHasUsedCheatKeys;
+    gExtractResourcesByName = Sexy::ExtractResourcesByName;
 
-	// Create an instance of LawnApp
-	std::unique_ptr<LawnApp> gLawnApp(new LawnApp());
-	if (gLawnApp) {
-		gLawnApp->Init();
-		gLawnApp->Start();
-		gLawnApp->Shutdown();
-	} else {
-		TodLog("Failed to create LawnApp instance.");
-	}
+    // Create an instance of LawnApp
+    std::unique_ptr<LawnApp> gLawnApp(new LawnApp());
+    if (gLawnApp) {
+        gLawnApp->Init();
+        gLawnApp->Start();
+        gLawnApp->Shutdown();
+    } else {
+        TodLog("Failed to create LawnApp instance.");
+    }
 
-	SDL_Quit();  // Quit SDL
+    SDL_Quit();  // Quit SDL
 }
 
 // Android JNI implementation
