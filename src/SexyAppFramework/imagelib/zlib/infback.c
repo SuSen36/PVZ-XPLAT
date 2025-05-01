@@ -74,7 +74,7 @@ int ZEXPORT inflateBackInit_(z_streamp strm, int windowBits,
    may not be thread-safe.
  */
 local void fixedtables(struct inflate_state FAR *state) {
-#ifdef BUILDFIXED
+
     static int virgin = 1;
     static code *lenfix, *distfix;
     static code fixed[544];
@@ -105,9 +105,7 @@ local void fixedtables(struct inflate_state FAR *state) {
         /* do this just once */
         virgin = 0;
     }
-#else /* !BUILDFIXED */
-#   include "inffixed.h"
-#endif /* BUILDFIXED */
+
     state->lencode = lenfix;
     state->lenbits = 9;
     state->distcode = distfix;
