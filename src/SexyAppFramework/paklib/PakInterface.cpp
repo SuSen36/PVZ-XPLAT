@@ -3,7 +3,6 @@
 #include <fstream>
 #include "../Common.h"
 #include "PakInterface.h"
-#include "SexyAppFramework/fcaseopen/fcaseopen.h"
 
 typedef unsigned char uchar;
 typedef unsigned short ushort;
@@ -93,7 +92,7 @@ static void FixFileName(const char* theFileName, char* theUpperName)
 bool PakInterface::AddPakFile(const std::string& theFileName)
 {
     // 在其他平台上使用标准文件操作
-    FILE *aFileHandle = fcaseopen(theFileName.c_str(), "rb");
+    FILE *aFileHandle = std::fopen(theFileName.c_str(), "rb");
     if (!aFileHandle) return false;
 
     fseek(aFileHandle, 0, SEEK_END);
@@ -274,7 +273,7 @@ PFILE* PakInterface::FOpen(const char* theFileName, const char* anAccess)
 		}
 	}
 
-	FILE* aFP = fcaseopen(theFileName, anAccess);
+	FILE* aFP = std::fopen(theFileName, anAccess);
 	if (aFP == NULL)
 		return NULL;
 	PFILE* aPFP = new PFILE;

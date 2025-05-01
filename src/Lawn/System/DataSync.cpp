@@ -1,5 +1,5 @@
 #include "DataSync.h"
-#include "SexyAppFramework/fcaseopen/fcaseopen.h"
+
 
 DataReader::DataReader()
 {
@@ -32,7 +32,7 @@ DataReader::~DataReader()
 
 bool DataReader::OpenFile(const std::string& theFileName)
 {
-	mFile = fcaseopen(theFileName.c_str(), "rb");
+	mFile = std::fopen(theFileName.c_str(), "rb");
 	return mFile;
 }
 
@@ -516,7 +516,7 @@ DataWriter::~DataWriter()
 
 bool DataWriter::OpenFile(const std::string& theFileName)
 {
-	mFile = fcaseopen(theFileName.c_str(), "wb");
+	mFile = std::fopen(theFileName.c_str(), "wb");
 	return mFile;
 }
 

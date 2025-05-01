@@ -13,7 +13,6 @@ file(GLOB SOURCES
 		src/SexyAppFramework/paklib/*.cpp
 		src/SexyAppFramework/sound/*.cpp
 		src/SexyAppFramework/widget/*.cpp
-		src/SexyAppFramework/fcaseopen/*.c
 		src/Sexy.TodLib/*.cpp
 		src/Lawn/*.cpp
 		src/Lawn/Widget/*.cpp
@@ -26,8 +25,8 @@ file(GLOB SOURCES
 
 # these files are included and must not be built in the project
 list(REMOVE_ITEM SOURCES
-        src/Sexy.TodLib/inc/TodDrawTriangle.cpp
-		src/Sexy.TodLib/inc/TodDrawTriangleInc.cpp
+        src/Sexy.TodLib/SWTri/TodDrawTriangle.cpp
+		src/Sexy.TodLib/SWTri/TodDrawTriangleInc.cpp
 )
 
 if(ANDROID)
@@ -59,6 +58,10 @@ elseif (UNIX AND NOT APPLE AND NOT ANDROID)
 	)
 endif()
 
+# 强制内存对齐分配
+if(ANDROID)
+	arget_compile_options(re-plants-vs-zombies PRIVATE -faligned-new)
+endif()
 
 set(SDL_STATIC OFF CACHE BOOL "Build static library of SDL" FORCE)
 set(SDL_SHARED ON CACHE BOOL "Build shared library of SDL" FORCE)
@@ -187,101 +190,4 @@ if (UNIX AND NOT APPLE AND NOT ANDROID)
 	endif()
 
 	# 这里继续放置你的其他Linux构建配置代码
-endif()
-
-# 设置资源目录
-set(RESOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Resources)
-
-# Windows 平台资源复制
-if(WIN32)
-	# 获取资源目录下的所有资源文件
-	file(GLOB_RECURSE RESOURCES "${RESOURCE_DIR}/*")
-
-	foreach(RES_FILE ${RESOURCES})
-		# 获取文件的相对路径
-		file(RELATIVE_PATH RELATIVE_PATH "${RESOURCE_DIR}" "${RES_FILE}")
-
-		# 创建目标路径
-		set(TARGET_PATH "${CMAKE_CURRENT_BINARY_DIR}/${RELATIVE_PATH}")
-
-		# 创建目标文件的目录
-		get_filename_component(TARGET_DIR "${TARGET_PATH}" DIRECTORY)
-
-		# 添加目标路径的命令
-		add_custom_command(
-				TARGET re-plants-vs-zombies POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E make_directory "${TARGET_DIR}"
-				COMMAND ${CMAKE_COMMAND} -E copy "${RES_FILE}" "${TARGET_PATH}"
-				COMMENT "Copying resource file ${RELATIVE_PATH} to build directory"
-		)
-	endforeach()
-endif()
-# Linux 平台资源复制
-if(UNIX AND NOT APPLE AND NOT ANDROID)
-	# 获取资源目录下的所有资源文件
-	file(GLOB_RECURSE RESOURCES "${RESOURCE_DIR}/*")
-
-	foreach(RES_FILE ${RESOURCES})
-		# 获取文件的相对路径
-		file(RELATIVE_PATH RELATIVE_PATH "${RESOURCE_DIR}" "${RES_FILE}")
-
-		# 创建目标路径
-		set(TARGET_PATH "${CMAKE_CURRENT_BINARY_DIR}/${RELATIVE_PATH}")
-
-		# 创建目标文件的目录
-		get_filename_component(TARGET_DIR "${TARGET_PATH}" DIRECTORY)
-
-		# 添加目标路径的命令
-		add_custom_command(
-				TARGET re-plants-vs-zombies POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E make_directory "${TARGET_DIR}"
-				COMMAND ${CMAKE_COMMAND} -E copy "${RES_FILE}" "${TARGET_PATH}"
-				COMMENT "Copying resource file ${RELATIVE_PATH} to build directory"
-		)
-	endforeach()
-
-	# 获取资源目录中的所有文件
-	file(GLOB RES_FILES "${CMAKE_CURRENT_SOURCE_DIR}/linux-project/res/*")
-
-	# 复制所有资源文件到构建目录
-	foreach(RES_FILE ${RES_FILES})
-		get_filename_component(FILE_NAME ${RES_FILE} NAME)  # 获取文件名
-		add_custom_command(
-				TARGET re-plants-vs-zombies POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E copy "${RES_FILE}" "${CMAKE_CURRENT_BINARY_DIR}/${FILE_NAME}"
-				COMMENT "Copying ${FILE_NAME} to build directory"
-		)
-	endforeach()
-
-	# 安装所有资源文件到构建目录
-	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/linux-project/res
-			DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
-	)
-
-endif()
-# Android 平台资源复制
-if(ANDROID)
-	set(ANDROID_ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android-project/app/src/main/assets")
-
-	# 获取资源目录下的所有资源文件
-	file(GLOB_RECURSE RESOURCES "${RESOURCE_DIR}/*")
-
-	foreach(RES_FILE ${RESOURCES})
-		# 获取文件的相对路径
-		file(RELATIVE_PATH RELATIVE_PATH "${RESOURCE_DIR}" "${RES_FILE}")
-
-		# 创建目标路径
-		set(TARGET_PATH "${ANDROID_ASSETS_DIR}/${RELATIVE_PATH}")
-
-		# 创建目标文件的目录
-		get_filename_component(TARGET_DIR "${TARGET_PATH}" DIRECTORY)
-
-		# 添加目标路径的命令
-		add_custom_command(
-				TARGET re-plants-vs-zombies POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E make_directory "${TARGET_DIR}"
-				COMMAND ${CMAKE_COMMAND} -E copy "${RES_FILE}" "${TARGET_PATH}"
-				COMMENT "Copying resource file ${RELATIVE_PATH} to assets directory"
-		)
-	endforeach()
 endif()

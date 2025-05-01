@@ -370,7 +370,7 @@ static inline int Tod_clipShape(TriVertex** dst, TriVertex* src, const float lef
 
 bool gTodTriangleDrawAdditive = false;
 
-#include "TodDrawTriangleInc.cpp"
+#include "Sexy.TodLib/SWTri/TodDrawTriangleInc.cpp"
 
 //0x4461B0
 TodTriangleGroup::TodTriangleGroup()

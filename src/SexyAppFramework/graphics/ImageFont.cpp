@@ -5,7 +5,7 @@
 #include "MemoryImage.h"
 #include "../graphics/GLImage.h"
 #include "../misc/AutoCrit.h"
-#include "SexyAppFramework/fcaseopen/fcaseopen.h"
+
 
 using namespace Sexy;
 
@@ -1089,7 +1089,7 @@ bool FontData::LoadLegacy(Image* theFontImage, const std::string& theFontDescFil
 	aFontLayer->mAscent = aFontLayer->mImage->GetHeight();
 
 	int aCharPos = 0;
-	FILE* aStream = fcaseopen(theFontDescFileName.c_str(), "r");
+	FILE* aStream = std::fopen(theFontDescFileName.c_str(), "r");
 
 	if (aStream == NULL)
 		return false;

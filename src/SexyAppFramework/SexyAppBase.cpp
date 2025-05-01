@@ -37,7 +37,6 @@
 #include "../SexyAppFramework/misc/Debug.h"
 #include "SexyAppFramework/paklib/PakInterface.h"
 #include "sound/DummyMusicInterface.h"
-#include "SexyAppFramework/fcaseopen/fcaseopen.h"
 
 #include "../SexyAppFramework/misc/memmgr.h"
 #include "../SexyAppFramework/misc/RegEmu.h"
@@ -1982,7 +1981,7 @@ bool SexyAppBase::WriteBytesToFile(const std::string& theFileName, const void *t
 	}	
 
 	MkDir(GetFileDir(theFileName));
-	FILE* aFP = fcaseopen(theFileName.c_str(), "w+b");
+	FILE* aFP = std::fopen(theFileName.c_str(), "w+b");
 
 	if (aFP == NULL)
 	{
