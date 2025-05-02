@@ -4,6 +4,11 @@ set(CMAKE_CXX_STANDARD 17)  # 设置 C++ 标准为 C++17
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(re-plants-vs-zombies LANGUAGES C CXX ASM)
 
+if(APPLE)
+    # 在macOS平台上使用xcode-project中的CMakeLists.txt
+    add_subdirectory(xcode-project)
+endif()
+
 file(GLOB SOURCES
 		src/*.cpp
 		src/SexyAppFramework/*.cpp
@@ -58,10 +63,8 @@ elseif (UNIX AND NOT APPLE AND NOT ANDROID)
 	)
 endif()
 
-# 强制内存对齐分配
-if(ANDROID)
-	arget_compile_options(re-plants-vs-zombies PRIVATE -faligned-new)
-endif()
+
+
 
 set(SDL_STATIC OFF CACHE BOOL "Build static library of SDL" FORCE)
 set(SDL_SHARED ON CACHE BOOL "Build shared library of SDL" FORCE)
@@ -78,6 +81,7 @@ elseif (UNIX)
 	if (APPLE)
 		set(BASS_SRC https://www.un4seen.com/files/bass24-osx.zip)
 		set(BASS_LIB libbass.dylib)
+		set(BASS_INCLUDE ./)
 	elseif (LINUX)
 		set(BASS_SRC https://www.un4seen.com/files/bass24-linux.zip)
 		set(BASS_LIB libs/x86_64/libbass.so)
@@ -136,6 +140,8 @@ if (WIN32)
 	add_executable(re-plants-vs-zombies ${SOURCES})
 elseif (ANDROID)
 	add_library(re-plants-vs-zombies SHARED ${SOURCES})
+elseif (APPLE)
+	add_executable(re-plants-vs-zombies ${SOURCES})
 elseif (UNIX AND NOT APPLE AND NOT ANDROID)
 	add_executable(re-plants-vs-zombies ${SOURCES})
 endif()
@@ -162,6 +168,9 @@ if (WIN32)
 elseif (ANDROID)  # 增加安卓平台的支持
     target_link_libraries(re-plants-vs-zombies android log EGL)  # 链接需要的库
 	target_compile_definitions(re-plants-vs-zombies PRIVATE ANDROID)  # 定义ANDROID宏
+elseif (APPLE)
+	target_link_libraries(re-plants-vs-zombies "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreFoundation" "-framework CoreAudio" "-framework AudioToolbox" "-framework CoreVideo")
+	target_compile_definitions(re-plants-vs-zombies PRIVATE MACOS)
 elseif (UNIX AND NOT APPLE AND NOT ANDROID)
 	target_link_libraries(re-plants-vs-zombies GL dl pthread X11 EGL)
 	target_compile_definitions(re-plants-vs-zombies PRIVATE LINUX)  # 定义 LINUX 宏
@@ -190,4 +199,61 @@ if (UNIX AND NOT APPLE AND NOT ANDROID)
 	endif()
 
 	# 这里继续放置你的其他Linux构建配置代码
+elseif (APPLE)
+	# 检查Homebrew是否已安装
+	execute_process(COMMAND which brew
+		RESULT_VARIABLE brew_result
+		OUTPUT_QUIET
+	)
+	
+	if(NOT brew_result EQUAL 0)
+		message(STATUS "正在安装Homebrew...")
+		execute_process(COMMAND /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+			RESULT_VARIABLE brew_install_result
+		)
+		
+		if(NOT brew_install_result EQUAL 0)
+			message(FATAL_ERROR "无法安装Homebrew。")
+		else()
+			message(STATUS "Homebrew安装成功。")
+		endif()
+	endif()
+	
+	# 检查CMake是否已安装
+	execute_process(COMMAND which cmake
+		RESULT_VARIABLE cmake_result
+		OUTPUT_QUIET
+	)
+	
+	if(NOT cmake_result EQUAL 0)
+		message(STATUS "正在安装CMake...")
+		execute_process(COMMAND brew install cmake
+			RESULT_VARIABLE cmake_install_result
+		)
+		
+		if(NOT cmake_install_result EQUAL 0)
+			message(FATAL_ERROR "无法安装CMake。")
+		else()
+			message(STATUS "CMake安装成功。")
+		endif()
+	endif()
+	
+	# 检查SDL2是否已安装
+	execute_process(COMMAND brew list sdl2
+		RESULT_VARIABLE sdl2_result
+		OUTPUT_QUIET
+	)
+	
+	if(NOT sdl2_result EQUAL 0)
+		message(STATUS "正在安装SDL2...")
+		execute_process(COMMAND brew install sdl2
+			RESULT_VARIABLE sdl2_install_result
+		)
+		
+		if(NOT sdl2_install_result EQUAL 0)
+			message(FATAL_ERROR "无法安装SDL2。")
+		else()
+			message(STATUS "SDL2安装成功。")
+		endif()
+	endif()
 endif()

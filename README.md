@@ -78,6 +78,28 @@ chmod +x ../tools/copy_resources.sh
 ../tools/copy_resources.sh ../Resources .
 ```
 
+### macOS
+需求：
+- CMake 3.2.2+
+- Xcode Command Line Tools
+- SDL2 开发库
+- BASS 音频库
+- OpenGL 开发库
+
+```bash
+# 安装依赖
+brew install cmake sdl2
+
+mkdir build
+cd build
+cmake ..
+cmake --build .
+
+# 复制资源文件
+chmod +x ../tools/copy_resources.sh
+../tools/copy_resources.sh ../Resources .
+```
+
 ### Android
 需求：
 - Android Studio
