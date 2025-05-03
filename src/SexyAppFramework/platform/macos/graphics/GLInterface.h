@@ -16,7 +16,11 @@
 #include <SDL.h>
 #include <SDL_opengl.h>
 #elif MACOS
-
+#include <SDL.h>
+#include <SDL_opengl.h>
+#elif LINUX
+#include <SDL.h>
+#include <SDL_opengl.h>
 #endif
 
 namespace Sexy

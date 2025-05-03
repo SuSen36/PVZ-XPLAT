@@ -404,7 +404,7 @@ void Reanimation::Update()
 	if (mFrameCount == 0 || mDead)
 		return;
 
-	TOD_ASSERT(finite(mAnimRate));
+	TOD_ASSERT(IS_FINITE(mAnimRate));
 	mLastFrameTime = mAnimTime;  // 更新上一帧的循环率
 	mAnimTime += SECONDS_PER_UPDATE * mAnimRate / mFrameCount;  // 更新当前循环率
 

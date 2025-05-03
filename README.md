@@ -88,16 +88,17 @@ chmod +x ../tools/copy_resources.sh
 
 ```bash
 # 安装依赖
-brew install cmake sdl2
+brew install cmake
 
 mkdir build
 cd build
 cmake ..
 cmake --build .
-
+#构建
+cd build
+cmake -G "Xcode" ..
 # 复制资源文件
-chmod +x ../tools/copy_resources.sh
-../tools/copy_resources.sh ../Resources .
+//请手动加入 .xcodeproj
 ```
 
 ### Android

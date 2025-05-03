@@ -21,7 +21,8 @@
 #include <cstdlib>
 #include <cstdint>
 #include <ctime>
-
+#include <cmath>
+#include <float.h>
 #include <SDL.h>
 
 #ifdef ANDROID
@@ -86,6 +87,11 @@ typedef struct _GUID {
 
 #endif // _WIN32
 
+#if defined(_WIN32)
+#define IS_FINITE(x) _finite(static_cast<double>(x))
+#else
+#define IS_FINITE(x) isfinite(x)
+#endif
 
 #include "../SexyAppFramework/misc/ModVal.h"
 
