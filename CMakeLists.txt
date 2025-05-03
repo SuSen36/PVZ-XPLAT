@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2.2)
+cmake_minimum_required(VERSION 3.22...3.28)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_STANDARD 17)  # 设置 C++ 标准为 C++17
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -120,17 +120,13 @@ FetchContent_Declare(
 
 FetchContent_GetProperties(bass)
 if (NOT bass_POPULATED)
-	FetchContent_Populate(bass)
+	FetchContent_MakeAvailable(bass)
 	file(COPY ${bass_SOURCE_DIR}/${BASS_LIB} DESTINATION ${CMAKE_BINARY_DIR})
 endif()
 
 get_filename_component(bassfile ${BASS_LIB} NAME)
 
-if(UNIX AND NOT APPLE AND NOT ANDROID)
-    add_library(bass STATIC IMPORTED GLOBAL)
-else ()
-	add_library(bass STATIC IMPORTED GLOBAL)
-endif()
+add_library(bass STATIC IMPORTED GLOBAL)
 
 set_target_properties(bass PROPERTIES
 		IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/${bassfile}
@@ -152,6 +148,10 @@ target_include_directories(re-plants-vs-zombies PRIVATE
 	${PLAT_INCLUDES}
 	${bass_SOURCE_DIR}/${BASS_INCLUDE}
 )
+
+if(APPLE)
+    add_subdirectory(xcode-project)
+endif()
 
 target_compile_definitions(re-plants-vs-zombies PRIVATE _DEBUG)
 
