@@ -6,8 +6,6 @@
 #include <GL/glx.h>
 
 #elif defined(MACOS)
-
-#endif
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/CGLCurrent.h>
 #endif

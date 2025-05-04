@@ -166,13 +166,19 @@ if(APPLE)
 "$<TARGET_BUNDLE_CONTENT_DIR:re-plants-vs-zombies>/Resources")
 
     # 设置 macOS Bundle 属性
-    set_target_properties(re-plants-vs-zombies PROPERTIES
+        set_target_properties(re-plants-vs-zombies PROPERTIES
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_GUI_IDENTIFIER "com.popcap.pvz"
         MACOSX_BUNDLE_BUNDLE_NAME "Plants vs Zombies"
         MACOSX_BUNDLE_BUNDLE_VERSION "1.0.0"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "1.0"
+        MACOSX_BUNDLE_ICON_FILE "AppIcon.icns"
+        
+        # 签名关键配置
+        XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "SuSen36"
         XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development"
+        XCODE_ATTRIBUTE_CODE_SIGN_STYLE "Automatic"
+        XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME "YES"
     )
 
 file(GLOB_RECURSE RESOURCE_FILES
@@ -186,16 +192,7 @@ file(GLOB_RECURSE RESOURCE_FILES
     "${RESOURCES_DIR}/sounds/*"
 )
 
-    # 安装配置
-    install(TARGETS re-plants-vs-zombies
-        BUNDLE DESTINATION "."
-        RUNTIME DESTINATION "bin"
-    )
-    install(DIRECTORY "${RESOURCES_DIR}"
-        DESTINATION "re-plants-vs-zombies.app/Contents/Resources"
-        USE_SOURCE_PERMISSIONS
-        PATTERN "*"
-    )
+
 endif()
 
 target_compile_definitions(re-plants-vs-zombies PRIVATE _DEBUG)
