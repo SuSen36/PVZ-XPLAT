@@ -2,7 +2,7 @@
 #define __SAVEGAMECONTEXT_H__
 
 #include <string>
-#include "../../Sexy.TodLib/TodList.h"
+#include "Sexy.TodLib/TodList.h"
 #include "SexyAppFramework/misc/Buffer.h"
 
 class Board;
@@ -52,7 +52,7 @@ void                SyncReanimation(Board* theBoard, Reanimation* theReanimation
 void                SyncTrail(Board* theBoard, Trail* theTrail, SaveGameContext& theContext);
 void                SyncBoard(SaveGameContext& theContext, Board* theBoard);
 void				FixBoardAfterLoad(Board* theBoard);
-bool				LawnLoadGame(Board* theBoard, const std::string& theFilePath);
-bool				LawnSaveGame(Board* theBoard, const std::string& theFilePath);
+bool				LawnLoadGame(Board* theBoard, const SexyString& theFilePath);
+bool				LawnSaveGame(Board* theBoard, const SexyString& theFilePath);
 
 #endif

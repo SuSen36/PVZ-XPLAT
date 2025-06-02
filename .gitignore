@@ -415,3 +415,5 @@ tools/read-compiled/target
 *.sublime-workspace
 
 build-*/
+/.idea/
+/cmake-build-debug/

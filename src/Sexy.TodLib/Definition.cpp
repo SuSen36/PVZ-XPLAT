@@ -4,7 +4,9 @@
 #include <assert.h>
 #include <cstring>
 #include <stddef.h>
+#include <future>
 #include <sys/stat.h>
+#include <thread>
 #include "TodDebug.h"
 #include "Definition.h"
 #include "zlib.h"
@@ -310,10 +312,12 @@ unsigned int DefinitionGetSize(DefMap* theDefMap, void* theDefinition) {
 
 void* DefinitionAlloc(int theSize)
 {
-    void* aPtr = operator new[](theSize);
-    TOD_ASSERT(aPtr);
-    memset(aPtr, 0, theSize);
-    return aPtr;
+    return SDL_malloc(theSize);
+}
+
+void DefinitionFree(void* ptr)
+{
+    SDL_free(ptr);
 }
 
 //0x443BE0
@@ -584,19 +588,19 @@ bool DefinitionReadCompiledFile(const SexyString& theCompiledFilePath, DefMap* t
     p_fclose(pFile);  // 关闭资源文件流并释放 pFile 占用的内存
     if (aReadCompressedFailed) { // 判断是否读取成功
         TodTrace(__S("Failed to read compiled file: %s\n"), theCompiledFilePath.c_str());
-        free(aCompressedBuffer);
+        DefinitionFree(aCompressedBuffer);
         return false;
     }
 
     size_t aUncompressedSize;
     void* aUncompressedBuffer = DefinitionUncompressCompiledBuffer(aCompressedBuffer, aCompressedSize, aUncompressedSize, theCompiledFilePath);
-    delete[] (char *)aCompressedBuffer;
+    DefinitionFree(aCompressedBuffer);
     if (!aUncompressedBuffer) return false;
     
     uint aDefHash = DefinitionCalcHash(theDefMap);  // 计算 CRC 校验值，后将用于检测数据的完整性
     if (aUncompressedSize < theDefMap->mDefSize + sizeof(uint)) {
         TodTrace(__S("Compiled file size too small: %s\n"), theCompiledFilePath.c_str());
-        delete[] (char *)aUncompressedBuffer;
+        DefinitionFree(aUncompressedBuffer);
         return false;
     } // 检测解压数据的长度是否足够“定义数据 + 一个校验值记录数据”的长度
 
@@ -607,7 +611,7 @@ bool DefinitionReadCompiledFile(const SexyString& theCompiledFilePath, DefMap* t
     SMemR(aBufferPtr, &aCashHash, sizeof(uint));  // 读取记录的 CRC 校验值
     if (aCashHash != aDefHash) {
         TodTrace(__S("Compiled file schema wrong: %s\n"), theCompiledFilePath.c_str());
-        delete[] (char *)aUncompressedBuffer;
+        DefinitionFree(aUncompressedBuffer);
         return false;
     } // 判断校验值是否一致，若不一致则说明数据发生错误
 
@@ -619,7 +623,7 @@ bool DefinitionReadCompiledFile(const SexyString& theCompiledFilePath, DefMap* t
     // 修复野指针及标志型数据，并保存是否成功的结果，后续作为返回值
     bool aResult = DefMapReadFromCache(aBufferPtr, theDefMap, theDefinition);
     size_t aReadMemSize = (uintptr_t)aBufferPtr - (uintptr_t)aUncompressedBuffer;
-    delete[] (char *)aUncompressedBuffer;
+    DefinitionFree(aUncompressedBuffer);
     if (aResult && aReadMemSize != aUncompressedSize) {
         TodTrace(__S("Compiled file wrong size: %s\n"), theCompiledFilePath.c_str());
         return false;
@@ -819,7 +823,7 @@ bool DefinitionReadArrayField(XMLParser* theXmlParser, DefinitionArrayDef* theAr
             void* anOldData = theArray->mArrayData;
             theArray->mArrayData = DefinitionAlloc(2 * theArray->mArrayCount * aDefMap->mDefSize);
             memcpy(theArray->mArrayData, anOldData, theArray->mArrayCount * aDefMap->mDefSize);
-            delete[] (char *)anOldData;
+            DefinitionFree(anOldData);
         }
         theArray->mArrayCount++;
     }
@@ -879,7 +883,7 @@ bool DefinitionReadFloatTrackField(XMLParser* theXmlParser, FloatParameterTrack*
     SexyString aStringValue;
 
     if (!DefinitionReadXMLString(theXmlParser, aStringValue)) return false;
-    
+
     float aValue = 0;
     int aLen = 0;
 
@@ -1023,6 +1027,14 @@ bool DefinitionReadFloatTrackField(XMLParser* theXmlParser, FloatParameterTrack*
 
     ::memcpy(theTrack->mNodes, aFloatTrackVec.data(), alloc_size);
     theTrack->mCountNodes = aFloatTrackVec.size();
+
+    for (int i = 1; i < theTrack->mCountNodes; i++) {
+        if (theTrack->mNodes[i].mTime <= theTrack->mNodes[i-1].mTime) {
+            TodTrace("Invalid track node time order at index %d", i);
+            theTrack->mCountNodes = 0; // 清空非法数据
+            return false;
+        }
+    }
 
     return true;
 }
@@ -1268,7 +1280,7 @@ bool DefinitionWriteCompiledFile(const SexyString& theCompiledFilePath, DefMap* 
     DefMapWriteToCache(aDef, theDefMap, theDefinition);
     void* aCompressedDef = DefinitionCompressCompiledBuffer(aDefBasePtr, aDefSize, &aCompressedSize);
 
-    delete[] (uint *)aDefBasePtr; // already compressed, no need to keep this instance alive
+    DefinitionFree(aDefBasePtr); // already compressed, no need to keep this instance alive
 
     std::string aFilePath = GetFileDir(theCompiledFilePath);
     MkDir(aFilePath);
@@ -1277,7 +1289,7 @@ bool DefinitionWriteCompiledFile(const SexyString& theCompiledFilePath, DefMap* 
     if (aFileStream) {
         unsigned int aBytesWritten = fwrite(aCompressedDef, 1u, aCompressedSize, aFileStream);
 
-        delete[] (char *)aCompressedDef;
+        DefinitionFree(aCompressedDef);
 
         fclose(aFileStream);
         return aBytesWritten == aCompressedSize;
@@ -1304,61 +1316,36 @@ bool DefinitionCompileFile(const SexyString theXMLFilePath, const SexyString& th
 //0x4447F0 : (void* def, *defMap, string& xmlFilePath)  //esp -= 0xC
 bool DefinitionCompileAndLoad(const SexyString& theXMLFilePath, DefMap* theDefMap, void* theDefinition)
 {
-#ifdef _DEBUG  // 内测版执行的内容
-
-    TodHesitationTrace(__S("predef"));
     SexyString aCompiledFilePath = DefinitionGetCompiledFilePathFromXMLFilePath(theXMLFilePath);
-    if (DefinitionIsCompiled(theXMLFilePath) && DefinitionReadCompiledFile(aCompiledFilePath, theDefMap, theDefinition))
-    {
-        TodHesitationTrace(__S("loaded %s"), aCompiledFilePath.c_str());
+    if (DefinitionReadCompiledFile(aCompiledFilePath, theDefMap, theDefinition)) {
         return true;
+    } else {
+        return DefinitionCompileFile(theXMLFilePath, aCompiledFilePath, theDefMap, theDefinition); // 返回false表示异步加载中
     }
-    else
-    {
-        PerfTimer aTimer;
-        aTimer.Start();
-        bool aResult = DefinitionCompileFile(theXMLFilePath, aCompiledFilePath, theDefMap, theDefinition);
-        TodTrace(__S("compile %d ms:'%s'"), (int)aTimer.GetDuration(), aCompiledFilePath.c_str());
-        TodHesitationTrace(__S("compiled %s"), aCompiledFilePath.c_str());
-        return aResult;
-    }
-
-#else  // 原版执行的内容
-
-    SexyString aCompiledFilePath = DefinitionGetCompiledFilePathFromXMLFilePath(theXMLFilePath);
-    if (DefinitionReadCompiledFile(aCompiledFilePath, theDefMap, theDefinition))
-        return true;
-
-    TodErrorMessageBox(StrFormat(__S("missing resource %s"), aCompiledFilePath.c_str()).c_str(), __S("Error"));
-    exit(0);
-    
-#endif
 }
 
 //0x4448E0
-float FloatTrackEvaluate(FloatParameterTrack& theTrack, float theTimeValue, float theInterp)
-{
-    if (theTrack.mCountNodes == 0)
+float FloatTrackEvaluate(FloatParameterTrack& theTrack, float theTimeValue, float theInterp) {
+    if (theTrack.mCountNodes == 0||theTimeValue < 0.0f||theTrack.mNodes == nullptr) {
         return 0.0f;
-
-    if (theTimeValue < theTrack.mNodes[0].mTime)  // 如果当前时间小于第一个节点的开始时间
+    }
+    if (theTimeValue < theTrack.mNodes[0].mTime) {
         return TodCurveEvaluate(theInterp, theTrack.mNodes[0].mLowValue, theTrack.mNodes[0].mHighValue, theTrack.mNodes[0].mDistribution);
+    }
 
-    for (int i = 1; i < theTrack.mCountNodes; i++)
-    {
+    for (int i = 1; i < theTrack.mCountNodes; i++) {
         FloatParameterTrackNode* aNodeNxt = &theTrack.mNodes[i];
-        if (theTimeValue <= aNodeNxt->mTime)  // 寻找首个开始时间大于当前时间的节点
-        {
+        if (theTimeValue <= aNodeNxt->mTime) {
             FloatParameterTrackNode* aNodeCur = &theTrack.mNodes[i - 1];
-            // 计算当前时间在〔当前节点至下一节点〕的过程中的进度
             float aTimeFraction = (theTimeValue - aNodeCur->mTime) / (aNodeNxt->mTime - aNodeCur->mTime);
+            aTimeFraction = std::max(0.0f, std::min(1.0f, aTimeFraction));
             float aLeftValue = TodCurveEvaluate(theInterp, aNodeCur->mLowValue, aNodeCur->mHighValue, aNodeCur->mDistribution);
             float aRightValue = TodCurveEvaluate(theInterp, aNodeNxt->mLowValue, aNodeNxt->mHighValue, aNodeNxt->mDistribution);
             return TodCurveEvaluate(aTimeFraction, aLeftValue, aRightValue, aNodeCur->mCurveType);
         }
     }
 
-    FloatParameterTrackNode* aLastNode = &theTrack.mNodes[theTrack.mCountNodes - 1];  // 如果当前时间大于最后一个节点的开始时间
+    FloatParameterTrackNode* aLastNode = &theTrack.mNodes[theTrack.mCountNodes - 1];
     return TodCurveEvaluate(theInterp, aLastNode->mLowValue, aLastNode->mHighValue, aLastNode->mDistribution);
 }
 
@@ -1407,30 +1394,24 @@ void DefinitionFreeArrayField(DefinitionArrayDef* theArray, DefMap* theDefMap)
 }
 
 //0x444A90
-void DefinitionFreeMap(DefMap* theDefMap, void* theDefinition)
-{
+void DefinitionFreeMap(DefMap* theDefMap, void* theDefinition) {
     // 根据 theDefMap 遍历 theDefinition 的每个成员变量
-    for (DefField* aField = theDefMap->mMapFields; *aField->mFieldName != '\0'; aField++)
-    {
-        void* aVar = (void*)((intptr_t)theDefinition + aField->mFieldOffset);  // 指向该成员变量的指针
-        switch (aField->mFieldType)
-        {
-        case DefFieldType::DT_STRING:
-            // @Patoke todo: removed this, caused a heap problem when closing the game, add back properly (causes memory leak)
-            //if (**(char**)aVar != '\0')
-            //    delete[] *(char**)aVar;  // 释放字符数组
-            *(char**)aVar = nullptr;
-            break;
-        case DefFieldType::DT_ARRAY:
-            DefinitionFreeArrayField((DefinitionArrayDef*)aVar, (DefMap*)aField->mExtraData);
-            break;
-        case DefFieldType::DT_TRACK_FLOAT:
-            if (((FloatParameterTrack*)aVar)->mCountNodes != 0)
-                delete[]((FloatParameterTrack*)aVar)->mNodes;  // 释放浮点参数轨道的节点
-            ((FloatParameterTrack*)aVar)->mNodes = nullptr;
-            break;
-        default:
-            break;
+    for (DefField *aField = theDefMap->mMapFields; *aField->mFieldName != '\0'; aField++) {
+        void *aVar = (void *) ((intptr_t) theDefinition + aField->mFieldOffset);  // 指向该成员变量的指针
+        switch (aField->mFieldType) {
+            case DefFieldType::DT_STRING:
+                if (**(char **) aVar != '\0')
+                    delete[] *(char **) aVar;  // 释放字符数组
+                *(char **) aVar = nullptr;
+                break;
+            case DefFieldType::DT_ARRAY:
+                DefinitionFreeArrayField((DefinitionArrayDef *) aVar, (DefMap *) aField->mExtraData);
+                break;
+            case DefFieldType::DT_TRACK_FLOAT:
+                if (((FloatParameterTrack *) aVar)->mCountNodes != 0)
+                    delete[]((FloatParameterTrack *) aVar)->mNodes;  // 释放浮点参数轨道的节点
+                ((FloatParameterTrack *) aVar)->mNodes = nullptr;
+                break;
         }
     }
 }

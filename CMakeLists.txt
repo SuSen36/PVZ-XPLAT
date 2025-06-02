@@ -68,9 +68,6 @@ elseif (UNIX AND NOT APPLE AND NOT ANDROID)
     )
 endif()
 
-
-
-
 set(SDL_STATIC OFF CACHE BOOL "Build static library of SDL" FORCE)
 set(SDL_SHARED ON CACHE BOOL "Build shared library of SDL" FORCE)
 
@@ -153,6 +150,11 @@ target_include_directories(re-plants-vs-zombies PRIVATE
 	${PLAT_INCLUDES}
 	${bass_SOURCE_DIR}/${BASS_INCLUDE}
 )
+
+	# 强制使用小端序编码
+target_compile_definitions(re-plants-vs-zombies PRIVATE SDL_BYTEORDER=SDL_LIL_ENDIAN)
+	# 禁用浮点异常（避免低性能设备崩溃）
+target_compile_options(re-plants-vs-zombies PRIVATE -fno-trapping-math)
 
 if(APPLE)
     # 设置输出目录（可选）

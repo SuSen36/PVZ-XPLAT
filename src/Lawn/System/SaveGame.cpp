@@ -9,13 +9,18 @@
 #include "../../ConstEnums.h"
 #include "../MessageWidget.h"
 #include "../../Sexy.TodLib/Trail.h"
-#include "zlib.h"
+#include "../../ImageLib/zlib/zlib.h"
 #include "../../Sexy.TodLib/Attachment.h"
 #include "../../Sexy.TodLib/Reanimator.h"
 #include "../../Sexy.TodLib/TodParticle.h"
 #include "../../Sexy.TodLib/EffectSystem.h"
 
-static const char* FILE_COMPILE_TIME_STRING = "Feb 16 200923:03:38";
+#include <memory>
+
+static const char* FILE_COMPILE_TIME_STRING = "Dec 10 201014:56:46";
+// "Feb 16 200923:03:38"; // OG
+// "Jul  2 201011:47:03"; // OLD GOTY
+// "Dec 10 201014:56:46"; // GOTY Steam
 static const unsigned int SAVE_FILE_MAGIC_NUMBER = 0xFEEDDEAD;
 static const unsigned int SAVE_FILE_VERSION = 2U;
 static unsigned int SAVE_FILE_DATE = crc32(0, (Bytef*)FILE_COMPILE_TIME_STRING, strlen(FILE_COMPILE_TIME_STRING));  //[0x6AA7EC]
@@ -276,7 +281,7 @@ void SyncParticleEmitter(TodParticleSystem* theParticleSystem, TodParticleEmitte
 	}
 
 	theContext.SyncImage(theParticleEmitter->mImageOverride);
-	SyncDataIDList((TodList<unsigned int>*)&theParticleEmitter->mParticleList, theContext, &theParticleSystem->mParticleHolder->mParticleListNodeAllocator);
+	SyncDataIDList((TodList<unsigned int>*) & theParticleEmitter->mParticleList, theContext, &theParticleSystem->mParticleHolder->mParticleListNodeAllocator);
 	for (TodListNode<ParticleID>* aNode = theParticleEmitter->mParticleList.mHead; aNode != nullptr; aNode = aNode->mNext)
 	{
 		TodParticle* aParticle = theParticleSystem->mParticleHolder->mParticles.DataArrayGet((unsigned int)aNode->mValue);
@@ -296,7 +301,7 @@ void SyncParticleSystem(Board* theBoard, TodParticleSystem* theParticleSystem, S
 		theParticleSystem->mParticleHolder = theBoard->mApp->mEffectSystem->mParticleHolder;
 	}
 
-	SyncDataIDList((TodList<unsigned int>*)&theParticleSystem->mEmitterList, theContext, &theParticleSystem->mParticleHolder->mEmitterListNodeAllocator);
+	SyncDataIDList((TodList<unsigned int>*) & theParticleSystem->mEmitterList, theContext, &theParticleSystem->mParticleHolder->mEmitterListNodeAllocator);
 	for (TodListNode<ParticleEmitterID>* aNode = theParticleSystem->mEmitterList.mHead; aNode != nullptr; aNode = aNode->mNext)
 	{
 		TodParticleEmitter* aEmitter = theParticleSystem->mParticleHolder->mEmitters.DataArrayGet((unsigned int)aNode->mValue);
@@ -335,7 +340,7 @@ void SyncReanimation(Board* theBoard, Reanimation* theReanimation, SaveGameConte
 			}
 			else
 			{
-				TOD_ASSERT(aTrackInstance.mBlendTransform.mText[0] == 0);
+				TOD_ASSERT(aTrackInstance.mBlendTransform.mText[0] == NULL);
 				TOD_ASSERT(aTrackInstance.mBlendTransform.mFont == nullptr);
 				TOD_ASSERT(aTrackInstance.mBlendTransform.mImage == nullptr);
 			}
@@ -357,15 +362,13 @@ template <typename T> inline static void SyncDataArray(SaveGameContext& theConte
 	theContext.SyncUint(theDataArray.mFreeListHead);
 	theContext.SyncUint(theDataArray.mMaxUsedCount);
 	theContext.SyncUint(theDataArray.mSize);
-	theContext.SyncBytes(theDataArray.mBlock, theDataArray.mMaxUsedCount * sizeof(*theDataArray.mBlock));
+	theContext.SyncBytes(theDataArray.mBlock, theDataArray.mMaxUsedCount * sizeof(typename DataArray<T>::DataArrayItem));
 }
 
 //0x4819D0
 void SyncBoard(SaveGameContext& theContext, Board* theBoard)
 {
-	// TODO test if gives sane results
-	size_t offset = size_t(&theBoard->mPaused) - size_t(theBoard);
-	theContext.SyncBytes(&theBoard->mPaused, sizeof(Board) - offset);
+	theContext.SyncBytes(&theBoard->mPaused, sizeof(Board) - offsetof(Board, mPaused));
 
 	SyncDataArray(theContext, theBoard->mZombies);													//0x482190
 	SyncDataArray(theContext, theBoard->mPlants);													//0x482280
@@ -408,7 +411,7 @@ void SyncBoard(SaveGameContext& theContext, Board* theBoard)
 	theContext.SyncBytes(theBoard->mSeedBank, sizeof(SeedBank));
 	theContext.SyncBytes(theBoard->mChallenge, sizeof(Challenge));
 	theContext.SyncBytes(theBoard->mApp->mMusic, sizeof(Music));
-	
+
 	if (theContext.mReading)
 	{
 		if ((unsigned long)theContext.ByteLeftToRead() < 4)
@@ -416,7 +419,7 @@ void SyncBoard(SaveGameContext& theContext, Board* theBoard)
 			theContext.mFailed = true;
 		}
 
-		if (theContext.mFailed || (unsigned int)theContext.mBuffer.ReadLong() != SAVE_FILE_MAGIC_NUMBER)
+		if (theContext.mFailed || theContext.mBuffer.ReadLong() != SAVE_FILE_MAGIC_NUMBER)
 		{
 			theContext.mFailed = true;
 		}
@@ -498,8 +501,7 @@ void FixBoardAfterLoad(Board* theBoard)
 }
 
 //0x481FE0
-// GOTY @Patoke: 0x48CBC0
-bool LawnLoadGame(Board* theBoard, const std::string& theFilePath)
+bool LawnLoadGame(Board* theBoard, const SexyString& theFilePath)
 {
 	SaveGameContext aContext;
 	aContext.mFailed = false;
@@ -529,7 +531,7 @@ bool LawnLoadGame(Board* theBoard, const std::string& theFilePath)
 }
 
 //0x4820D0
-bool LawnSaveGame(Board* theBoard, const std::string& theFilePath)
+bool LawnSaveGame(Board* theBoard, const SexyString& theFilePath)
 {
 	SaveGameContext aContext;
 	aContext.mFailed = false;
