@@ -415,3 +415,8 @@ tools/read-compiled/target
 *.sublime-workspace
 
 build-*/
+/android-project/app/.cxx/
+/android-project/.idea/
+/.idea/
+/.vscode/
+/android-project/.gradle/
