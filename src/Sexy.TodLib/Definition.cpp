@@ -648,28 +648,6 @@ bool IsFileInPakFile(const SexyString& theFilePath)
     return aIsInPak;
 }
 
-bool DefinitionIsCompiled(const SexyString& theXMLFilePath)
-{
-    SexyString aCompiledFilePath = DefinitionGetCompiledFilePathFromXMLFilePath(theXMLFilePath);
-    if (IsFileInPakFile(aCompiledFilePath))
-        return true;
-
-    struct stat attr;
-
-    if (stat(aCompiledFilePath.c_str(), &attr) != 0)
-        return false;
-    time_t aCompiledFileTime = attr.st_mtime;
-
-    if (stat(theXMLFilePath.c_str(), &attr) != 0)
-    {
-        TodTrace(__S("Can't file source file to compile '%s'"), theXMLFilePath.c_str());
-        return false;
-    }
-    time_t aXMLFileTime = attr.st_mtime;
-
-    return aXMLFileTime <= aCompiledFileTime;
-}
-
 void DefinitionFillWithDefaults(DefMap* theDefMap, void* theDefinition)
 {
     memset(theDefinition, NULL, theDefMap->mDefSize);  // 将 theDefinition 初始化填充为 0

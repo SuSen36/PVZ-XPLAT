@@ -417,3 +417,7 @@ tools/read-compiled/target
 build-*/
 /.idea/
 /cmake-build-debug/
+/cmake-build-debug/
+/android-project/app/.cxx/
+/android-project/.idea/
+/.idea/

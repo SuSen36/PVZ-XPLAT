@@ -143,7 +143,6 @@ public:
 
 SexyString /*__cdecl*/  DefinitionGetCompiledFilePathFromXMLFilePath(const SexyString& theXMLFilePath);
 bool                    IsFileInPakFile(const SexyString& theFilePath);
-bool                    DefinitionIsCompiled(const SexyString& theXMLFilePath);
 bool                    DefinitionReadCompiledFile(const SexyString& theCompiledFilePath, DefMap* theDefMap, void* theDefinition);
 void                    DefinitionFillWithDefaults(DefMap* theDefMap, void* theDefinition);
 void                    DefinitionXmlError(XMLParser* theXmlParser, char* theFormat, ...);

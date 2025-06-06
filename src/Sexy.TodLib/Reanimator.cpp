@@ -1165,8 +1165,8 @@ void ReanimatorLoadDefinitions(ReanimationParams* theReanimationParamArray, int 
 	{
 		ReanimationParams* aReanimationParams = &theReanimationParamArray[i];
 		TOD_ASSERT(aReanimationParams->mReanimationType == i);
-		if (DefinitionIsCompiled(StringToSexyString(aReanimationParams->mReanimFileName)))
-			ReanimatorEnsureDefinitionLoaded(aReanimationParams->mReanimationType, true);
+		//if (DefinitionIsCompiled(StringToSexyString(aReanimationParams->mReanimFileName)))
+		//	ReanimatorEnsureDefinitionLoaded(aReanimationParams->mReanimationType, true);
 	}
 }
 

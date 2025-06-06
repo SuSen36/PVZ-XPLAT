@@ -1930,7 +1930,7 @@ void SexyAppBase::ReadFromRegistry()
 	if (mRegKey.length() == 0)
 		return;
 
-	regemu::SetRegFile("registry.regemu");
+	regemu::SetRegFile("config.regemu");
 
 	int anInt;
 	if (RegistryReadInteger("MusicVolume", &anInt))

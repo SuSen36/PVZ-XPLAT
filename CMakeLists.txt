@@ -138,9 +138,10 @@ if (WIN32)
 	add_executable(re-plants-vs-zombies ${SOURCES})
 elseif (ANDROID)
 	add_library(re-plants-vs-zombies SHARED ${SOURCES})
-elseif (APPLE)
-	add_executable(re-plants-vs-zombies ${SOURCES})
-elseif (UNIX AND NOT APPLE AND NOT ANDROID)
+elseif (EMSCRIPTEN)
+	add_executable(re-plants-vs-zombies ${SOURCES}) # Emscripten output is an executable (.js or .html)
+	cd(re-plants-vs-zombies PROPERTIES SUFFIX ".html") # Set suffix to .html for convenience
+else ()
 	add_executable(re-plants-vs-zombies ${SOURCES})
 endif()
 
@@ -153,8 +154,21 @@ target_include_directories(re-plants-vs-zombies PRIVATE
 
 	# 强制使用小端序编码
 target_compile_definitions(re-plants-vs-zombies PRIVATE SDL_BYTEORDER=SDL_LIL_ENDIAN)
-	# 禁用浮点异常（避免低性能设备崩溃）
-target_compile_options(re-plants-vs-zombies PRIVATE -fno-trapping-math)
+# 强制 Emscripten 平台定义宏
+target_compile_definitions(re-plants-vs-zombies PRIVATE EMSCRIPTEN)
+
+if (EMSCRIPTEN)
+    # Emscripten 特定的编译选项
+    target_compile_options(re-plants-vs-zombies PRIVATE
+        -O3 # 优化级别
+        -s USE_SDL=2 # 使用 SDL2
+        -s WASM=1 # 输出 WebAssembly
+        -fno-trapping-math # 禁用浮点异常
+    )
+else()
+    # 禁用浮点异常（避免低性能设备崩溃）
+    target_compile_options(re-plants-vs-zombies PRIVATE -fno-trapping-math)
+endif()
 
 if(APPLE)
     # 设置输出目录（可选）
@@ -199,7 +213,23 @@ endif()
 
 target_compile_definitions(re-plants-vs-zombies PRIVATE _DEBUG)
 
-target_link_libraries(re-plants-vs-zombies SDL2::SDL2 bass)
+if (NOT EMSCRIPTEN)
+	target_link_libraries(re-plants-vs-zombies SDL2::SDL2 bass)
+else()
+	target_link_libraries(re-plants-vs-zombies SDL2) # Emscripten provides its own SDL2
+    # Emscripten 特定的链接选项
+    target_link_options(re-plants-vs-zombies PRIVATE
+        -s USE_SDL=2
+        -s WASM=1
+        -s ASYNCIFY
+        -s EXPORT_NAME="Module"
+        -s ALLOW_MEMORY_GROWTH=1
+        -s MODULARIZE=1
+        -s EXPORTED_FUNCTIONS="['_main']"
+        -s EXTRA_EXPORTED_RUNTIME_METHODS="['ccall', 'cwrap']"
+        --shell-file ${PROJECT_SOURCE_DIR}/Libs/SDL/emscripten/html_template/shell_minimal.html
+    )
+endif()
 
 if (WIN32)
 	target_link_options(re-plants-vs-zombies PRIVATE -static -static-libgcc -static-libstdc++)
