@@ -94,6 +94,7 @@ mkdir build
 cd build
 cmake ..
 cmake --build .
+
 #构建
 cd build
 cmake -G "Xcode" ..
@@ -116,7 +117,7 @@ cmake -G "Xcode" ..
 ./tools/copy_resources.sh Resources android-project/app/src/main/assets
 ```
 
-### JavaWeb
+### Web
 ```bash
 # 构建
  cd web_project;.\web_build.ps1
@@ -124,7 +125,8 @@ cmake -G "Xcode" ..
 
 ```bash
 # 启动本地服务器
-#http://localhost:8000/re-plants-vs-zombies.html
+# http://localhost:8000/re-plants-vs-zombies.html
+# 此脚本会启动一个由 web_server.py 支持的本地 HTTP 服务器
  cd web_project;.\start_web_server.ps1
 ```
 ## 运行

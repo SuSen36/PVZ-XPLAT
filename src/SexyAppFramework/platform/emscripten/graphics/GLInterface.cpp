@@ -1292,13 +1292,24 @@ int GLInterface::Init(bool IsWindowed)
         attr.powerPreference = EM_WEBGL_POWER_PREFERENCE_HIGH_PERFORMANCE;
         EMSCRIPTEN_WEBGL_CONTEXT_HANDLE ctx =
             emscripten_webgl_create_context("#canvas", &attr);  // [2,6](@ref)
-        emscripten_webgl_make_context_current(ctx);
+
+        if (ctx <= 0) { // 检查上下文是否成功创建
+            EM_ASM({ console.error('Failed to create WebGL context'); });
+            return 0; // 返回失败
+        }
+
+        EMSCRIPTEN_RESULT res = emscripten_webgl_make_context_current(ctx);
+        if (res != EMSCRIPTEN_RESULT_SUCCESS) { // 检查上下文是否成功激活
+            EM_ASM({ console.error('Failed to make WebGL context current'); });
+            return 0; // 返回失败
+        }
 
 #ifdef EMSCRIPTEN
 EM_ASM({
 	console.log('GLctx after make_context_current:', GLctx);
 });
 #endif
+
 #endif
 	}
 #ifndef __EMSCRIPTEN__

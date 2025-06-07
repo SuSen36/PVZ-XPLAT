@@ -73,6 +73,11 @@ elseif (EMSCRIPTEN)
 	)
 endif()
 
+if(NOT ANDROID)
+set(SDL_STATIC ON CACHE BOOL "Build static library of SDL" FORCE)
+set(SDL_SHARED OFF CACHE BOOL "Build shared library of SDL" FORCE)
+endif()
+
 set(USE_MIDI OFF CACHE BOOL "SDL Mixer X midi" FORCE)
 set(USE_MODPLUG OFF CACHE BOOL "SDL Mixer X modplug" FORCE)
 set(USE_XMP OFF CACHE BOOL "SDL Mixer X xmp" FORCE)

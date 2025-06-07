@@ -9,12 +9,12 @@
 #include "SexyAppFramework/misc/Ratio.h"
 #include "SexyAppFramework/misc/SexyMatrix.h"
 
-#ifdef WINDOWS
+
 #include <SDL.h>
 #include <SDL_opengl.h>
-#elif LINUX
-#include <SDL.h>
-#include <SDL_opengl.h>
+#ifdef EMSCRIPTEN
+#include <emscripten/html5.h>
+#include <GLES2/gl2.h>
 #endif
 
 namespace Sexy
