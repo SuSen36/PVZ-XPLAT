@@ -137,10 +137,22 @@ Android 平台的数据文件存放在 Android/data/com.popcap.pvz/files 目录�
 ## 许可说明
 本项目仅用于学习和研究目的。所有游戏资源的版权归 PopCap Games 所有。
 
+## 免责声明
+本项目及其所有内容仅供教育和研究目的使用。我们不对本项目中包含的任何信息的准确性、完整性或有用性做出任何保证，也不对因使用或依赖这些信息而造成的任何损害承担责任。
+本项目的开发者不对任何直接、间接、附带、特殊或后果性损害承担责任，包括但不限于数据丢失、利润损失或业务中断，这些损害可能是由于使用或无法使用本项目而引起的，即使我们已被告知发生此类损害的可能性。
+用户应自行承担使用本项目的全部风险。在任何情况下，用户都应对其使用本项目所采取的行动负全部责任。
+本项目不隶属于 PopCap Games，也不受其认可、维护或授权。所有游戏资源和商标均为其各自所有者的财产。本项目无意侵犯任何版权或商标。
+
 ## 贡献指南
 欢迎提交 Issue 和 Pull Request 来改进项目。在提交代码前，请确保：
 1. 代码符合项目的编码规范
 2. 通过所有平台的编译测试
+
+## 致谢
+- 跨平台和音频部分的代码参考自 @headshot2017 的项目: [https://github.com/headshot2017/re-plants-vs-zombies](https://github.com/headshot2017/re-plants-vs-zombies)
+- 反编译项目来自 @Patoke 的项目: [https://github.com/Patoke/re-plants-vs-zombies](https://github.com/Patoke/re-plants-vs-zombies)
+- 感谢 @rspforhp 在反编译 PvZ 0.9.9 版本方面的出色工作。
+- 感谢 @ruslan831 存档了 PvZ 0.9.9 的反编译项目。
 
 ## 已知问题
 - 如遇到编译问题，请检查 CMake 配置和依赖库是否正确安装
