@@ -17,9 +17,10 @@ Write-Host "After Pop-Location. Current Directory: $(pwd)"
 
 # Remove any manual PATH additions as direct calls will be used.
 # Removed the emsdk list and activate calls that were added for diagnostics.
-mkdir build_emscripten -ErrorAction SilentlyContinue
-cd build_emscripten
-Write-Host "After cd to build_emscripten. Current Directory: $(pwd)"
+$buildDir = Join-Path $PSScriptRoot "pvz-web\src\main\resources\static"
+mkdir $buildDir -ErrorAction SilentlyContinue
+cd $buildDir
+Write-Host "After cd to $buildDir. Current Directory: $(pwd)"
 
 # Configure CMake
 # CMAKE_BIN is expected to be a system environment variable pointing to the CMake bin directory.
@@ -28,13 +29,12 @@ $cmakeExePath = "C:\CMake\bin\cmake.exe"
 $emscriptenToolchainFile = Join-Path $emsdkRoot "upstream\emscripten\cmake\Modules\Platform\Emscripten.cmake"
 $nodeExePath = Join-Path $emsdkRoot "node\22.16.0_64bit\bin\node.exe"
 
-& $cmakeExePath ../.. -G "Ninja" `
+Write-Host "Current Directory before CMake: $(pwd)"
+& $cmakeExePath ../../../../../../ -G "Ninja" `
     "-DCMAKE_TOOLCHAIN_FILE=$emscriptenToolchainFile" `
-    "-DCMAKE_CROSSCOMPILING_EMULATOR=$nodeExePath"
+    "-DCMAKE_CROSSCOMPILING_EMULATOR=$nodeExePath" `
+    "-DCMAKE_EXE_LINKER_FLAGS=-s FORCE_FILESYSTEM=1 --preload-file ../"
 
 # Build project
 $ninjaExePath = Join-Path $emsdkRoot "upstream\bin\ninja.exe"
 & $ninjaExePath -j8
-
-# 运行测试
-start re-plants-vs-zombies.html 

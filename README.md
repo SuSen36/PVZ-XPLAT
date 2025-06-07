@@ -118,9 +118,15 @@ cmake -G "Xcode" ..
 
 ### JavaWeb
 ```bash
-cd web_project; .\web_build.ps1
+# 构建
+ cd web_project;.\web_build.ps1
 ```
 
+```bash
+# 启动本地服务器
+#http://localhost:8000/re-plants-vs-zombies.html
+ cd web_project;.\start_web_server.ps1
+```
 ## 运行
 Windows/Linux 平台编译完成后，游戏数据文件需要放在可执行文件同目录下。
 Android 平台的数据文件存放在 Android/data/com.popcap.pvz/files 目录下。

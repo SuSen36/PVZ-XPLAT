@@ -1,5 +1,7 @@
 package com.popcap.pvz;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.AssetManager;
 import android.os.Bundle;
@@ -18,7 +20,7 @@ public class PVZActivity extends SDLActivity {
 
     static {
         System.loadLibrary("SDL2");
-        System.loadLibrary("bass");
+        System.loadLibrary("SDL2_mixer_ext");
         System.loadLibrary("re-plants-vs-zombies");
     }
 
@@ -26,8 +28,16 @@ public class PVZActivity extends SDLActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE); // 强制为横屏
-        // 直接复制资产，不请求权限
-        copyAssetsToExternalStorage();
+        // 检查是否第一次启动，如果是则执行复制
+        SharedPreferences prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+        boolean isFirstRun = prefs.getBoolean("isFirstRun", true); // 默认 true 表示首次运行
+        if (isFirstRun) {
+            copyAssetsToExternalStorage();
+            // 更新标志位，标记已运行过
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("isFirstRun", false);
+            editor.apply(); // 使用 apply() 异步保存，避免阻塞主线程
+        }
     }
 
     private void copyAssetsToExternalStorage() {
@@ -67,24 +77,24 @@ public class PVZActivity extends SDLActivity {
     private void copyAssetFile(AssetManager assetManager, String filename, String destPath) {
         try {
             // 检查是否是目录
-            if (Objects.requireNonNull(assetManager.list(filename)).length > 0) { // 检查是否是文件夹
+            if (Objects.requireNonNull(assetManager.list(filename)).length > 0) {
                 File dir = new File(destPath);
                 if (!dir.exists()) {
                     dir.mkdirs(); // 确保目录存在
                 }
 
-                // 递归遍历子目录
+                // 遍历子目录
                 String[] subFiles = assetManager.list(filename);
                 for (String subFile : subFiles) {
                     copyAssetFile(assetManager, filename + "/" + subFile, destPath + "/" + subFile);
                 }
-                return; // 返回，处理目录完毕
+                return; // 处理目录完毕
             }
 
             // 在复制文件之前检查目标文件是否已存在
             File outFile = new File(destPath);
             if (outFile.exists()) {
-                return; // 跳过该文件的复制
+                return;
             }
 
             // 复制文件

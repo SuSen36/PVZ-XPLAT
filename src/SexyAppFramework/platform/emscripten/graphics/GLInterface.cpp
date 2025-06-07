@@ -1,9 +1,8 @@
 #include <SDL.h>
-#include "SexyAppFramework/glad/glad.h"
-#ifdef _WIN32
 
-#elif defined(LINUX)
-#include <GL/glx.h>
+#ifdef EMSCRIPTEN
+#include <emscripten/html5.h>
+#include <GLES2/gl2.h>
 #endif
 
 #include "../graphics/GLInterface.h"
@@ -1284,22 +1283,31 @@ int GLInterface::Init(bool IsWindowed)
 	if (!inited)
 	{
 		inited = true;
-#ifdef _WIN32
-		if (!gladLoadGLLoader((GLADloadproc)wglGetProcAddress))
-		{
-			std::cerr << "Failed to initialize GLAD" << std::endl;
-			return -1;
-		}
-#elif defined(LINUX)
-		if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
-		{
-			std::cerr << "Failed to initialize GLAD" << std::endl;
-			return -1;
-		}
+
+#ifdef EMSCRIPTEN
+        // WebGL初始化（Emscripten环境）
+        EmscriptenWebGLContextAttributes attr;
+        emscripten_webgl_init_context_attributes(&attr);
+        attr.alpha = false;
+        attr.powerPreference = EM_WEBGL_POWER_PREFERENCE_HIGH_PERFORMANCE;
+        EMSCRIPTEN_WEBGL_CONTEXT_HANDLE ctx =
+            emscripten_webgl_create_context("#canvas", &attr);  // [2,6](@ref)
+        emscripten_webgl_make_context_current(ctx);
+
+#ifdef EMSCRIPTEN
+EM_ASM({
+	console.log('GLctx after make_context_current:', GLctx);
+});
+#endif
 #endif
 	}
-	int aMaxSize;
-	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &aMaxSize);
+#ifndef __EMSCRIPTEN__
+    int aMaxSize;
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &aMaxSize);
+#else
+    // WebGL特殊处理
+    int aMaxSize = 2048;  // WebGL默认最大纹理尺寸
+#endif
 
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);

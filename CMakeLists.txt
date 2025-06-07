@@ -67,6 +67,7 @@ elseif (UNIX AND NOT APPLE AND NOT ANDROID)
             ${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/macos
     )
 elseif (EMSCRIPTEN)
+	set(LIBTYPE STATIC CACHE STRING "Build type for SDL (STATIC/SHARED)" FORCE) # Force SDL to build as static
 	list(APPEND PLAT_INCLUDES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/emscripten
 	)
@@ -79,7 +80,12 @@ set(USE_OPUS OFF CACHE BOOL "SDL Mixer X opus" FORCE)
 set(USE_DRFLAC OFF CACHE BOOL "SDL Mixer X flac" FORCE)
 set(USE_PXTONE OFF CACHE BOOL "SDL Mixer X pxtone" FORCE)
 
+if(ANDROID)
+set(BUILD_SHARED_LIBS ON CACHE BOOL "Build static libraries for Emscripten" FORCE)
+else ()
+set(BUILD_STATIC_LIBS ON CACHE BOOL "Build static libraries for Emscripten" FORCE)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build static libraries for Emscripten" FORCE)
+endif()
 
 add_subdirectory(Libs/SDL)
 add_subdirectory(Libs/SDL-Mixer-X)
@@ -105,7 +111,6 @@ target_include_directories(re-plants-vs-zombies PRIVATE
 
 # 强制使用小端序编码
 target_compile_definitions(re-plants-vs-zombies PRIVATE SDL_BYTEORDER=SDL_LIL_ENDIAN)
-
 # 禁用浮点异常（避免低性能设备崩溃）
 target_compile_options(re-plants-vs-zombies PRIVATE -fno-trapping-math)
 
@@ -149,19 +154,48 @@ file(GLOB_RECURSE RESOURCE_FILES
 )
 endif()
 
-target_compile_definitions(re-plants-vs-zombies PRIVATE _DEBUG)
+if(NOT ANDROID)
+	# 导出 SDL2 目标到命名空间
+	install(TARGETS SDL2-static SDL2main EXPORT SDL2Targets  # 显式导出 SDL2
+			ARCHIVE DESTINATION lib
+			LIBRARY DESTINATION lib
+			RUNTIME DESTINATION bin
+			INCLUDES DESTINATION include
+	)
+else()
+	install(TARGETS SDL2 SDL2main EXPORT SDL2Targets  # 显式导出 SDL2
+			ARCHIVE DESTINATION lib
+			LIBRARY DESTINATION lib
+			RUNTIME DESTINATION bin
+			INCLUDES DESTINATION include
+	)
+endif()
 
+# 将 SDL2 加入全局导出集
+install(EXPORT SDL2Targets
+		FILE SDL2Targets.cmake
+		NAMESPACE SDL2::
+		DESTINATION lib/cmake/SDL2
+)
+
+
+target_compile_definitions(re-plants-vs-zombies PRIVATE _DEBUG)
+if(ANDROID)
+target_link_libraries(re-plants-vs-zombies SDL2 SDL2_mixer_ext)
+else()
 target_link_libraries(re-plants-vs-zombies SDL2-static SDL2_mixer_ext_Static)
+endif()
 
 if (EMSCRIPTEN)
 	# Emscripten 特定的链接选项
     target_link_options(re-plants-vs-zombies PRIVATE
         -sWASM=1 # 输出 WebAssembly
         -sASYNCIFY=1
-        -sMODULARIZE=1
         -sEXPORTED_FUNCTIONS=_main
         -sEXPORTED_RUNTIME_METHODS=ccall,cwrap
-        --shell-file ${PROJECT_SOURCE_DIR}/web_project/emsdk/upstream/emscripten/src/shell_minimal.html
+        --shell-file "${CMAKE_CURRENT_SOURCE_DIR}/web_project/emsdk/upstream/emscripten/src/shell_minimal.html"
+        -sUSE_WEBGL2=1 # 启用 WebGL 2
+        ${LDFLAGS}
     )
 endif()
 
