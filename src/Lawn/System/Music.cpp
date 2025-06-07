@@ -6,6 +6,7 @@
 #include "../../Sexy.TodLib/TodDebug.h"
 #include "../../Sexy.TodLib/TodCommon.h"
 #include "SexyAppFramework/sound/SDLMusicInterface.h"
+#include "SexyAppFramework/platform/emscripten/EmscriptenPlatform.h"
 
 using namespace Sexy;
 
@@ -42,7 +43,7 @@ bool Music::TodLoadMusic(MusicFile theMusicFile, const std::string& theFileName)
     std::string anExt;
 
     size_t aDot = theFileName.rfind('.');
-    if (aDot != std::string::npos)  // 文件名中不含“.”（文件无扩展名）
+    if (aDot != std::string::npos)  // 文件名中不含"."（文件无扩展名）
         anExt = StringToLower(theFileName.substr(aDot + 1));  // 取得小写的文件扩展名
 
     PFILE* pFile = p_fopen(theFileName.c_str(), "rb");

@@ -10,6 +10,7 @@
 #include "SexyAppFramework/graphics/Font.h"
 #include "SexyAppFramework/misc/PerfTimer.h"
 #include "SexyAppFramework/graphics/MemoryImage.h"
+#include "SexyAppFramework/Common.h"
 
 unsigned int gReanimatorDefCount;                     //[0x6A9EE4]
 ReanimatorDefinition* gReanimatorDefArray;   //[0x6A9EE8]

@@ -421,3 +421,4 @@ build-*/
 /android-project/app/.cxx/
 /android-project/.idea/
 /.idea/
+/android-project/.idea/caches/

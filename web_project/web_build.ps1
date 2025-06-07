@@ -17,7 +17,7 @@ Write-Host "After Pop-Location. Current Directory: $(pwd)"
 
 # Remove any manual PATH additions as direct calls will be used.
 # Removed the emsdk list and activate calls that were added for diagnostics.
-
+mkdir build_emscripten -ErrorAction SilentlyContinue
 cd build_emscripten
 Write-Host "After cd to build_emscripten. Current Directory: $(pwd)"
 

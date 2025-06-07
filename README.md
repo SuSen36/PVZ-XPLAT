@@ -116,6 +116,11 @@ cmake -G "Xcode" ..
 ./tools/copy_resources.sh Resources android-project/app/src/main/assets
 ```
 
+### JavaWeb
+```bash
+cd web_project; .\web_build.ps1
+```
+
 ## 运行
 Windows/Linux 平台编译完成后，游戏数据文件需要放在可执行文件同目录下。
 Android 平台的数据文件存放在 Android/data/com.popcap.pvz/files 目录下。

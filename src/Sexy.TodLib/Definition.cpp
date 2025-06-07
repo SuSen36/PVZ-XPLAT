@@ -8,7 +8,7 @@
 #include <thread>
 #include "TodDebug.h"
 #include "Definition.h"
-#include "zlib.h"
+#include "../SexyAppFramework/imagelib/zlib/zlib.h" // Changed to internal zlib path
 #include "SexyAppFramework/paklib/PakInterface.h"
 #include "SexyAppFramework/misc/PerfTimer.h"
 #include "SexyAppFramework/misc/XMLParser.h"
@@ -601,7 +601,7 @@ bool DefinitionReadCompiledFile(const SexyString& theCompiledFilePath, DefMap* t
         TodTrace(__S("Compiled file size too small: %s\n"), theCompiledFilePath.c_str());
         DefinitionFree(aUncompressedBuffer);
         return false;
-    } // 检测解压数据的长度是否足够“定义数据 + 一个校验值记录数据”的长度
+    } // 检测解压数据的长度是否足够"定义数据 + 一个校验值记录数据"的长度
 
 
     // 复制一份解压数据的指针用于读取时移动，原指针后续要用于计算读取区域大小及 delete[] 操作

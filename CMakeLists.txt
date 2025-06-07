@@ -66,6 +66,10 @@ elseif (UNIX AND NOT APPLE AND NOT ANDROID)
     list(APPEND PLAT_INCLUDES
             ${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/macos
     )
+elseif (EMSCRIPTEN)
+	list(APPEND PLAT_INCLUDES
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/emscripten
+	)
 endif()
 
 set(USE_MIDI OFF CACHE BOOL "SDL Mixer X midi" FORCE)
@@ -74,6 +78,8 @@ set(USE_XMP OFF CACHE BOOL "SDL Mixer X xmp" FORCE)
 set(USE_OPUS OFF CACHE BOOL "SDL Mixer X opus" FORCE)
 set(USE_DRFLAC OFF CACHE BOOL "SDL Mixer X flac" FORCE)
 set(USE_PXTONE OFF CACHE BOOL "SDL Mixer X pxtone" FORCE)
+
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build static libraries for Emscripten" FORCE)
 
 add_subdirectory(Libs/SDL)
 add_subdirectory(Libs/SDL-Mixer-X)
@@ -90,6 +96,7 @@ else ()
 endif()
 
 target_include_directories(re-plants-vs-zombies PRIVATE
+	${PROJECT_SOURCE_DIR}/src/SexyAppFramework/imagelib/zlib
 	${PROJECT_SOURCE_DIR}/src
 	${PROJECT_SOURCE_DIR}/Libs/SDL/include
 	${PROJECT_SOURCE_DIR}/Libs/SDL-Mixer-X/include
@@ -99,20 +106,9 @@ target_include_directories(re-plants-vs-zombies PRIVATE
 # 强制使用小端序编码
 target_compile_definitions(re-plants-vs-zombies PRIVATE SDL_BYTEORDER=SDL_LIL_ENDIAN)
 
-if (EMSCRIPTEN)
-	# 强制 Emscripten 平台定义宏
-	target_compile_definitions(re-plants-vs-zombies PRIVATE EMSCRIPTEN)
-    # Emscripten 特定的编译选项
-    target_compile_options(re-plants-vs-zombies PRIVATE
-        -O3 # 优化级别
-        -s USE_SDL=2 # 使用 SDL2
-        -s WASM=1 # 输出 WebAssembly
-        -fno-trapping-math # 禁用浮点异常
-    )
-else()
-    # 禁用浮点异常（避免低性能设备崩溃）
-    target_compile_options(re-plants-vs-zombies PRIVATE -fno-trapping-math)
-endif()
+# 禁用浮点异常（避免低性能设备崩溃）
+target_compile_options(re-plants-vs-zombies PRIVATE -fno-trapping-math)
+
 
 if(APPLE)
     # 设置输出目录（可选）
@@ -151,42 +147,21 @@ file(GLOB_RECURSE RESOURCE_FILES
     "${RESOURCES_DIR}/reanim/*"
     "${RESOURCES_DIR}/sounds/*"
 )
-
-
 endif()
-
-# 导出 SDL2 目标到命名空间
-install(TARGETS SDL2-static SDL2main EXPORT SDL2Targets  # 显式导出 SDL2
-		ARCHIVE DESTINATION lib
-		LIBRARY DESTINATION lib
-		RUNTIME DESTINATION bin
-		INCLUDES DESTINATION include
-)
-
-# 将 SDL2 加入全局导出集
-install(EXPORT SDL2Targets
-		FILE SDL2Targets.cmake
-		NAMESPACE SDL2::
-		DESTINATION lib/cmake/SDL2
-)
 
 target_compile_definitions(re-plants-vs-zombies PRIVATE _DEBUG)
 
-if (NOT EMSCRIPTEN)
-	target_link_libraries(re-plants-vs-zombies SDL2-static SDL2_mixer_ext_Static)
-else()
-	target_link_libraries(re-plants-vs-zombies SDL2::SDL2 SDL2_mixer_ext_Static) # Emscripten provides its own SDL2
-    # Emscripten 特定的链接选项
+target_link_libraries(re-plants-vs-zombies SDL2-static SDL2_mixer_ext_Static)
+
+if (EMSCRIPTEN)
+	# Emscripten 特定的链接选项
     target_link_options(re-plants-vs-zombies PRIVATE
-        -s USE_SDL=2
-        -s WASM=1
-        -s ASYNCIFY
-        -s EXPORT_NAME="Module"
-        -s ALLOW_MEMORY_GROWTH=1
-        -s MODULARIZE=1
-        -s EXPORTED_FUNCTIONS="['_main']"
-        -s EXTRA_EXPORTED_RUNTIME_METHODS="['ccall', 'cwrap']"
-        --shell-file ${PROJECT_SOURCE_DIR}/Libs/SDL/emscripten/html_template/shell_minimal.html
+        -sWASM=1 # 输出 WebAssembly
+        -sASYNCIFY=1
+        -sMODULARIZE=1
+        -sEXPORTED_FUNCTIONS=_main
+        -sEXPORTED_RUNTIME_METHODS=ccall,cwrap
+        --shell-file ${PROJECT_SOURCE_DIR}/web_project/emsdk/upstream/emscripten/src/shell_minimal.html
     )
 endif()
 
@@ -199,14 +174,16 @@ elseif (ANDROID)  # 增加安卓平台的支持
 elseif (APPLE)
 	target_link_libraries(re-plants-vs-zombies "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreFoundation" "-framework CoreAudio" "-framework AudioToolbox" "-framework CoreVideo")
 	target_compile_definitions(re-plants-vs-zombies PRIVATE MACOS)
-elseif (UNIX AND NOT APPLE AND NOT ANDROID)
+elseif (EMSCRIPTEN)
+	target_compile_definitions(re-plants-vs-zombies PRIVATE EMSCRIPTEN)
+elseif (UNIX AND NOT APPLE AND NOT ANDROID AND NOT EMSCRIPTEN)
 	target_link_libraries(re-plants-vs-zombies GL dl X11 EGL)
 	target_compile_definitions(re-plants-vs-zombies PRIVATE LINUX)  # 定义 LINUX 宏
 else ()
 	target_link_libraries(re-plants-vs-zombies GL)
 endif()
 
-if (UNIX AND NOT APPLE AND NOT ANDROID)
+if (UNIX AND NOT APPLE AND NOT ANDROID AND NOT EMSCRIPTEN) 
 	# 确保Linux系统使用相应的包
 	message(STATUS "Linux系统检测到，将尝试安装libx11-dev 和 libxkbcommon-dev")
 
