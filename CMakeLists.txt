@@ -68,6 +68,11 @@ elseif (UNIX AND NOT APPLE AND NOT ANDROID)
     )
 elseif (EMSCRIPTEN)
 	set(LIBTYPE STATIC CACHE STRING "Build type for SDL (STATIC/SHARED)" FORCE) # Force SDL to build as static
+	list(APPEND SOURCES
+			${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/emscripten/graphics/Window.cpp
+			${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/emscripten/graphics/GLInterface.cpp
+			${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/emscripten/Input.cpp
+	)
 	list(APPEND PLAT_INCLUDES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/emscripten
 	)
