@@ -1,5 +1,6 @@
 #pragma warning( disable : 4786 )
 
+#include <stdexcept>
 #include "CritSect.h"
 
 using namespace Sexy;
@@ -8,12 +9,20 @@ using namespace Sexy;
 
 CritSect::CritSect(void)
 {
-	pthread_mutex_init(&mCriticalSection, 0);
+    mCriticalSection = SDL_CreateMutex();
+    if(!mCriticalSection) {
+        throw std::runtime_error("Failed to create mutex");
+    }
+    SDL_LockMutex(mCriticalSection);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 CritSect::~CritSect(void)
 {
-	pthread_mutex_destroy(&mCriticalSection);
+    if(mCriticalSection) {
+        SDL_UnlockMutex(mCriticalSection);
+        SDL_DestroyMutex(mCriticalSection);
+        mCriticalSection = nullptr;
+    }
 }

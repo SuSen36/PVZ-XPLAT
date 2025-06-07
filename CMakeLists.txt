@@ -68,71 +68,15 @@ elseif (UNIX AND NOT APPLE AND NOT ANDROID)
     )
 endif()
 
-set(SDL_STATIC OFF CACHE BOOL "Build static library of SDL" FORCE)
-set(SDL_SHARED ON CACHE BOOL "Build shared library of SDL" FORCE)
+set(USE_MIDI OFF CACHE BOOL "SDL Mixer X midi" FORCE)
+set(USE_MODPLUG OFF CACHE BOOL "SDL Mixer X modplug" FORCE)
+set(USE_XMP OFF CACHE BOOL "SDL Mixer X xmp" FORCE)
+set(USE_OPUS OFF CACHE BOOL "SDL Mixer X opus" FORCE)
+set(USE_DRFLAC OFF CACHE BOOL "SDL Mixer X flac" FORCE)
+set(USE_PXTONE OFF CACHE BOOL "SDL Mixer X pxtone" FORCE)
 
 add_subdirectory(Libs/SDL)
-
-include(FetchContent)
-
-if (WIN32)
-	set(BASS_SRC https://www.un4seen.com/files/bass24.zip)
-	set(BASS_LIB x64/bass.dll)
-	set(BASS_INCLUDE c)
-elseif (UNIX)
-	if (APPLE)
-		set(BASS_SRC https://www.un4seen.com/files/bass24-osx.zip)
-		set(BASS_LIB libbass.dylib)
-		set(BASS_INCLUDE ./)
-	elseif (LINUX)
-		set(BASS_SRC https://www.un4seen.com/files/bass24-linux.zip)
-		set(BASS_LIB libs/x86_64/libbass.so)
-		set(BASS_INCLUDE ./)
-	elseif (ANDROID)
-		set(BASS_INCLUDE c)
-		# 使用ANDROID_ABI来动态识别当前架构
-		if (ANDROID_ABI STREQUAL "arm64-v8a")
-			set(BASS_SRC https://www.un4seen.com/files/bass24-android.zip)
-			set(BASS_LIB libs/arm64-v8a/libbass.so)
-		elseif (ANDROID_ABI STREQUAL "armeabi-v7a")
-			set(BASS_SRC https://www.un4seen.com/files/bass24-android.zip)
-			set(BASS_LIB libs/armeabi-v7a/libbass.so)
-		elseif (ANDROID_ABI STREQUAL "x86")
-			set(BASS_SRC https://www.un4seen.com/files/bass24-android.zip)
-			set(BASS_LIB libs/x86/libbass.so)
-		elseif (ANDROID_ABI STREQUAL "x86_64")
-			set(BASS_SRC https://www.un4seen.com/files/bass24-android.zip)
-			set(BASS_LIB libs/x86_64/libbass.so)
-		else()
-			message(FATAL_ERROR "不支持的Android架构: ${ANDROID_ABI}.")
-		endif()  # 结束针对 Android 的判断
-	else()
-		message(FATAL_ERROR "仅支持Android平台的构建.")
-	endif()  # 结束针对 UNIX 的判断
-
-endif()  # 结束针对 WIN32 的判断
-
-message(STATUS "Current ABI: ${ANDROID_ABI}")
-
-FetchContent_Declare(
-		bass
-		URL ${BASS_SRC}
-		#DOWNLOAD_EXTRACT_TIMESTAMP TRUE
-)
-
-FetchContent_GetProperties(bass)
-if (NOT bass_POPULATED)
-	FetchContent_MakeAvailable(bass)
-	file(COPY ${bass_SOURCE_DIR}/${BASS_LIB} DESTINATION ${CMAKE_BINARY_DIR})
-endif()
-
-get_filename_component(bassfile ${BASS_LIB} NAME)
-
-add_library(bass STATIC IMPORTED GLOBAL)
-
-set_target_properties(bass PROPERTIES
-		IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/${bassfile}
-)
+add_subdirectory(Libs/SDL-Mixer-X)
 
 if (WIN32)
 	add_executable(re-plants-vs-zombies ${SOURCES})
@@ -140,7 +84,7 @@ elseif (ANDROID)
 	add_library(re-plants-vs-zombies SHARED ${SOURCES})
 elseif (EMSCRIPTEN)
 	add_executable(re-plants-vs-zombies ${SOURCES}) # Emscripten output is an executable (.js or .html)
-	cd(re-plants-vs-zombies PROPERTIES SUFFIX ".html") # Set suffix to .html for convenience
+	set_target_properties(re-plants-vs-zombies PROPERTIES SUFFIX ".html") # Set suffix to .html for convenience
 else ()
 	add_executable(re-plants-vs-zombies ${SOURCES})
 endif()
@@ -148,16 +92,16 @@ endif()
 target_include_directories(re-plants-vs-zombies PRIVATE
 	${PROJECT_SOURCE_DIR}/src
 	${PROJECT_SOURCE_DIR}/Libs/SDL/include
+	${PROJECT_SOURCE_DIR}/Libs/SDL-Mixer-X/include
 	${PLAT_INCLUDES}
-	${bass_SOURCE_DIR}/${BASS_INCLUDE}
 )
 
-	# 强制使用小端序编码
+# 强制使用小端序编码
 target_compile_definitions(re-plants-vs-zombies PRIVATE SDL_BYTEORDER=SDL_LIL_ENDIAN)
-# 强制 Emscripten 平台定义宏
-target_compile_definitions(re-plants-vs-zombies PRIVATE EMSCRIPTEN)
 
 if (EMSCRIPTEN)
+	# 强制 Emscripten 平台定义宏
+	target_compile_definitions(re-plants-vs-zombies PRIVATE EMSCRIPTEN)
     # Emscripten 特定的编译选项
     target_compile_options(re-plants-vs-zombies PRIVATE
         -O3 # 优化级别
@@ -211,12 +155,27 @@ file(GLOB_RECURSE RESOURCE_FILES
 
 endif()
 
+# 导出 SDL2 目标到命名空间
+install(TARGETS SDL2-static SDL2main EXPORT SDL2Targets  # 显式导出 SDL2
+		ARCHIVE DESTINATION lib
+		LIBRARY DESTINATION lib
+		RUNTIME DESTINATION bin
+		INCLUDES DESTINATION include
+)
+
+# 将 SDL2 加入全局导出集
+install(EXPORT SDL2Targets
+		FILE SDL2Targets.cmake
+		NAMESPACE SDL2::
+		DESTINATION lib/cmake/SDL2
+)
+
 target_compile_definitions(re-plants-vs-zombies PRIVATE _DEBUG)
 
 if (NOT EMSCRIPTEN)
-	target_link_libraries(re-plants-vs-zombies SDL2::SDL2 bass)
+	target_link_libraries(re-plants-vs-zombies SDL2-static SDL2_mixer_ext_Static)
 else()
-	target_link_libraries(re-plants-vs-zombies SDL2) # Emscripten provides its own SDL2
+	target_link_libraries(re-plants-vs-zombies SDL2::SDL2 SDL2_mixer_ext_Static) # Emscripten provides its own SDL2
     # Emscripten 特定的链接选项
     target_link_options(re-plants-vs-zombies PRIVATE
         -s USE_SDL=2
@@ -232,13 +191,8 @@ else()
 endif()
 
 if (WIN32)
-	target_link_options(re-plants-vs-zombies PRIVATE -static -static-libgcc -static-libstdc++)
 	target_link_libraries(re-plants-vs-zombies opengl32 ws2_32 ddraw dinput8 dxguid dxerr8 user32 gdi32 winmm imm32)
 	target_compile_definitions(re-plants-vs-zombies PRIVATE WINDOWS)
-
-	if(NOT CONSOLE)
-		target_link_options(re-plants-vs-zombies PRIVATE -mwindows)
-	endif()
 elseif (ANDROID)  # 增加安卓平台的支持
     target_link_libraries(re-plants-vs-zombies android log EGL)  # 链接需要的库
 	target_compile_definitions(re-plants-vs-zombies PRIVATE ANDROID)  # 定义ANDROID宏
@@ -246,7 +200,7 @@ elseif (APPLE)
 	target_link_libraries(re-plants-vs-zombies "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreFoundation" "-framework CoreAudio" "-framework AudioToolbox" "-framework CoreVideo")
 	target_compile_definitions(re-plants-vs-zombies PRIVATE MACOS)
 elseif (UNIX AND NOT APPLE AND NOT ANDROID)
-	target_link_libraries(re-plants-vs-zombies GL dl pthread X11 EGL)
+	target_link_libraries(re-plants-vs-zombies GL dl X11 EGL)
 	target_compile_definitions(re-plants-vs-zombies PRIVATE LINUX)  # 定义 LINUX 宏
 else ()
 	target_link_libraries(re-plants-vs-zombies GL)

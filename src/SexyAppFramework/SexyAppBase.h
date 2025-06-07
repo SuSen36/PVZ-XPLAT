@@ -169,7 +169,7 @@ public:
 	WidgetManager*			mWidgetManager;
 	DialogMap				mDialogMap;
 	DialogList				mDialogList;
-	void*					mPrimaryThreadId;
+    SDL_threadID			mPrimaryThreadId;
 	bool					mSEHOccured;
 	bool					mShutdown;
 	bool					mExitToTop;
@@ -353,7 +353,7 @@ protected:
 	
 	// Loading thread methods	
 	virtual void			LoadingThreadCompleted();
-	static void*			LoadingThreadProcStub(void *theArg);	
+	static int LoadingThreadProcStub(void *theArg);
 
 	// Cursor thread methods
 	void					CursorThreadProc();

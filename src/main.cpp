@@ -1,4 +1,5 @@
 #define SDL_MAIN_HANDLED
+
 #include "LawnApp.h"
 #include "Resources.h"
 #include "Sexy.TodLib/TodStringFile.h"
@@ -6,6 +7,7 @@
 #include <SDL.h>
 #include <iostream>
 #include <memory>
+#include "SDL2/SDL_main.h"
 
 #ifdef ANDROID
 #include <android/log.h>  // Android logging
@@ -51,14 +53,14 @@ void runGame() {
 }
 
 // Android JNI implementation
-#ifdef ANDROID
-int SDL_main(int argc, char *argv[]) {
+#ifdef EMSCRIPTEN
+int main(int argc, char *argv[]) {
 	runGame();  // Run the game on Windows
 	return 0;  // Exit the program
 }
 #else
 // Windows entry point
-int main(int argc, char *argv[]) {
+int SDL_main(int argc, char *argv[]) {
 	runGame();  // Run the game on Windows
 	return 0;  // Exit the program
 }

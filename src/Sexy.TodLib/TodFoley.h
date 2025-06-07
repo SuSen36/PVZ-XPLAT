@@ -2,7 +2,7 @@
 #define __TODFOLEY_H__
 
 #include "../Resources.h"
-#include "SexyAppFramework/sound/BassSoundInstance.h"
+#include "SexyAppFramework/sound/SDLSoundInstance.h"
 using namespace Sexy;
 
 #define MAX_FOLEY_TYPES 110
@@ -152,12 +152,12 @@ extern FoleyParams gLawnFoleyParamArray[(int)FoleyType::NUM_FOLEY];  //0x69FAD0
 // ############################################################ 以下正式开始拟音音效相关声明 ############################################################
 // ######################################################################################################################################################
 
-class TodDSoundInstance : public BassSoundInstance
+class TodDSoundInstance : public SDLSoundInstance
 {
     friend class TodFoley;
 
 public:
-    TodDSoundInstance(HSAMPLE theSourceSound) : BassSoundInstance(theSourceSound) { }
+    TodDSoundInstance(SDLSoundManager* theSoundManager, Mix_Chunk* theSourceSound) : SDLSoundInstance(theSoundManager, theSourceSound) { }
 
     /*inline*/ int      GetSoundPosition();
     /*inline*/ void     SetSoundPosition(int thePosition);

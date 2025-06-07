@@ -1,7 +1,6 @@
 #ifndef _H_CritSect
 #define _H_CritSect
-
-#include <pthread.h>
+#include "SDL_mutex.h"
 #include "../Common.h"
 
 class CritSync;
@@ -11,11 +10,13 @@ namespace Sexy
 
 class CritSect 
 {
+
 private:
-	pthread_mutex_t mCriticalSection;
 	friend class AutoCrit;
+    SDL_mutex*   mCriticalSection;
 
 public:
+
 	CritSect(void);
 	~CritSect(void);
 };

@@ -23,8 +23,8 @@
 //#include "../SexyAppFramework/misc/HTTPTransfer.h"
 #include "SexyAppFramework/widget/Dialog.h"
 #include "SexyAppFramework/imagelib/ImageLib.h"
-#include "sound/BassSoundManager.h"
-#include "sound/BassSoundInstance.h"
+#include "sound/SDLSoundManager.h"
+#include "sound/SDLSoundInstance.h"
 #include "../SexyAppFramework/misc/Rect.h"
 #include "../SexyAppFramework/misc/PropertiesParser.h"
 #include "../SexyAppFramework/misc/PerfTimer.h"
@@ -32,12 +32,11 @@
 #include "../SexyAppFramework/misc/ModVal.h"
 //#include "SexyAppFramework/graphics/SysFont.h"
 #include "../SexyAppFramework/misc/ResourceManager.h"
-#include "sound/BassMusicInterface.h"
+#include "../SexyAppFramework/sound/SDlMusicInterface.h"
 #include "../SexyAppFramework/misc/AutoCrit.h"
 #include "../SexyAppFramework/misc/Debug.h"
 #include "SexyAppFramework/paklib/PakInterface.h"
 #include "sound/DummyMusicInterface.h"
-
 #include "../SexyAppFramework/misc/memmgr.h"
 #include "../SexyAppFramework/misc/RegEmu.h"
 
@@ -318,7 +317,7 @@ SexyAppBase::SexyAppBase()
 	mWidgetManager = new WidgetManager(this);
 	mResourceManager = new ResourceManager(this);
 
-	mPrimaryThreadId = nullptr;
+	mPrimaryThreadId = 0;
 
 	/*
 	if (GetSystemMetrics(86)) // check for tablet pc
@@ -1107,12 +1106,8 @@ std::string SexyAppBase::GetProductVersion(const std::string& thePath)
 void SexyAppBase::WaitForLoadingThread()
 {
 	int ms = 20;
-
-	timespec ts;
-	ts.tv_sec = ms / 1000;
-	ts.tv_nsec = (ms % 1000) * 1000000;
 	while ((mLoadingThreadStarted) && (!mLoadingThreadCompleted))
-		nanosleep(&ts, &ts);
+        SDL_Delay(ms);
 }
 
 void SexyAppBase::SetCursorImage(int theCursorNum, Image* theImage)
@@ -2189,7 +2184,7 @@ void SexyAppBase::ShutdownHook()
 
 void SexyAppBase::Shutdown()
 {
-	if ((mPrimaryThreadId != 0) && ((void*)pthread_self() != mPrimaryThreadId))
+	if ((mPrimaryThreadId != 0) && SDL_ThreadID() != mPrimaryThreadId)
 	{
 		mLoadingFailed = true;
 	}
@@ -3350,7 +3345,7 @@ void SexyAppBase::ClearKeysDown()
 void SexyAppBase::WriteDemoTimingBlock()
 {
 	// Demo writing functions can only be called from the main thread and after SexyAppBase::Init
-	DBG_ASSERTE((void*)pthread_self() == mPrimaryThreadId);
+	DBG_ASSERTE(SDL_ThreadID() == mPrimaryThreadId);
 
 	while (mUpdateCount - mLastDemoUpdateCnt > 15)
 	{
@@ -3777,7 +3772,7 @@ void SexyAppBase::LoadingThreadCompleted()
 {
 }
 
-void* SexyAppBase::LoadingThreadProcStub(void *theArg)
+int SexyAppBase::LoadingThreadProcStub(void *theArg)
 {
 	SexyAppBase* aSexyApp = (SexyAppBase*) theArg;
 	
@@ -3797,9 +3792,13 @@ void SexyAppBase::StartLoadingThread()
 		//::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);		
 		mLoadingThreadStarted = true;
 		//_beginthread(LoadingThreadProcStub, 0, this);
-		pthread_t id;
-		pthread_create(&id, NULL, LoadingThreadProcStub, this);
-		pthread_detach(id);
+        SDL_Thread* thread = SDL_CreateThread(
+                LoadingThreadProcStub,   // 线程入口函数
+                "LoadingThread",         // 线程命名（调试可见）
+                this                     // 传递this指针作为参数
+        );
+
+        SDL_DetachThread(thread);
 	}
 }
 void SexyAppBase::CursorThreadProc()
@@ -4326,10 +4325,8 @@ bool SexyAppBase::Process(bool allowSleep)
 					// Wait till next processing cycle
 					++mSleepCount;
 
-					timespec ts;
-					ts.tv_sec = aTimeToNextFrame / 1000;
-					ts.tv_nsec = (aTimeToNextFrame % 1000) * 1000000;
-					nanosleep(&ts, &ts);
+                    uint32_t delay_ms = mFrameTime;
+                    SDL_Delay(delay_ms);
 
 					aCumSleepTime += aTimeToNextFrame;					
 				}
@@ -4350,10 +4347,7 @@ bool SexyAppBase::Process(bool allowSleep)
 				if (!allowSleep)
 					return false;
 
-				timespec ts;
-				ts.tv_sec = aLoadingYieldSleepTime / 1000;
-				ts.tv_nsec = (aLoadingYieldSleepTime % 1000) * 1000000;
-				nanosleep(&ts, &ts);
+                SDL_Delay(aLoadingYieldSleepTime);
 			}
 		}
 	}
@@ -4445,12 +4439,10 @@ bool SexyAppBase::UpdateAppStep(bool* updated)
 		{
 			if (mStepMode==2)
 			{
-				timespec ts;
-				ts.tv_sec = mFrameTime / 1000;
-				ts.tv_nsec = (mFrameTime % 1000) * 1000000;
-				nanosleep(&ts, &ts);
+                uint32_t delay_ms = mFrameTime;
+                SDL_Delay(delay_ms);
 
-				mUpdateAppState = UPDATESTATE_PROCESS_DONE; // skip actual update until next step
+                mUpdateAppState = UPDATESTATE_PROCESS_DONE; // skip actual update until next step
 			}
 			else
 			{
@@ -4959,7 +4951,7 @@ MusicInterface* SexyAppBase::CreateMusicInterface()
 	if (mNoSoundNeeded)
 		return new DummyMusicInterface();
 	else
-		return new BassMusicInterface(nullptr);
+		return new SDLMusicInterface();
 }
 
 void SexyAppBase::InitPropertiesHook()
@@ -4972,7 +4964,7 @@ void SexyAppBase::InitHook()
 
 void SexyAppBase::Init()
 {
-	mPrimaryThreadId = (void*)pthread_self();	
+	mPrimaryThreadId = SDL_ThreadID();
 	
 	if (mShutdown)
 		return;
@@ -5187,7 +5179,7 @@ void SexyAppBase::Init()
 	}
 
 	if (mSoundManager == NULL)		
-		mSoundManager = new BassSoundManager(nullptr);
+		mSoundManager = new SDLSoundManager();
 
 	SetSfxVolume(mSfxVolume);
 	

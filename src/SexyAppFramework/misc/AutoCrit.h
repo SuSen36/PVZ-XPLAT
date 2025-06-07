@@ -1,6 +1,7 @@
 #ifndef __AUTOCRIT_INCLUDED__
 #define __AUTOCRIT_INCLUDED__
 
+#include <stdexcept>
 #include "../Common.h"
 #include "CritSect.h"
 
@@ -9,24 +10,36 @@ namespace Sexy
 
 class AutoCrit
 {
-	pthread_mutex_t*		mCritSec;
+    SDL_mutex* mCriticalSection;
 public:
-	AutoCrit(pthread_mutex_t* theCritSec) : 
-		mCritSec(theCritSec)
+	AutoCrit(SDL_mutex* theCritSec) :
+            mCriticalSection(theCritSec)
 	{
-		pthread_mutex_trylock(mCritSec);
+        mCriticalSection = SDL_CreateMutex();
+        if(!mCriticalSection) {
+            throw std::runtime_error("Failed to create mutex");
+        }
+        SDL_LockMutex(mCriticalSection);
 	}
 
-	AutoCrit(CritSect& theCritSect) : 
-		mCritSec(&theCritSect.mCriticalSection)
-	{
-		pthread_mutex_trylock(mCritSec);
-	}
+    explicit AutoCrit(CritSect& theCritSect) :
+            mCriticalSection(theCritSect.mCriticalSection)
+    {
+        mCriticalSection = SDL_CreateMutex();
+        if(!mCriticalSection) {
+            throw std::runtime_error("Failed to create mutex");
+        }
+        SDL_LockMutex(mCriticalSection);
+    }
 
 	~AutoCrit()
 	{
-		pthread_mutex_unlock(mCritSec);
-	}
+        if(mCriticalSection) {
+            SDL_UnlockMutex(mCriticalSection);
+            SDL_DestroyMutex(mCriticalSection);
+            mCriticalSection = nullptr;
+        }
+    }
 };
 
 }

@@ -2,7 +2,7 @@
 #define __MUSIC_H__
 
 #include <string>
-#include <bass.h>
+#include <SDL_mixer_ext/SDL_mixer_ext.h>
 
 class LawnApp;
 namespace Sexy
@@ -95,7 +95,7 @@ public:
 	void						MusicUpdate();
 	void						StopAllMusic();
 	/*inline*/ void				PlayMusic(MusicTune theMusicTune, int theOffset = -1, int theDrumsOffset = -1);
-    /*inline*/ HMUSIC 		    GetMusicHandle(MusicFile theMusicFile);
+    /*inline*/ Mix_Music* 		GetMusicHandle(MusicFile theMusicFile);
     void						StartGameMusic();
 	/*inline*/ void				LoadSong(MusicFile theMusicFile, const std::string& theFileName);
 	void						MusicResync();
