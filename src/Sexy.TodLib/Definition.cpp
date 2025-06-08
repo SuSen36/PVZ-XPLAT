@@ -165,7 +165,7 @@ void* TodEmitterDefinitionConstructor(void* thePointer)
 {
     if (thePointer)
     {
-        memset(thePointer, NULL, sizeof(TodEmitterDefinition));
+        memset(thePointer, 0, sizeof(TodEmitterDefinition));
         ((TodEmitterDefinition*)thePointer)->mImageFrames = 1;
         ((TodEmitterDefinition*)thePointer)->mEmitterType = EmitterType::EMITTER_BOX;
         ((TodEmitterDefinition*)thePointer)->mName = "";
@@ -530,17 +530,6 @@ uint DefinitionCalcHashDefMap(int aSchemaHash, DefMap* theDefMap, TodList<DefMap
     return aSchemaHash;
 }
 
-//0x444490
-uint DefinitionCalcHash(DefMap* theDefMap)
-{
-    // Uninitialised!!
-    TodList<DefMap*> aProgressMaps = TodList<DefMap*>();
-    uint aResult = DefinitionCalcHashDefMap(crc32(0L, (Bytef*)Z_NULL, NULL) + 1, theDefMap, aProgressMaps);
-
-    // TodList destructor is called upon it going out of scope.
-    return aResult;
-}
-
 //0x444500 : UnCompress(&theUncompressedSize, theCompressedBufferSize, esi = *theCompressedBuffer)
 void* DefinitionUncompressCompiledBuffer(void* theCompressedBuffer, size_t theCompressedBufferSize, size_t& theUncompressedSize, const SexyString& theCompiledFilePath)
 {
@@ -596,7 +585,6 @@ bool DefinitionReadCompiledFile(const SexyString& theCompiledFilePath, DefMap* t
     DefinitionFree(aCompressedBuffer);
     if (!aUncompressedBuffer) return false;
     
-    uint aDefHash = DefinitionCalcHash(theDefMap);  // 计算 CRC 校验值，后将用于检测数据的完整性
     if (aUncompressedSize < theDefMap->mDefSize + sizeof(uint)) {
         TodTrace(__S("Compiled file size too small: %s\n"), theCompiledFilePath.c_str());
         DefinitionFree(aUncompressedBuffer);
@@ -608,11 +596,6 @@ bool DefinitionReadCompiledFile(const SexyString& theCompiledFilePath, DefMap* t
     void* aBufferPtr = aUncompressedBuffer;
     uint aCashHash;
     SMemR(aBufferPtr, &aCashHash, sizeof(uint));  // 读取记录的 CRC 校验值
-    if (aCashHash != aDefHash) {
-        TodTrace(__S("Compiled file schema wrong: %s\n"), theCompiledFilePath.c_str());
-        DefinitionFree(aUncompressedBuffer);
-        return false;
-    } // 判断校验值是否一致，若不一致则说明数据发生错误
 
     // ☆ 正式开始读取定义数据 ☆
     // 初次粗略读取 theDefinition 原类型的定义数据，囫囵吞枣地将所有记录的数据全部读入到 theDefinition 中
@@ -649,7 +632,7 @@ bool IsFileInPakFile(const SexyString& theFilePath)
 
 void DefinitionFillWithDefaults(DefMap* theDefMap, void* theDefinition)
 {
-    memset(theDefinition, NULL, theDefMap->mDefSize);  // 将 theDefinition 初始化填充为 0
+    memset(theDefinition, 0, theDefMap->mDefSize);  // 将 theDefinition 初始化填充为 0
     for (DefField* aField = theDefMap->mMapFields; *aField->mFieldName != '\0'; aField++)  // 遍历 theDefinition 的每一个成员变量
         if (aField->mFieldType == DefFieldType::DT_STRING)
             *(char**)((uintptr_t)theDefinition + aField->mFieldOffset) = (char *)"";  // 将所有 char* 类型的成员变量赋值为空字符数组的指针
@@ -1250,9 +1233,8 @@ bool DefinitionWriteCompiledFile(const SexyString& theCompiledFilePath, DefMap* 
     unsigned int aDefSize = DefinitionGetSize(theDefMap, theDefinition) + sizeof(unsigned int);
     void* aDefBasePtr = DefinitionAlloc(aDefSize);
     void* aDef = aDefBasePtr;
-    uint aDefHash = DefinitionCalcHash(theDefMap);
 
-    SMemW(aDef, &aDefHash, sizeof(uint));
+
     SMemW(aDef, theDefinition, theDefMap->mDefSize);
     DefMapWriteToCache(aDef, theDefMap, theDefinition);
     void* aCompressedDef = DefinitionCompressCompiledBuffer(aDefBasePtr, aDefSize, &aCompressedSize);
@@ -1272,7 +1254,7 @@ bool DefinitionWriteCompiledFile(const SexyString& theCompiledFilePath, DefMap* 
         return aBytesWritten == aCompressedSize;
     }
 
-    delete[] (char *)aCompressedDef;
+    DefinitionFree(aCompressedDef);
     return false;
 }
 

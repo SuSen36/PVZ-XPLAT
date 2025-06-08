@@ -1,6 +1,6 @@
 /*
   SDL_mixer:  An audio mixer library based on the SDL library
-  Copyright (C) 1997-2024 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -32,10 +32,6 @@
 #include "midi_seq/mix_midi_seq.h"
 
 #include <fluidlite.h>
-
-#ifdef USE_CUSTOM_AUDIO_STREAM
-#   include "stream_custom.h"
-#endif
 
 typedef struct {
     int loaded;
@@ -79,10 +75,6 @@ static fluidsynth_loader fluidsynth;
     if (fluidsynth.FUNC == NULL) { Mix_SetError("Missing fluidlite.framework"); return -1; }
 #endif
 
-#ifdef __APPLE__
-    /* Need to turn off optimizations so weak framework load check works */
-    __attribute__ ((optnone))
-#endif
 static int FLUIDSYNTH_Load()
 {
     if (fluidsynth.loaded == 0) {
@@ -328,7 +320,7 @@ static void FLUIDSYNTH_Delete(void *context);
 #if 0
 static int SDLCALL fluidsynth_check_soundfont(const char *path, void *data)
 {
-    SDL_RWops *rw = _Mix_RWFromFile(path, "rb");
+    SDL_RWops *rw = SDL_RWFromFile(path, "rb");
 
     (void)data;
     if (rw) {
@@ -650,27 +642,13 @@ static void FLUIDSYNTH_SetVolume(void *context, int volume)
     FLUIDSYNTH_Music *music = (FLUIDSYNTH_Music *)context;
     /* FluidSynth's default gain is 0.2. Make 1.0 the maximum gain value to avoid sound overload. */
     music->volume = volume;
-    fluidsynth.fluid_synth_set_gain(music->synth, ((float)music->volume / MIX_MAX_VOLUME) * music->gain);
+    fluidsynth.fluid_synth_set_gain(music->synth, ((float)volume / MIX_MAX_VOLUME) * music->gain);
 }
 
 static int FLUIDSYNTH_GetVolume(void *context)
 {
     FLUIDSYNTH_Music *music = (FLUIDSYNTH_Music *)context;
     return music->volume;
-}
-
-static void FLUIDSYNTH_SetGain(void *context, float gain)
-{
-    FLUIDSYNTH_Music *music = (FLUIDSYNTH_Music *)context;
-    /* FluidSynth's default gain is 0.2. Make 1.0 the maximum gain value to avoid sound overload. */
-    music->gain = gain;
-    fluidsynth.fluid_synth_set_gain(music->synth, ((float)music->volume / MIX_MAX_VOLUME) * music->gain);
-}
-
-static float FLUIDSYNTH_GetGain(void *context)
-{
-    FLUIDSYNTH_Music *music = (FLUIDSYNTH_Music *)context;
-    return music->gain;
 }
 
 static int FLUIDSYNTH_Play(void *context, int play_count)
@@ -890,8 +868,6 @@ Mix_MusicInterface Mix_MusicInterface_FLUIDSYNTH =
     NULL,   /* CreateFromFileEx [MIXER-X]*/
     FLUIDSYNTH_SetVolume,
     FLUIDSYNTH_GetVolume,
-    FLUIDSYNTH_SetGain,   /* SetGain [MIXER-X]*/
-    FLUIDSYNTH_GetGain,   /* GetGain [MIXER-X]*/
     FLUIDSYNTH_Play,
     NULL,
     FLUIDSYNTH_GetAudio,
@@ -938,12 +914,13 @@ Mix_MusicInterface Mix_MusicInterface_FLUIDXMI =
     NULL,   /* CreateFromFileEx [MIXER-X]*/
     FLUIDSYNTH_SetVolume,
     FLUIDSYNTH_GetVolume,
-    FLUIDSYNTH_SetGain,   /* SetGain [MIXER-X]*/
-    FLUIDSYNTH_GetGain,   /* GetGain [MIXER-X]*/
     FLUIDSYNTH_Play,
     NULL,
     FLUIDSYNTH_GetAudio,
     NULL,   /* Jump */
+    NULL,   /* GetOrder */
+    NULL,   /* MuteChannel */
+    NULL,   /* SetChannelVolume */
     FLUIDSYNTH_Seek,
     FLUIDSYNTH_Tell,
     FLUIDSYNTH_Duration,

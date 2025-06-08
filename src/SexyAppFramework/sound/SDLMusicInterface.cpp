@@ -24,38 +24,11 @@ SDLMusicInterface::~SDLMusicInterface()
 
 bool SDLMusicInterface::LoadMusic(int theSongId, const std::string& theFileName)
 {
-	Mix_Music* aHMusic = 0;
-	
-	std::string anExt;
-	size_t aDotPos = theFileName.find_last_of('.');
-	if (aDotPos!=std::string::npos)
-		anExt = StringToLower(theFileName.substr(aDotPos+1));
+	Mix_Music* aHMusic = nullptr;
 
-	/*
-	if (anExt=="wav" || anExt=="ogg" || anExt=="mp3")
-		aStream = gBass->BASS_StreamCreateFile(FALSE, (void*) theFileName.c_str(), 0, 0, 0);
-	else
-	{
-		PFILE* aFP = p_fopen(theFileName.c_str(), "rb");
-		if (aFP == NULL)
-			return false;
-
-		p_fseek(aFP, 0, SEEK_END);
-		int aSize = p_ftell(aFP);
-		p_fseek(aFP, 0, SEEK_SET);
-
-		uchar* aData = new uchar[aSize];
-		p_fread(aData, 1, aSize, aFP);
-		p_fclose(aFP);
-
-		aHMusic = gBass->BASS_MusicLoad(FALSE, (void*) theFileName.c_str(), 0, 0, BASS_MUSIC_LOOP | BASS2_MUSIC_RAMP, 0);
-
-		delete[] aData;
-	}
-	*/
 	aHMusic = Mix_LoadMUS(theFileName.c_str());
 
-	if (aHMusic==0)
+	if (aHMusic==nullptr)
 		return false;
 	
 	SDLMusicInfo aMusicInfo;	

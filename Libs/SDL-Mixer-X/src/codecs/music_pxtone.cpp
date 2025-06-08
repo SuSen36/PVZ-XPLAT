@@ -1,6 +1,6 @@
 /*
   SDL_mixer:  An audio mixer library based on the SDL library
-  Copyright (C) 1997-2024 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -21,9 +21,6 @@
 #ifdef MUSIC_PXTONE
 
 #include "music_pxtone.h"
-extern "C" {
-#include "utils.h"
-}
 
 #include "./pxtone/pxtnService.h"
 #include "./pxtone/pxtnError.h"
@@ -47,8 +44,11 @@ static void PXTONE_SetDefault(PXTONE_Setup *setup)
 /* This file supports PXTONE music streams */
 typedef struct
 {
+    SDL_RWops *src;
+    Sint64 src_start;
+    int freesrc;
+
     int volume;
-    int volume_real;
     double tempo;
     float gain;
 
@@ -163,7 +163,6 @@ static void *PXTONE_NewRWex(struct SDL_RWops *src, int freesrc, const char *args
     int32_t comment_len;
     pxtnERR ret;
     PXTONE_Setup setup = pxtone_setup;
-    Uint8 src_channels = music_spec.channels;
 
     music = (PXTONE_Music *)SDL_calloc(1, sizeof *music);
     if (!music) {
@@ -176,7 +175,6 @@ static void *PXTONE_NewRWex(struct SDL_RWops *src, int freesrc, const char *args
     music->tempo = setup.tempo;
     music->gain = setup.gain;
     music->volume = MIX_MAX_VOLUME;
-    music->volume_real = _Mix_MakeGainedVolume(MIX_MAX_VOLUME, music->gain);
 
     music->pxtn = new pxtnService(_pxtn_r, _pxtn_w, _pxtn_s, _pxtn_p);
 
@@ -187,11 +185,7 @@ static void *PXTONE_NewRWex(struct SDL_RWops *src, int freesrc, const char *args
         return NULL;
     }
 
-    if (src_channels > 2) {
-        src_channels = 2; /* PXTone can't output more than two channels */
-    }
-
-    if (!music->pxtn->set_destination_quality(src_channels, music_spec.freq)) {
+    if (!music->pxtn->set_destination_quality(music_spec.channels, music_spec.freq)) {
         PXTONE_Delete(music);
         Mix_SetError("PXTONE: Failed to set the destination quality");
         return NULL;
@@ -229,7 +223,7 @@ static void *PXTONE_NewRWex(struct SDL_RWops *src, int freesrc, const char *args
         return NULL;
     }
 
-    music->stream = SDL_NewAudioStream(AUDIO_S16SYS, src_channels, music_spec.freq,
+    music->stream = SDL_NewAudioStream(AUDIO_S16SYS, music_spec.channels, music_spec.freq,
                                        music_spec.format, music_spec.channels, music_spec.freq);
 
     if (!music->stream) {
@@ -247,6 +241,7 @@ static void *PXTONE_NewRWex(struct SDL_RWops *src, int freesrc, const char *args
     }
 
     /* Attempt to load metadata */
+    music->freesrc = freesrc;
 
     name = music->pxtn->text->get_name_buf(&name_len);
     if (name) {
@@ -260,11 +255,6 @@ static void *PXTONE_NewRWex(struct SDL_RWops *src, int freesrc, const char *args
         temp_string = SDL_iconv_string("UTF-8", "Shift-JIS", comment, comment_len + 1);
         meta_tags_set(&music->tags, MIX_META_COPYRIGHT, temp_string);
         SDL_free(temp_string);
-    }
-
-    /* release RWops now, since it's already fully loaded to pxtn */
-    if (freesrc) {
-        SDL_RWclose(src);
     }
 
     return music;
@@ -298,6 +288,9 @@ static void PXTONE_Delete(void *context)
             SDL_free(music->buffer);
         }
 
+        if (music->src && music->freesrc) {
+            SDL_RWclose(music->src);
+        }
         SDL_free(music);
     }
 }
@@ -356,7 +349,7 @@ static int PXTONE_GetSome(void *context, void *data, int bytes, SDL_bool *done)
 static int PXTONE_PlayAudio(void *music_p, void *data, int bytes)
 {
     PXTONE_Music *music = (PXTONE_Music*)music_p;
-    return music_pcm_getaudio(music_p, data, bytes, music->volume_real, PXTONE_GetSome);
+    return music_pcm_getaudio(music_p, data, bytes, music->volume, PXTONE_GetSome);
 }
 
 static const char* PXTONE_GetMetaTag(void *context, Mix_MusicMetaTag tag_type)
@@ -365,34 +358,20 @@ static const char* PXTONE_GetMetaTag(void *context, Mix_MusicMetaTag tag_type)
     return meta_tags_get(&music->tags, tag_type);
 }
 
-/* Set the volume_real for a PXTONE stream */
+/* Set the volume for a PXTONE stream */
 static void PXTONE_SetVolume(void *music_p, int volume)
 {
     PXTONE_Music *music = (PXTONE_Music *)music_p;
-    music->volume = volume;
-    music->volume_real = _Mix_MakeGainedVolume(volume, music->gain);
+    float v = SDL_floorf(((float)(volume) * music->gain) + 0.5f);
+    music->volume = (int)v;
 }
 
 /* Get the volume for a PXTONE stream */
 static int PXTONE_GetVolume(void *music_p)
 {
     PXTONE_Music *music = (PXTONE_Music *)music_p;
-    return music->volume;
-}
-
-/* Set the gaining factor for a PXTONE stream */
-static void PXTONE_SetGain(void *music_p, float gain)
-{
-    PXTONE_Music *music = (PXTONE_Music *)music_p;
-    music->gain = gain;
-    music->volume_real = _Mix_MakeGainedVolume(music->volume, gain);
-}
-
-/* Get the gaining factor for a PXTONE stream */
-static float PXTONE_GetGain(void *music_p)
-{
-    PXTONE_Music *music = (PXTONE_Music *)music_p;
-    return music->gain;
+    float v = SDL_floorf(((float)(music->volume) / music->gain) + 0.5f);
+    return (int)v;
 }
 
 /* Jump (seek) to a given position (time is in seconds) */
@@ -513,12 +492,13 @@ Mix_MusicInterface Mix_MusicInterface_PXTONE =
     NULL,   /* CreateFromFileEx [MIXER-X]*/
     PXTONE_SetVolume,
     PXTONE_GetVolume,
-    PXTONE_SetGain,   /* SetGain [MIXER-X]*/
-    PXTONE_GetGain,   /* GetGain [MIXER-X]*/
     PXTONE_Play,
     NULL,   /* IsPlaying */
     PXTONE_PlayAudio,
     NULL,   /* Jump */
+    NULL,   /* GetOrder */
+    NULL,   /* MuteChannel */
+    NULL,   /* SetChannelVolume */
     PXTONE_Seek,
     PXTONE_Tell,
     PXTONE_Duration,

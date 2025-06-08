@@ -1223,11 +1223,12 @@ void LawnApp::Init()
 	mSawYeti = false;
 
 	SexyApp::Init();
-	// @Patoke: horrible debug checks, breaks the whole exe in release mode
-//#ifdef _DEBUG
+
+#ifdef _DEBUG
 	TodAssertInitForApp();
 	TodLog("session id: %u", mSessionID);
-//#endif
+#endif
+	TodTraceAndLog("LawnApp::Init() - TodTrace正常启动了: kkkkkkkk");
 
 	if (!mResourceManager->ParseResourcesFile("properties/resources.xml"))
 	{
@@ -1838,7 +1839,7 @@ void LawnApp::ButtonMouseMove(int, int, int) {}
 // GOTY @Patoke: 0x456690
 void LawnApp::ButtonDepress(int theId)
 {
-	if (theId % 10000 >= 2000 && theId % 10000 < 3000)  // 按钮编号 theId ∈ [2000, 3000) 时，表示按下 theId - 2000 编号的对话中的“是”按钮
+	if (theId % 10000 >= 2000 && theId % 10000 < 3000)  // 按钮编号 theId ∈ [2000, 3000) 时，表示按下 theId - 2000 编号的对话中的"是"按钮
 	{
 		switch (theId - 2000)
 		{
@@ -1944,7 +1945,7 @@ void LawnApp::ButtonDepress(int theId)
 		}
 	}
 
-	if (theId % 10000 >= 3000 && theId < 4000)  // 按钮编号 theId ∈ [3000, 4000) 时，表示按下 theId - 3000 编号的对话中的“否”按钮
+	if (theId % 10000 >= 3000 && theId < 4000)  // 按钮编号 theId ∈ [3000, 4000) 时，表示按下 theId - 3000 编号的对话中的"否"按钮
 	{
 		switch (theId - 3000)
 		{

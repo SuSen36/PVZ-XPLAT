@@ -1,6 +1,6 @@
 /*
   SDL_mixer:  An audio mixer library based on the SDL library
-  Copyright (C) 1997-2025 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -28,6 +28,7 @@
 
 #include "music_cmd.h"
 #include "music_wav.h"
+#include "music_openmpt.h"
 #include "music_modplug.h"
 #include "music_xmp.h"
 #include "music_nativemidi.h"
@@ -240,7 +241,7 @@ static void _Mix_MultiMusic_ResumeAll(void)
 
 typedef struct _Eff_positionargs position_args;
 
-struct Mix_Music {
+struct _Mix_Music {
     Mix_MusicInterface *interface;
     void *context;
 
@@ -610,6 +611,9 @@ static Mix_MusicInterface *s_music_interfaces[] =
 #endif
 #ifdef MUSIC_PXTONE
     &Mix_MusicInterface_PXTONE,
+#endif
+#ifdef MUSIC_MOD_OPENMPT
+    &Mix_MusicInterface_OPENMPT,
 #endif
 #ifdef MUSIC_MOD_XMP
     &Mix_MusicInterface_XMP,
@@ -1377,49 +1381,12 @@ static int detect_ea_rsxx(SDL_RWops *in, Sint64 start, Uint8 magic_byte)
     return res;
 }
 
-static int detect_mod(SDL_RWops *in, Sint64 start)
-{
-    int res = SDL_FALSE;
-    int i;
-    Uint8 mod_magic[4];
-    const char * const mod_known_magics[] = {
-        "M.K.", "M!K!", "M&K!", "N.T.", "6CHN", "8CHN",
-        "CD61", "CD81", "TDZ1", "TDZ2", "TDZ3", "TDZ4",
-        "FA04", "FA06", "FA08", "LARD", "NSMS", "FLT4",
-        NULL
-    };
-
-    if (SDL_RWseek(in, start + 1080, RW_SEEK_SET) < 0) {
-        goto fail;
-    }
-    if (SDL_RWread(in, mod_magic, 1, 4) != 4) {
-        goto fail;
-    }
-
-    for (i = 0; mod_known_magics[i] ; ++i) {
-        if(SDL_memcmp(mod_magic, mod_known_magics[i], 4) == 0) {
-            res = SDL_TRUE;
-            break;
-        }
-    }
-
-fail:
-    SDL_RWseek(in, start, RW_SEEK_SET);
-    return res;
-}
-
 static int detect_mp3(Uint8 *magic, SDL_RWops *src, Sint64 start, Sint64 offset)
 {
     const Uint32 null = 0;
     Uint8 mp3_magic[4];
-    Uint8 mp3_read_buffer[2048];
-    const size_t mp3_read_buffer_size = 2048;
-    size_t i = 0, got;
-    SDL_bool found;
-    SDL_bool at_end = SDL_FALSE;
     Sint64 end_file_pos = 0;
     const int max_search = 10240;
-    int bytes_read = 0;
 
     SDL_memcpy(mp3_magic, magic, 4);
 
@@ -1444,33 +1411,14 @@ static int detect_mp3(Uint8 *magic, SDL_RWops *src, Sint64 start, Sint64 offset)
 
 digMoreBytes:
     /* Find the nearest 0xFF byte */
-    found = SDL_FALSE;
-    do
-    {
-        SDL_memset(mp3_read_buffer, 0, mp3_read_buffer_size);
-        got = SDL_RWread(src, mp3_read_buffer, 1, mp3_read_buffer_size);
+    while ((SDL_RWread(src, mp3_magic, 1, 1) == 1) &&
+           (mp3_magic[0] != 0xFF) &&
+           (SDL_RWtell(src) < (start + offset + max_search)) &&
+           (SDL_RWtell(src) < (end_file_pos - 1)) )
+    {}
 
-        at_end = got < mp3_read_buffer_size;
-
-        if (got == 0) {
-            SDL_RWseek(src, start, RW_SEEK_SET); /* Reached the end of the file */
-            return 0;
-        }
-
-        bytes_read += got;
-
-        for (i = 0; i < got; ++i) {
-            if (mp3_read_buffer[i] == 0xFF) {
-                found = SDL_TRUE;
-                bytes_read -= (Sint64)(got - i);
-                SDL_RWseek(src, -(Sint64)(got - i), RW_SEEK_CUR);
-                break;
-            }
-        }
-    } while(!found && bytes_read < max_search);
-
-    /* Can't read 4 bytes of the frame header */
-    if (SDL_RWread(src, mp3_magic, 1, 4) != 4) {
+    /* Can't read last 3 bytes of the frame header */
+    if (SDL_RWread(src, mp3_magic + 1, 1, 3) != 3) {
         SDL_RWseek(src, start, RW_SEEK_SET);
         return 0;
     }
@@ -1479,7 +1427,7 @@ digMoreBytes:
     SDL_RWseek(src, -3, RW_SEEK_CUR);
 
     /* Got the end of search zone, however, found nothing */
-    if (bytes_read > max_search) {
+    if (SDL_RWtell(src) >= (start + offset + max_search)) {
         SDL_RWseek(src, start, RW_SEEK_SET);
         return 0;
     }
@@ -1492,76 +1440,19 @@ digMoreBytes:
 
 readHeader:
     if (
-        ((mp3_magic[0] & 0xff) != 0xff) || ((mp3_magic[1] & 0xe6) != 0xe2) || /*  No sync bits */
+        ((mp3_magic[0] & 0xff) != 0xff) || ((mp3_magic[1] & 0xf0) != 0xf0) || /*  No sync bits */
+        ((mp3_magic[1] & 0xe6) != 0xe2) ||
         ((mp3_magic[2] & 0xf0) == 0x00) || /*  Bitrate is 0 */
         ((mp3_magic[2] & 0xf0) == 0xf0) || /*  Bitrate is 15 */
         ((mp3_magic[2] & 0x0c) == 0x0c) || /*  Frequency is 3 */
         ((mp3_magic[1] & 0x06) == 0x00)    /*  Layer is 4 */
     ) {
         /* printf("WRONG BITS\n"); */
-        if (at_end) {
-            SDL_RWseek(src, start, RW_SEEK_SET); /* Reached the end of the file */
-            return 0;
-        }
-
         goto digMoreBytes;
     }
 
     SDL_RWseek(src, start, RW_SEEK_SET);
     return 1;
-}
-
-static int detect_riff_mp3(SDL_RWops *src, Sint64 start)
-{
-    Uint32 magic;
-    Uint32 chunk_type;
-    Uint32 chunk_length;
-    Uint16 encoding;
-
-    magic = SDL_ReadLE32(src);
-    if (magic != 0x46464952 /*RIFF*/ && magic != 0x45564157 /*WAVE*/) {
-        SDL_RWseek(src, start, RW_SEEK_SET);
-        return 0;
-    }
-
-    /* Skip 8 bytes */
-    SDL_RWseek(src, 8, RW_SEEK_CUR);
-
-    /* Read the chunks */
-    for (; ;) {
-        chunk_type = SDL_ReadLE32(src);
-        chunk_length = SDL_ReadLE32(src);
-
-        if (chunk_length == 0)
-            break;
-
-        switch (chunk_type) {
-        case 0x20746D66: /* Do find only fmt chunk */
-            if (chunk_length < 16) {
-                SDL_RWseek(src, start, RW_SEEK_SET);
-                return 0;
-            }
-
-            encoding = SDL_ReadLE16(src);
-            SDL_RWseek(src, start, RW_SEEK_SET);
-            return encoding == 0x0055; /* If encoding is MPEG Layer 3*/
-
-        default: /* All other chunks just skip until finding a "fmt" */
-            SDL_RWseek(src, chunk_length, RW_SEEK_CUR);
-            break;
-        }
-
-        /* RIFF chunks have a 2-byte alignment. Skip padding byte. */
-        if (chunk_length & 1) {
-            if (SDL_RWseek(src, 1, RW_SEEK_CUR) < 0) {
-                return 0;
-            }
-        }
-    }
-
-    SDL_RWseek(src, start, RW_SEEK_SET);
-
-    return 0;
 }
 
 Mix_MusicType detect_music_type(SDL_RWops *src)
@@ -1639,10 +1530,6 @@ Mix_MusicType detect_music_type(SDL_RWops *src)
            AIFF files have the magic 12 bytes "FORM" XXXX "AIFF" */
     if (((SDL_memcmp(magic, "RIFF", 4) == 0) && (SDL_memcmp((magic + 8), "WAVE", 4) == 0)) ||
        ((SDL_memcmp(magic, "FORM", 4) == 0) && (SDL_memcmp((magic + 8), "XDIR", 4) != 0))) {
-        /* Some WAV files may contain MP3-encoded streams */
-        if (detect_riff_mp3(src, start)) {
-            return MUS_MP3;
-        }
         return MUS_WAV;
     }
 
@@ -1789,10 +1676,6 @@ Mix_MusicType detect_music_type(SDL_RWops *src)
                     return MUS_FLAC;
             }
         }
-    }
-
-    if (detect_mod(src, start)) {
-        return MUS_MOD;
     }
 
     /* Detect MP3 format by frame header [needs scanning of bigger part of the file] */
@@ -1951,7 +1834,7 @@ Mix_Music * MIXCALLCC Mix_LoadMUS(const char *file)
         }
     }
 
-    src = _Mix_RWFromFile(file, "rb");
+    src = SDL_RWFromFile(file, "rb");
     if (src == NULL) {
         Mix_SetError("Couldn't open '%s'", file);
         SDL_free(music_file);
@@ -1965,6 +1848,7 @@ Mix_Music * MIXCALLCC Mix_LoadMUS(const char *file)
     if (ext) {
         ++ext; /* skip the dot in the extension */
         if (SDL_strcasecmp(ext, "AMS") == 0 ||
+            SDL_strcasecmp(ext, "MOD") == 0 ||
             SDL_strcasecmp(ext, "MOL") == 0 ||
             SDL_strcasecmp(ext, "NST") == 0 ||
             SDL_strcasecmp(ext, "STM") == 0 ||
@@ -2116,49 +2000,24 @@ Mix_Music * MIXCALLCC Mix_LoadMUSType_RW_ARG(SDL_RWops *src, Mix_MusicType type,
 /* Free a music chunk previously loaded */
 void MIXCALLCC Mix_FreeMusic(Mix_Music *music)
 {
-    SDL_bool do_hook = SDL_TRUE;
-    int is_multimusic;
-
     if (music) {
         /* Stop the music if it's currently playing */
         Mix_LockAudio();
 
-        is_multimusic = music->is_multimusic;
-
-        if (music == music_playing || is_multimusic) {
+        if (music == music_playing || music->is_multimusic) {
             /* Wait for any fade out to finish */
-            while ((music_active || is_multimusic) && music->fading == MIX_FADING_OUT) {
-                if (do_hook) {
-                    /* Don't call the hook as it will be already called in
-                       the music_mix_stream(), otherwise, it will be called twice. */
-                    do_hook = SDL_FALSE;
-                }
+            while ((music_active || music->is_multimusic) && music->fading == MIX_FADING_OUT) {
                 Mix_UnlockAudio();
                 SDL_Delay(100);
                 Mix_LockAudio();
             }
 
-            if (is_multimusic) {
-                _Mix_MultiMusic_Remove(music);
+            if (music->is_multimusic) {
                 music_internal_halt(music);
             }
 
             if (music == music_playing) {
                 music_internal_halt(music_playing);
-            }
-
-            if (do_hook) {
-                if (music->music_finished_hook) {
-                    music->music_finished_hook(music, music->music_finished_hook_user_data);
-                }
-
-                if (is_multimusic) {
-                    if (music_finished_hook_mm) {
-                        music_finished_hook_mm();
-                    }
-                } else if (music_finished_hook) {
-                    music_finished_hook();
-                }
             }
         }
         Mix_UnlockAudio();
@@ -2530,6 +2389,120 @@ int MIXCALLCC Mix_ModMusicStreamJumpToOrder(Mix_Music *music, int order)
             retval = music->interface->Jump(music->context, order);
         } else {
             Mix_SetError("Jump not implemented for music type");
+        }
+    } else {
+        Mix_SetError("Music isn't playing");
+    }
+    Mix_UnlockAudio();
+
+    return retval;
+}
+
+/* Get current order in mod music. */
+int Mix_ModMusicGetOrder(int *outOrder)
+{
+    int retval = -1;
+
+    Mix_LockAudio();
+    if (music_playing) {
+        if (music_playing->interface->GetOrder) {
+            retval = music_playing->interface->GetOrder(music_playing->context, outOrder);
+        } else {
+            Mix_SetError("GetOrder not implemented for music type");
+        }
+    } else {
+        Mix_SetError("Music isn't playing");
+    }
+    Mix_UnlockAudio();
+
+    return retval;
+}
+int Mix_ModMusicStreamGetOrder(Mix_Music *music, int *outOrder)
+{
+    int retval = -1;
+
+    Mix_LockAudio();
+    if (music && (music->is_multimusic || music_playing)) {
+        if (music->interface->GetOrder) {
+            retval = music->interface->GetOrder(music->context, outOrder);
+        } else {
+            Mix_SetError("GetOrder not implemented for music type");
+        }
+    } else {
+        Mix_SetError("Music isn't playing");
+    }
+    Mix_UnlockAudio();
+
+    return retval;
+}
+
+/* Set a mod music's channel mute status. */
+int Mix_ModMusicSetChannelMute(int channel, int mute)
+{
+    int retval = -1;
+
+    Mix_LockAudio();
+    if (music_playing) {
+        if (music_playing->interface->MuteChannel) {
+            retval = music_playing->interface->MuteChannel(music_playing->context, channel, mute);
+        } else {
+            Mix_SetError("MuteChannel not implemented for music type");
+        }
+    } else {
+        Mix_SetError("Music isn't playing");
+    }
+    Mix_UnlockAudio();
+
+    return retval;
+}
+int Mix_ModMusicStreamSetChannelMute(Mix_Music *music, int channel, int mute)
+{
+    int retval = -1;
+
+    Mix_LockAudio();
+    if (music && (music->is_multimusic || music_playing)) {
+        if (music->interface->MuteChannel) {
+            retval = music->interface->MuteChannel(music->context, channel, mute);
+        } else {
+            Mix_SetError("MuteChannel not implemented for music type");
+        }
+    } else {
+        Mix_SetError("Music isn't playing");
+    }
+    Mix_UnlockAudio();
+
+    return retval;
+}
+
+/* Set a mod music's channel volume. */
+int Mix_ModMusicSetChannelVolume(int channel, int volume)
+{
+    int retval = -1;
+
+    Mix_LockAudio();
+    if (music_playing) {
+        if (music_playing->interface->SetChannelVolume) {
+            retval = music_playing->interface->SetChannelVolume(music_playing->context, channel, volume);
+        } else {
+            Mix_SetError("SetChannelVolume not implemented for music type");
+        }
+    } else {
+        Mix_SetError("Music isn't playing");
+    }
+    Mix_UnlockAudio();
+
+    return retval;
+}
+int Mix_ModMusicStreamSetChannelVolume(Mix_Music *music, int channel, int volume)
+{
+    int retval = -1;
+
+    Mix_LockAudio();
+    if (music && (music->is_multimusic || music_playing)) {
+        if (music->interface->SetChannelVolume) {
+            retval = music->interface->SetChannelVolume(music->context, channel, volume);
+        } else {
+            Mix_SetError("SetChannelVolume not implemented for music type");
         }
     } else {
         Mix_SetError("Music isn't playing");
@@ -3046,37 +3019,6 @@ int MIXCALLCC Mix_GetVolumeMusicGeneral(void)
     return music_general_volume;
 }
 
-int MIXCALLCC Mix_SetMusicGain(Mix_Music *music, float gain)
-{
-    int ret = -1;
-
-    if (gain < 0.0f) {
-        gain = 0.0f;
-    }
-
-    Mix_LockAudio();
-    if (music && music->interface && music->interface->SetGain) {
-        music->interface->SetGain(music->context, gain);
-        ret = 0;
-    }
-    Mix_UnlockAudio();
-
-    return ret;
-}
-
-float MIXCALLCC Mix_GetMusicGain(Mix_Music *music)
-{
-    float ret = -1.0f;
-
-    Mix_LockAudio();
-    if (music && music->interface && music->interface->GetGain) {
-        ret = music->interface->GetGain(music->context);
-    }
-    Mix_UnlockAudio();
-
-    return ret;
-}
-
 /* Halt playing of music */
 static void music_internal_halt(Mix_Music *music)
 {
@@ -3119,8 +3061,7 @@ int MIXCALLCC Mix_HaltMusicStream(Mix_Music *music)
             if (music_finished_hook_mm) {
                 music_finished_hook_mm();
             }
-            music->free_on_stop = 0; /* Unset this flag as it makes no effect
-                                        and will make the confusion in the future */
+            music->free_on_stop = 0; /* Unset this flag as it makes no effect and will make the confusion in the future */
         } else {
             if (music_finished_hook) {
                 music_finished_hook();
@@ -3529,7 +3470,7 @@ const char* MIXCALLCC Mix_GetSoundFonts(void)
         unsigned i;
 
         for (i = 0; i < SDL_arraysize(s_soundfont_paths); ++i) {
-            SDL_RWops *rwops = _Mix_RWFromFile(s_soundfont_paths[i], "rb");
+            SDL_RWops *rwops = SDL_RWFromFile(s_soundfont_paths[i], "rb");
             if (rwops) {
                 SDL_RWclose(rwops);
                 return s_soundfont_paths[i];

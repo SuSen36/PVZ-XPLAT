@@ -1,6 +1,6 @@
 /*
   SDL_mixer:  An audio mixer library based on the SDL library
-  Copyright (C) 1997-2024 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -44,9 +44,6 @@
 #define DRMP3_FREE(p) SDL_free((p))
 #include "dr_libs/dr_mp3.h"
 
-#ifdef USE_CUSTOM_AUDIO_STREAM
-#   include "stream_custom.h"
-#endif
 
 typedef struct {
     struct mp3file_t file;
@@ -73,33 +70,11 @@ static size_t DRMP3_ReadCB(void *context, void *buf, size_t size)
 static drmp3_bool32 DRMP3_SeekCB(void *context, int offset, drmp3_seek_origin origin)
 {
     DRMP3_Music *music = (DRMP3_Music *)context;
-    int whence;
-    switch (origin) {
-    case drmp3_seek_origin_start:
-        whence = RW_SEEK_SET;
-        break;
-    case drmp3_seek_origin_current:
-        whence = RW_SEEK_CUR;
-        break;
-    case drmp3_seek_origin_end:
-        whence = RW_SEEK_END;
-        break;
-    default:
-        return DRMP3_FALSE;
-    }
-
+    int whence = (origin == drmp3_seek_origin_start) ? RW_SEEK_SET : RW_SEEK_CUR;
     if (MP3_RWseek(&music->file, offset, whence) < 0) {
         return DRMP3_FALSE;
     }
-
     return DRMP3_TRUE;
-}
-
-static drmp3_bool32 DRMP3_TellCB(void *context, drmp3_int64 *pos)
-{
-    DRMP3_Music *music = (DRMP3_Music *)context;
-    *pos = MP3_RWtell(&music->file);
-    return (*pos < 0) ? DRMP3_FALSE : DRMP3_TRUE;
 }
 
 static int DRMP3_Seek(void *context, double position);
@@ -129,7 +104,7 @@ static void *DRMP3_CreateFromRW(SDL_RWops *src, int freesrc)
 
     MP3_RWseek(&music->file, 0, RW_SEEK_SET);
 
-    if (!drmp3_init(&music->dec, DRMP3_ReadCB, DRMP3_SeekCB, DRMP3_TellCB, NULL, music, NULL)) {
+    if (!drmp3_init(&music->dec, DRMP3_ReadCB, DRMP3_SeekCB, music, NULL)) {
         SDL_free(music);
         Mix_SetError("music_drmp3: corrupt mp3 file (bad stream).");
         return NULL;
@@ -298,12 +273,13 @@ Mix_MusicInterface Mix_MusicInterface_DRMP3 =
     NULL,   /* CreateFromFileEx [MIXER-X]*/
     DRMP3_SetVolume,
     DRMP3_GetVolume,
-    NULL,   /* SetGain [MIXER-X]*/
-    NULL,   /* GetGain [MIXER-X]*/
     DRMP3_Play,
     NULL,   /* IsPlaying */
     DRMP3_GetAudio,
     NULL,   /* Jump */
+    NULL,   /* GetOrder */
+    NULL,   /* MuteChannel */
+    NULL,   /* SetChannelVolume */
     DRMP3_Seek,
     DRMP3_Tell,
     DRMP3_Duration,

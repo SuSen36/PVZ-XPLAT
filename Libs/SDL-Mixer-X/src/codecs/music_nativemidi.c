@@ -1,6 +1,6 @@
 /*
   SDL_mixer:  An audio mixer library based on the SDL library
-  Copyright (C) 1997-2025 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -99,12 +99,13 @@ Mix_MusicInterface Mix_MusicInterface_NATIVEMIDI =
     NULL,   /* CreateFromFileEx [MIXER-X]*/
     NATIVEMIDI_SetVolume,
     NULL,   /* GetVolume */
-    NULL,   /* SetGain [MIXER-X]*/
-    NULL,   /* GetGain [MIXER-X]*/
     NATIVEMIDI_Play,
     NATIVEMIDI_IsPlaying,
     NULL,   /* GetAudio */
     NULL,   /* Jump */
+    NULL,   /* GetOrder */
+    NULL,   /* MuteChannel */
+    NULL,   /* SetChannelVolume */
     NULL,   /* Seek */
     NULL,   /* Tell */
     NULL,   /* Duration */

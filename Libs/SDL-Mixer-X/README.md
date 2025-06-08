@@ -17,6 +17,8 @@ Using of very long Chunks is ineffective), etc. The goal of this fork is to reso
 issues, providing more extended functionality than was originally,
 and providing support for more audio formats.
 
+Fork with added libopenmpt support made by Headshotnoby (headshot2017)
+
 * [More detailed information](docs/index.md)
 * [Read original ReadMe](README.txt)
 
@@ -37,6 +39,7 @@ There are libraries that keeps MixerX library under ZLib:
 ### Static linking
 (BSD, ZLib, "Artistic", MIT, and "public domain" licenses are allows usage in closed-source projects)
 * libFLAC
+* libopenmpt
 * libModPlug
 * libOGG
 * libOpus

@@ -1,6 +1,6 @@
 /*
   SDL_mixer:  An audio mixer library based on the SDL library
-  Copyright (C) 1997-2025 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -29,10 +29,6 @@
 #include MODPLUG_HEADER
 #else
 #include <libmodplug/modplug.h>
-#endif
-
-#ifdef USE_CUSTOM_AUDIO_STREAM
-#   include "stream_custom.h"
 #endif
 
 typedef struct {
@@ -66,10 +62,6 @@ static ModPlug_Settings settings;
     if (modplug.FUNC == NULL) { Mix_SetError("Missing libmodplug.framework"); return -1; }
 #endif
 
-#ifdef __APPLE__
-    /* Need to turn off optimizations so weak framework load check works */
-    __attribute__ ((optnone))
-#endif
 static int MODPLUG_Load(void)
 {
     if (modplug.loaded == 0) {
@@ -91,9 +83,6 @@ static int MODPLUG_Load(void)
         FUNCTION_LOADER(ModPlug_GetName, const char* (*)(ModPlugFile* file))
 #ifdef MODPLUG_DYNAMIC
         modplug.ModPlug_Tell = (int (*)(ModPlugFile* file)) SDL_LoadFunction(modplug.handle, "ModPlug_Tell");
-        if (modplug.ModPlug_Tell == NULL) {
-            SDL_ClearError();   /* ModPlug_Tell is optional. */
-        }
 #elif defined(MODPLUG_HAS_TELL)
         modplug.ModPlug_Tell = ModPlug_Tell;
 #else
@@ -365,12 +354,13 @@ Mix_MusicInterface Mix_MusicInterface_MODPLUG =
     NULL,   /* CreateFromFileEx [MIXER-X]*/
     MODPLUG_SetVolume,
     MODPLUG_GetVolume,
-    NULL,   /* SetGain [MIXER-X]*/
-    NULL,   /* GetGain [MIXER-X]*/
     MODPLUG_Play,
     NULL,   /* IsPlaying */
     MODPLUG_GetAudio,
     MODPLUG_Jump,
+    NULL,   /* GetOrder */
+    NULL,   /* MuteChannel */
+    NULL,   /* SetChannelVolume */
     MODPLUG_Seek,
     MODPLUG_Tell,
     MODPLUG_Duration,

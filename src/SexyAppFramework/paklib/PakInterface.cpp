@@ -74,7 +74,7 @@ static void FixFileName(const char* theFileName, char* theUpperName)
             while ((aDest > theUpperName + 1) && (*(aDest - 1) != '\\'))  // 回退到上一层目录
                 --aDest;
             aSrc++;
-            // 此处将形如“a\b\..\c”的路径简化为“a\c”
+            // 此处将形如"a\b\..\c"的路径简化为"a\c"
         }
         else
         {
@@ -115,12 +115,18 @@ bool PakInterface::AddPakFile(const std::string& theFileName)
             *aDataPtr++ ^= 0xF7;
     }
 
-    PakRecordMap::iterator aRecordItr = mPakRecordMap.insert(PakRecordMap::value_type(StringToUpper(theFileName), PakRecord())).first;
-    PakRecord* aPakRecord = &(aRecordItr->second);
-    aPakRecord->mCollection = aPakCollection;
-    aPakRecord->mFileName = theFileName;
-    aPakRecord->mStartPos = 0;
-    aPakRecord->mSize = aFileSize;
+    char pakFileNameFixed[256];
+    FixFileName(theFileName.c_str(), pakFileNameFixed);
+    std::string pakFileNameKey = pakFileNameFixed;
+    auto& pakRecordsVec = mPakRecordMap[pakFileNameKey];
+    PakRecord pakFileRecord;
+    pakFileRecord.mCollection = aPakCollection;
+    pakFileRecord.mFileName = theFileName;
+    pakFileRecord.mStartPos = 0;
+    pakFileRecord.mSize = aFileSize;
+    pakFileRecord.mFileTime = 0; // Or some meaningful value if available for the PAK file itself
+    pakFileRecord.mPriority = 0; // Default priority for the PAK file entry
+    pakRecordsVec.push_back(pakFileRecord);
 
     // 使用 FOpen 函数处理 PAK 文件读取（此处可能需要适配）
     PFILE* aFP = FOpen(theFileName.c_str(), "rb");
@@ -171,13 +177,16 @@ bool PakInterface::AddPakFile(const std::string& theFileName)
         char anUpperName[256];
         FixFileName(aName, anUpperName);
 
-        PakRecordMap::iterator aRecordItr = mPakRecordMap.insert(PakRecordMap::value_type(StringToUpper(aName), PakRecord())).first;
-        PakRecord* aPakRecord = &(aRecordItr->second);
-        aPakRecord->mCollection = aPakCollection;
-        aPakRecord->mFileName = anUpperName;
-        aPakRecord->mStartPos = aPos;
-        aPakRecord->mSize = aSrcSize;
-        aPakRecord->mFileTime = aFileTime;
+        std::string internalFileNameKey = anUpperName;
+        auto& internalRecordsVec = mPakRecordMap[internalFileNameKey];
+        PakRecord internalFileRecord;
+        internalFileRecord.mCollection = aPakCollection;
+        internalFileRecord.mFileName = anUpperName;
+        internalFileRecord.mStartPos = aPos;
+        internalFileRecord.mSize = aSrcSize;
+        internalFileRecord.mFileTime = aFileTime;
+        internalFileRecord.mPriority = 0;
+        internalRecordsVec.push_back(internalFileRecord);
 
         aPos += aSrcSize;
     }
@@ -185,12 +194,13 @@ bool PakInterface::AddPakFile(const std::string& theFileName)
     int anOffset = FTell(aFP);
 
     // 现在修正文件的起始位置
-    aRecordItr = mPakRecordMap.begin();
+    std::map<std::string, std::vector<PakRecord>>::iterator aRecordItr = mPakRecordMap.begin();
     while (aRecordItr != mPakRecordMap.end())
     {
-        PakRecord* aPakRecord = &(aRecordItr->second);
-        if (aPakRecord->mCollection == aPakCollection)
-            aPakRecord->mStartPos += anOffset;
+        for (auto& record : aRecordItr->second) {
+            if (record.mCollection == aPakCollection)
+                record.mStartPos += anOffset;
+        }
         ++aRecordItr;
     }
 
@@ -230,13 +240,18 @@ bool PakInterface::AddDirectory(const std::string& theFileName)
             }
 
             // 生成文件记录
-            PakRecordMap::iterator aRecordItr = mPakRecordMap.insert(PakRecordMap::value_type(StringToUpper(filePath), PakRecord())).first;
-            PakRecord* aPakRecord = &(aRecordItr->second);
-            aPakRecord->mCollection = aPakCollection;
-            aPakRecord->mFileName = filePath;
-            aPakRecord->mStartPos = 0;
-            aPakRecord->mSize = fileSize;
-            aPakRecord->mFileTime = std::filesystem::last_write_time(entry).time_since_epoch().count();
+            char dirFilePathFixed[256];
+            FixFileName(filePath.c_str(), dirFilePathFixed);
+            std::string dirFileKey = dirFilePathFixed;
+            auto& dirRecordsVec = mPakRecordMap[dirFileKey];
+            PakRecord dirFileRecord;
+            dirFileRecord.mCollection = aPakCollection;
+            dirFileRecord.mFileName = filePath;
+            dirFileRecord.mStartPos = 0;
+            dirFileRecord.mSize = fileSize;
+            dirFileRecord.mFileTime = std::filesystem::last_write_time(entry).time_since_epoch().count();
+            dirFileRecord.mPriority = 0; // Default priority for directory files
+            dirRecordsVec.push_back(dirFileRecord);
         }
     }
 
@@ -255,25 +270,27 @@ PFILE* PakInterface::FOpen(const char* theFileName, const char* anAccess)
 		PakRecordMap::iterator anItr = mPakRecordMap.find(anUpperName);
 		if (anItr != mPakRecordMap.end())
 		{
-			PFILE* aPFP = new PFILE;
-			aPFP->mRecord = &anItr->second;
-			aPFP->mPos = 0;
-			aPFP->mFP = NULL;
-			return aPFP;
-		}
+            const PakRecord* highestPriorityRecord = nullptr;
+            int highestPriority = -1;
 
-		anItr = mPakRecordMap.find(theFileName);
-		if (anItr != mPakRecordMap.end())
-		{
-			PFILE* aPFP = new PFILE;
-			aPFP->mRecord = &anItr->second;
-			aPFP->mPos = 0;
-			aPFP->mFP = NULL;
-			return aPFP;
+            for (const auto& record : anItr->second) { // it->second is now std::vector<PakRecord>
+                if (record.mPriority > highestPriority) {
+                    highestPriority = record.mPriority;
+                    highestPriorityRecord = &record;
+                }
+            }
+
+            if (highestPriorityRecord) {
+                PFILE* aPFP = new PFILE;
+                aPFP->mRecord = static_cast<const PakRecord*>(highestPriorityRecord); // 使用优先级最高的记录
+                aPFP->mPos = 0; // 初始化读取位置
+                aPFP->mFP = NULL; // PAK 文件没有标准文件指针
+                return aPFP;
+            }
 		}
 	}
 
-	FILE* aFP = std::fopen(theFileName, anAccess);
+	FILE* aFP = fopen(theFileName, anAccess);
 	if (aFP == NULL)
 		return NULL;
 	PFILE* aPFP = new PFILE;

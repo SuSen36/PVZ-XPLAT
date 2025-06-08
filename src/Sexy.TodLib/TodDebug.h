@@ -17,6 +17,7 @@ public:
 void				TodLog(const char* theFormat, ...);
 void				TodLogString(const char* theMsg);
 void				TodTrace(const char* theFormat, ...);
+void                TodHesitationTrace(const char* theFormat, ...);
 void				TodTraceMemory();
 void				TodTraceAndLog(const char* theFormat, ...);
 void				TodTraceWithoutSpamming(const char* theFormat, ...);

@@ -231,11 +231,33 @@ bool				AllowAllAccess(const std::string& theFileName);
 std::wstring		UTF8StringToWString(const std::string theString);
 
 // Read memory and then move the pointer
-void				SMemR(void*& _Src, void* _Dst, size_t _Size);
-void				SMemRStr(void*& _Src, std::string& theString);
+inline void			SMemR(void*& _Src, void* _Dst, size_t _Size)
+{
+    memcpy(_Dst, _Src, _Size);
+    _Src = (void*)((uintptr_t)_Src + _Size);
+}
+
+inline void			SMemRStr(void*& _Src, std::string& theString)
+{
+	size_t aStrLen;
+	SMemR(_Src, &aStrLen, sizeof(aStrLen));
+	theString.resize(aStrLen);
+	SMemR(_Src, (void*)theString.c_str(), aStrLen);
+}
+
 // Write memory and then move the pointer
-void				SMemW(void*& _Dst, const void* _Src, size_t _Size);
-void				SMemWStr(void*& _Dst, const std::string& theString);
+inline void			SMemW(void*& _Dst, const void* _Src, size_t _Size)
+{
+	memcpy(_Dst, _Src, _Size);
+	_Dst = (void*)((uintptr_t)_Dst + _Size);
+}
+
+inline void			SMemWStr(void*& _Dst, const std::string& theString)
+{
+	size_t aStrLen = theString.size();
+	SMemW(_Dst, &aStrLen, sizeof(aStrLen));
+	SMemW(_Dst, theString.c_str(), aStrLen);
+}
 
 inline void			inlineUpper(std::string &theData)
 {

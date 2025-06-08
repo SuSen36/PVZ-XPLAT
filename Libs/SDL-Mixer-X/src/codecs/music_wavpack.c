@@ -1,6 +1,6 @@
 /*
   SDL_mixer:  An audio mixer library based on the SDL library
-  Copyright (C) 1997-2025 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -39,10 +39,6 @@
 #endif
 #include <stdio.h>  /* SEEK_SET, ... */
 
-#ifdef USE_CUSTOM_AUDIO_STREAM
-#   include "stream_custom.h"
-#endif
-
 #ifndef OPEN_DSD_NATIVE
 #define OPEN_DSD_NATIVE 0x100
 #define OPEN_DSD_AS_PCM 0x200
@@ -70,6 +66,7 @@ typedef struct {
     uint32_t libversion;
     uint32_t (*WavpackGetLibraryVersion)(void);
     char *(*WavpackGetErrorMessage)(WavpackContext*);
+    WavpackContext *(*WavpackOpenFileInput)(const char *infilename, char *error, int flags, int norm_offset);
     WavpackContext *(*WavpackOpenFileInputEx)(WavpackStreamReader *reader, void *wv_id, void *wvc_id, char *error, int flags, int norm_offset);
     WavpackContext *(*WavpackCloseFile)(WavpackContext*);
     int (*WavpackGetMode)(WavpackContext*);
@@ -97,13 +94,9 @@ static wavpack_loader wvpk;
 #else
 #define FUNCTION_LOADER(FUNC, SIG) \
     wvpk.FUNC = FUNC; \
-    if (wvpk.FUNC == NULL) { Mix_SetError("Missing wavpack.framework"); return -1; }
+    if (wvpk.FUNC == NULL) { Mix_SetError("Missing WavPack.framework"); return -1; }
 #endif
 
-#ifdef __APPLE__
-    /* Need to turn off optimizations so weak framework load check works */
-    __attribute__ ((optnone))
-#endif
 static int WAVPACK_Load(void)
 {
     if (wvpk.loaded == 0) {
@@ -115,6 +108,7 @@ static int WAVPACK_Load(void)
 #endif
         FUNCTION_LOADER(WavpackGetLibraryVersion, uint32_t (*)(void));
         FUNCTION_LOADER(WavpackGetErrorMessage, char *(*)(WavpackContext*));
+        FUNCTION_LOADER(WavpackOpenFileInput, WavpackContext *(*)(const char*, char*, int, int));
         FUNCTION_LOADER(WavpackOpenFileInputEx, WavpackContext *(*)(WavpackStreamReader*, void*, void*, char*, int, int));
         FUNCTION_LOADER(WavpackCloseFile, WavpackContext *(*)(WavpackContext*));
         FUNCTION_LOADER(WavpackGetMode, int (*)(WavpackContext*));
@@ -192,10 +186,10 @@ typedef struct {
     int64_t numsamples;
     uint32_t samplerate;
     int bps, channels, mode;
-    #ifdef MUSIC_WAVPACK_DSD
+#ifdef MUSIC_WAVPACK_DSD
     int decimation;
     void *decimation_ctx;
-    #endif
+#endif
 
     SDL_AudioStream *stream;
     void *buffer;
@@ -330,19 +324,15 @@ static void *WAVPACK_CreateFromFile(const char *file)
     file2 = SDL_stack_alloc(char, len + 2);
     if (!file2) src2 = NULL;
     else {
-        /* this assumes 'file' is a good boy and has 'wv' as an extension.
-         * official wavpack command line tools do the same thing so I'm not
-         * doing anything extra. besides, the wavpack library validates the
-         * correction file, therefore, no harm done.  */
         SDL_memcpy(file2, file, len);
         file2[len] =  'c';
         file2[len + 1] = '\0';
         src2 = SDL_RWFromFile(file2, "rb");
-        #if WAVPACK_DBG
+#if WAVPACK_DBG
         if (src2) {
             SDL_Log("Loaded WavPack correction file %s", file2);
         }
-        #endif
+#endif
         SDL_stack_free(file2);
     }
 
@@ -398,7 +388,7 @@ static void *WAVPACK_CreateFromRW_internal(SDL_RWops *src1, SDL_RWops *src2, int
        *freesrc2 = 0; /* WAVPACK_Delete() will free it. */
     }
 
-    #ifdef MUSIC_WAVPACK_DSD
+#ifdef MUSIC_WAVPACK_DSD
     music->decimation = 1;
     /* for very high sample rates (including DSD, which will normally be 352,800 Hz)
      * decimate 4x here before sending on */
@@ -411,12 +401,12 @@ static void *WAVPACK_CreateFromRW_internal(SDL_RWops *src1, SDL_RWops *src2, int
             return NULL;
         }
     }
-    #endif
+#endif
 
-    #if WAVPACK_DBG
+#if WAVPACK_DBG
     SDL_Log("WavPack loader:\n numsamples: %" SDL_PRIs64 "\n samplerate: %d\n bitspersample: %d\n channels: %d\n mode: 0x%x\n lossy: %d\n duration: %f\n",
             (Sint64)music->numsamples, music->samplerate, music->bps, music->channels, music->mode, !(music->mode & MODE_LOSSLESS), music->numsamples/(double)music->samplerate);
-    #endif
+#endif
 
     /* library returns the samples in 8, 16, 24, or 32 bit depth, but
      * always in an int32_t[] buffer, in signed host-endian format. */
@@ -527,11 +517,11 @@ static int WAVPACK_GetSome(void *context, void *data, int bytes, SDL_bool *done)
     }
 
     amount = (int) wvpk.WavpackUnpackSamples(music->ctx, music->buffer, music->frames * DECIMATION(music));
-    #ifdef MUSIC_WAVPACK_DSD
+#ifdef MUSIC_WAVPACK_DSD
     if (amount && music->decimation_ctx) {
         amount = decimation_run(music->decimation_ctx, music->buffer, amount);
     }
-    #endif
+#endif
 
     if (amount) {
         int32_t *src = (int32_t *)music->buffer;
@@ -592,15 +582,15 @@ static int WAVPACK_Seek(void *context, double time)
     int64_t sample = (int64_t)(time * music->samplerate);
     int success = (wvpk.WavpackSeekSample64 != NULL) ?
                    wvpk.WavpackSeekSample64(music->ctx, sample) :
-                   wvpk.WavpackSeekSample(music->ctx, (uint32_t)sample);
+                   wvpk.WavpackSeekSample(music->ctx, sample);
     if (!success) {
         return Mix_SetError("%s", wvpk.WavpackGetErrorMessage(music->ctx));
     }
-    #ifdef MUSIC_WAVPACK_DSD
+#ifdef MUSIC_WAVPACK_DSD
     if (music->decimation_ctx) {
         decimation_reset(music->decimation_ctx);
     }
-    #endif
+#endif
     return 0;
 }
 
@@ -630,9 +620,9 @@ static void WAVPACK_Delete(void *context)
         SDL_FreeAudioStream(music->stream);
     }
     SDL_free(music->buffer);
-    #ifdef MUSIC_WAVPACK_DSD
+#ifdef MUSIC_WAVPACK_DSD
     SDL_free(music->decimation_ctx);
-    #endif
+#endif
     if (music->src2) {
         SDL_RWclose(music->src2);
     }
@@ -644,7 +634,7 @@ static void WAVPACK_Delete(void *context)
 
 #ifdef MUSIC_WAVPACK_DSD
 /* Decimation code for playing DSD (which comes from the library already decimated 8x) */
-/* Code provided by David Bryant. */
+/* sinc low-pass filter, cutoff = fs/12, 80 terms */
 /* sinc low-pass filter, cutoff = fs/12, 80 terms */
 #define NUM_TERMS 80
 static const int32_t filter[NUM_TERMS] = {
@@ -681,7 +671,7 @@ static void *decimation_init(int num_channels, int ratio)
     return sp;
 }
 
-/** FIXME: This isn't particularly easy on the CPU ! **/
+
 static int decimation_run(void *context, int32_t *samples, int num_samples)
 {
     ChanState *sp = (ChanState *)context;
@@ -748,12 +738,13 @@ Mix_MusicInterface Mix_MusicInterface_WAVPACK =
     NULL,   /* CreateFromFileEx [MIXER-X]*/
     WAVPACK_SetVolume,
     WAVPACK_GetVolume,
-    NULL,   /* SetGain [MIXER-X]*/
-    NULL,   /* GetGain [MIXER-X]*/
     WAVPACK_Play,
     NULL,   /* IsPlaying */
     WAVPACK_GetAudio,
     NULL,   /* Jump */
+    NULL,   /* GetOrder */
+    NULL,   /* MuteChannel */
+    NULL,   /* SetChannelVolume */
     WAVPACK_Seek,
     WAVPACK_Tell,
     WAVPACK_Duration,

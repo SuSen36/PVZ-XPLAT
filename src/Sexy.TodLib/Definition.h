@@ -184,7 +184,6 @@ void*                   DefinitionCompressCompiledBuffer(void* theBuffer, unsign
 void*                   DefinitionUncompressCompiledBuffer(void* theCompressedBuffer, size_t theCompressedBufferSize, size_t& theUncompressedSize, const SexyString& theCompiledFilePath);
 uint /*__cdecl*/        DefinitionCalcHashSymbolMap(int aSchemaHash, DefSymbol* theSymbolMap);
 uint /*__cdecl*/        DefinitionCalcHashDefMap(int aSchemaHash, DefMap* theDefMap, TodList<DefMap*>& theProgressMaps);
-uint /*__cdecl*/        DefinitionCalcHash(DefMap* theDefMap);
 inline bool             DefReadFromCacheString(void*& theReadPtr, char** theString);
 inline bool             DefReadFromCacheArray(void*& theReadPtr, DefinitionArrayDef* theArray, DefMap* theDefMap);
 inline bool             DefReadFromCacheImage(void*& theReadPtr, Image** theImage);

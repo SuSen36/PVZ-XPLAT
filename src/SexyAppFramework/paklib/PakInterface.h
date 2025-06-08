@@ -6,6 +6,7 @@
 #include <string>
 #include <cstdint>
 #include "../Common.h"
+#include <vector>
 
 class PakCollection;
 
@@ -23,9 +24,10 @@ public:
 	int64_t				mFileTime;				//+0x20：八字节型的资源文件的时间戳
 	int						mStartPos;				//+0x28：该资源文件在资源包中的位置（即在 mCollection->mDataPtr 中的偏移量）
 	int						mSize;					//+0x2C：资源文件的大小，单位为 Byte（字节数）
+	int						mPriority;				//+0x30：资源文件的优先级，用于同名文件加载时的选择
 };
 
-typedef std::map<std::string, PakRecord> PakRecordMap;
+typedef std::map<std::string, std::vector<PakRecord>> PakRecordMap;
 
 // ====================================================================================================
 // ★ 一个 PakCollection 实例对应一个 pak 资源包在内存中的映射文件
@@ -46,7 +48,7 @@ typedef std::list<PakCollection> PakCollectionList;
 
 struct PFILE
 {
-	PakRecord*				mRecord;
+	const PakRecord*		mRecord;
 	int						mPos;
 	FILE*					mFP;
 };

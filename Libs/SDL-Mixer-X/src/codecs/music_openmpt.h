@@ -1,6 +1,6 @@
 /*
   SDL_mixer:  An audio mixer library based on the SDL library
-  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2024 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -19,10 +19,10 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-/* This file supports Ogg Opus music streams */
+/* This file supports playing MOD files with libopenmpt */
 
 #include "music.h"
 
-extern Mix_MusicInterface Mix_MusicInterface_Opus;
+extern Mix_MusicInterface Mix_MusicInterface_OPENMPT;
 
 /* vi: set ts=4 sw=4 expandtab: */

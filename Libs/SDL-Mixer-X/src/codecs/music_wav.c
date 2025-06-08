@@ -1,6 +1,6 @@
 /*
   SDL_mixer:  An audio mixer library based on the SDL library
-  Copyright (C) 1997-2025 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -25,9 +25,6 @@
 
 #include "music_wav.h"
 #include "mp3utils.h"
-#ifdef USE_CUSTOM_AUDIO_STREAM
-#   include "stream_custom.h"
-#endif
 
 typedef struct ADPCM_DecoderState
 {
@@ -2037,12 +2034,13 @@ Mix_MusicInterface Mix_MusicInterface_WAV =
     NULL,   /* CreateFromFileEx [MIXER-X]*/
     WAV_SetVolume,
     WAV_GetVolume,
-    NULL,   /* SetGain [MIXER-X]*/
-    NULL,   /* GetGain [MIXER-X]*/
     WAV_Play,
     NULL,   /* IsPlaying */
     WAV_GetAudio,
     NULL,       /* Jump */
+    NULL,   /* GetOrder */
+    NULL,   /* MuteChannel */
+    NULL,   /* SetChannelVolume */
     WAV_Seek,   /* Seek */
     WAV_Tell,   /* Tell */
     WAV_Duration,

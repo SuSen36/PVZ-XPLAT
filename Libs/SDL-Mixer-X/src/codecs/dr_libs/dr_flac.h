@@ -1,6 +1,6 @@
 /*
 FLAC audio decoder. Choice of public domain or MIT-0. See license statements at the end of this file.
-dr_flac - v0.12.43 - 2024-12-17
+dr_flac - v0.12.41 - 2023-06-17
 
 David Reid - mackron@gmail.com
 
@@ -179,7 +179,7 @@ reports metadata to the application through the use of a callback, and every met
 
 The main opening APIs (`drflac_open()`, etc.) will fail if the header is not present. The presents a problem in certain scenarios such as broadcast style
 streams or internet radio where the header may not be present because the user has started playback mid-stream. To handle this, use the relaxed APIs:
-
+    
     `drflac_open_relaxed()`
     `drflac_open_with_metadata_relaxed()`
 
@@ -235,12 +235,12 @@ extern "C" {
 
 #define DRFLAC_VERSION_MAJOR     0
 #define DRFLAC_VERSION_MINOR     12
-#define DRFLAC_VERSION_REVISION  43
+#define DRFLAC_VERSION_REVISION  41
 #define DRFLAC_VERSION_STRING    DRFLAC_XSTRINGIFY(DRFLAC_VERSION_MAJOR) "." DRFLAC_XSTRINGIFY(DRFLAC_VERSION_MINOR) "." DRFLAC_XSTRINGIFY(DRFLAC_VERSION_REVISION)
 
 #include <stddef.h> /* For size_t. */
 
-/* Sized Types */
+/* Sized types. */
 typedef   signed char           drflac_int8;
 typedef unsigned char           drflac_uint8;
 typedef   signed short          drflac_int16;
@@ -275,7 +275,7 @@ typedef drflac_uint32           drflac_bool32;
 #define DRFLAC_FALSE            0
 /* End Sized Types */
 
-/* Decorations */
+
 #if !defined(DRFLAC_API)
     #if defined(DRFLAC_DLL)
         #if defined(_WIN32)
@@ -343,16 +343,16 @@ but also more memory. In my testing there is diminishing returns after about 4KB
 #endif
 
 
-/* Architecture Detection */
+/* Check if we can enable 64-bit optimizations. */
 #if defined(_WIN64) || defined(_LP64) || defined(__LP64__)
 #define DRFLAC_64BIT
 #endif
 
-#if defined(__x86_64__) || (defined(_M_X64) && !defined(_M_ARM64EC))
+#if defined(__x86_64__) || defined(_M_X64)
     #define DRFLAC_X64
 #elif defined(__i386) || defined(_M_IX86)
     #define DRFLAC_X86
-#elif defined(__arm__) || defined(_M_ARM) || defined(__arm64) || defined(__arm64__) || defined(__aarch64__) || defined(_M_ARM64) || defined(_M_ARM64EC)
+#elif defined(__arm__) || defined(_M_ARM) || defined(__arm64) || defined(__arm64__) || defined(__aarch64__) || defined(_M_ARM64)
     #define DRFLAC_ARM
 #endif
 /* End Architecture Detection */
@@ -1394,7 +1394,7 @@ DRFLAC_API drflac_bool32 drflac_next_cuesheet_track(drflac_cuesheet_track_iterat
 #else
     #define DRFLAC_INLINE
 #endif
-/* End Inline */
+
 
 /*
 Intrinsics Support
@@ -1851,7 +1851,7 @@ static DRFLAC_INLINE drflac_uint32 drflac__swap_endian_uint32(drflac_uint32 n)
     #if defined(_MSC_VER) && !defined(__clang__)
         return _byteswap_ulong(n);
     #elif defined(__GNUC__) || defined(__clang__)
-        #if defined(DRFLAC_ARM) && (defined(__ARM_ARCH) && __ARM_ARCH >= 6) && !defined(__ARM_ARCH_6M__) && !defined(DRFLAC_64BIT)   /* <-- 64-bit inline assembly has not been tested, so disabling for now. */
+        #if defined(DRFLAC_ARM) && (defined(__ARM_ARCH) && __ARM_ARCH >= 6) && !defined(DRFLAC_64BIT)   /* <-- 64-bit inline assembly has not been tested, so disabling for now. */
             /* Inline assembly optimized implementation for ARM. In my testing, GCC does not generate optimized code with __builtin_bswap32(). */
             drflac_uint32 r;
             __asm__ __volatile__ (
@@ -2815,7 +2815,7 @@ static DRFLAC_INLINE drflac_uint32 drflac__clz_lzcnt(drflac_cache_t x)
 
                 return r;
             }
-        #elif defined(DRFLAC_ARM) && (defined(__ARM_ARCH) && __ARM_ARCH >= 5) && !defined(__ARM_ARCH_6M__) && !defined(DRFLAC_64BIT)   /* <-- I haven't tested 64-bit inline assembly, so only enabling this for the 32-bit build for now. */
+        #elif defined(DRFLAC_ARM) && (defined(__ARM_ARCH) && __ARM_ARCH >= 5) && !defined(DRFLAC_64BIT)   /* <-- I haven't tested 64-bit inline assembly, so only enabling this for the 32-bit build for now. */
             {
                 unsigned int r;
                 __asm__ __volatile__ (
@@ -5393,12 +5393,6 @@ static drflac_bool32 drflac__read_subframe_header(drflac_bs* bs, drflac_subframe
         return DRFLAC_FALSE;
     }
 
-    /*
-    Default to 0 for the LPC order. It's important that we always set this to 0 for non LPC
-    and FIXED subframes because we'll be using it in a generic validation check later.
-    */
-    pSubframe->lpcOrder = 0;
-
     type = (header & 0x7E) >> 1;
     if (type == 0) {
         pSubframe->subframeType = DRFLAC_SUBFRAME_CONSTANT;
@@ -5470,18 +5464,6 @@ static drflac_bool32 drflac__decode_subframe(drflac_bs* bs, drflac_frame* frame,
     subframeBitsPerSample -= pSubframe->wastedBitsPerSample;
 
     pSubframe->pSamplesS32 = pDecodedSamplesOut;
-
-    /*
-    pDecodedSamplesOut will be pointing to a buffer that was allocated with enough memory to store
-    maxBlockSizeInPCMFrames samples (as specified in the FLAC header). We need to guard against an
-    overflow here. At a higher level we are checking maxBlockSizeInPCMFrames from the header, but
-    here we need to do an additional check to ensure this frame's block size fully encompasses any
-    warmup samples which is determined by the LPC order. For non LPC and FIXED subframes, the LPC
-    order will be have been set to 0 in drflac__read_subframe_header().
-    */
-    if (frame->header.blockSizeInPCMFrames < pSubframe->lpcOrder) {
-        return DRFLAC_FALSE;
-    }
 
     switch (pSubframe->subframeType)
     {
@@ -6720,10 +6702,10 @@ static drflac_bool32 drflac__read_and_decode_metadata(drflac_read_proc onRead, d
 
                             /* Skip to the index point count */
                             pRunningData += 35;
-
+                            
                             indexCount = pRunningData[0];
                             pRunningData += 1;
-
+                            
                             bufferSize += indexCount * sizeof(drflac_cuesheet_track_index);
 
                             /* Quick validation check. */
@@ -8172,7 +8154,7 @@ static drflac* drflac_open_with_metadata_private(drflac_read_proc onRead, drflac
 #include <wchar.h>      /* For wcslen(), wcsrtombs() */
 #endif
 
-/* Errno */
+
 /* drflac_result_from_errno() is only used for fopen() and wfopen() so putting it inside DR_WAV_NO_STDIO for now. If something else needs this later we can move it out. */
 #include <errno.h>
 static drflac_result drflac_result_from_errno(int e)
@@ -8578,7 +8560,7 @@ static drflac_result drflac_result_from_errno(int e)
 }
 /* End Errno */
 
-/* fopen */
+
 static drflac_result drflac_fopen(FILE** ppFile, const char* pFilePath, const char* pOpenMode)
 {
 #if defined(_MSC_VER) && _MSC_VER >= 1400
@@ -11699,9 +11681,9 @@ DRFLAC_API drflac_bool32 drflac_seek_to_pcm_frame(drflac* pFlac, drflac_uint64 p
 
 
 
+
 /* High Level APIs */
 
-/* SIZE_MAX */
 #if defined(SIZE_MAX)
     #define DRFLAC_SIZE_MAX  SIZE_MAX
 #else
@@ -12095,14 +12077,6 @@ DRFLAC_API drflac_bool32 drflac_next_cuesheet_track(drflac_cuesheet_track_iterat
 /*
 REVISION HISTORY
 ================
-v0.12.43 - 2024-12-17
-  - Fix a possible buffer overflow during decoding.
-  - Improve detection of ARM64EC
-
-v0.12.42 - 2023-11-02
-  - Fix build for ARMv6-M.
-  - Fix a compilation warning with GCC.
-
 v0.12.41 - 2023-06-17
   - Fix an incorrect date in revision history. No functional change.
 

@@ -1,8 +1,8 @@
-cmake_minimum_required (VERSION 2.8.12...3.10)
+cmake_minimum_required (VERSION 2.8.12...3.5)
 project(SDLMixerX C CXX)
 
 set(SDLMixerX_VERSION_MAJOR 2)
-set(SDLMixerX_VERSION_MINOR 8)
+set(SDLMixerX_VERSION_MINOR 7)
 set(SDLMixerX_VERSION_PATCH 0)
 set(SDLMixerX_VERSION_TWEAK 0)
 set(SDLMixerX_VERSION      "${SDLMixerX_VERSION_MAJOR}.${SDLMixerX_VERSION_MINOR}.${SDLMixerX_VERSION_PATCH}.${SDLMixerX_VERSION_TWEAK}")
@@ -61,15 +61,6 @@ option(MIXERX_ENABLE_GPL    "Enable using of components with GPL and LGPL licens
 option(MIXERX_DISABLE_SIMD "Disable any SIMD optimizations as possible" OFF)
 
 option(ENABLE_ADDRESS_SANITIZER "Enable the Address Sanitizer GCC feature" OFF)
-
-if(NINTENDO_3DS OR NINTENDO_WII OR VITA)
-    set(ENABLE_LOWEND_RESAMPLER_DEFAULT ON)
-else()
-    set(ENABLE_LOWEND_RESAMPLER_DEFAULT OFF)
-endif()
-
-option(ENABLE_LOWEND_RESAMPLER "Enable the nearest-neighbour resampler for low-end hardware" ${ENABLE_LOWEND_RESAMPLER_DEFAULT})
-
 
 set(MIXERX_ZLIB TRUE)
 if(MIXERX_ENABLE_LGPL OR MIXERX_ENABLE_GPL)
@@ -225,6 +216,7 @@ include(music_drmp3)
 #                          M15, MFP, MGT, MMDC, MTN, RTM, SFX, SPM, STIM, STX,
 #                          WOW
 # - Other formats supported by both ModPlug and libXMP
+include(music_openmpt)
 include(music_modplug)
 include(music_xmp)
 include(music_gme)
@@ -336,14 +328,6 @@ list(APPEND SDLMixerX_SOURCES
     ${SDLMixerX_SOURCE_DIR}/src/utils.c ${SDLMixerX_SOURCE_DIR}/src/utils.h
     ${SDLMixerX_SOURCE_DIR}/src/codecs/mp3utils.c
 )
-
-if(ENABLE_LOWEND_RESAMPLER)
-    list(APPEND SDLMixerX_SOURCES
-        ${SDLMixerX_SOURCE_DIR}/src/stream_custom.c
-        ${SDLMixerX_SOURCE_DIR}/src/stream_custom.h
-    )
-    list(APPEND SDL_MIXER_DEFINITIONS -DUSE_CUSTOM_AUDIO_STREAM)
-endif()
 
 #file(GLOB SDLMixerX_SOURCES ${SDLMixerX_SOURCES})
 
@@ -615,6 +599,7 @@ print_sumary("FLAC" USE_FLAC FLAC_FOUND FLAC_LIBRARIES MIXERX_ZLIB "-")
 print_sumary("DRMP3" USE_MP3_DRMP3 TRUE STATS_BUILTIN_LIB MIXERX_ZLIB "-")
 print_sumary("MPG123" USE_MP3_MPG123 MPG123_FOUND MPG123_LIBRARIES MIXERX_LGPL "LGPLv2.1")
 print_sumary("WavPack" USE_WAVPACK WavPack_FOUND WavPack_LIBRARIES MIXERX_ZLIB "-")
+print_sumary("OpenMPT" USE_OPENMPT OpenMPT_FOUND OpenMPT_LIBRARIES MIXERX_ZLIB "-")
 print_sumary("ModPlug" USE_MODPLUG ModPlug_FOUND ModPlug_LIBRARIES MIXERX_ZLIB "-")
 print_sumary("libXMP" USE_XMP XMP_FOUND XMP_LIBRARIES MIXERX_LGPL "LGPLv2.1")
 print_sumary("GME" USE_GME GME_FOUND GME_LIBRARIES MIXERX_LGPL "LGPLv2.1")
