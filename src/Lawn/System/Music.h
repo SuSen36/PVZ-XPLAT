@@ -32,10 +32,19 @@ enum MusicTune
 enum MusicFile
 {
 	MUSIC_FILE_NONE = -1,
-	MUSIC_FILE_MAIN_MUSIC = 1,
-	MUSIC_FILE_DRUMS,
-	MUSIC_FILE_HIHATS,
 	MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN,
+	MUSIC_FILE_ZEN_GARDEN,
+	MUSIC_FILE_ROOF,
+	MUSIC_FILE_POOL,
+	MUSIC_FILE_NIGHT,
+	MUSIC_FILE_LOONBOON,
+	MUSIC_FILE_FOG,
+	MUSIC_FILE_DAY,
+	MUSIC_FILE_CRAZY_DAVE,
+	MUSIC_FILE_CONVEYOR,
+	MUSIC_FILE_CHOOSE_YOUR_SEEDS,
+	MUSIC_FILE_CEREBRAWL,
+	MUSIC_FILE_BOSS,
 	NUM_MUSIC_FILES
 };
 
@@ -103,6 +112,7 @@ public:
 	/*inline*/ void				StartBurst();
 	void						GameMusicPause(bool thePause);
 	void						PlayFromOffset(MusicFile theMusicFile, int theOffset, double theVolume);
+	void						PlayMusicNoOffset(MusicFile theMusicFile, double theVolume);
 	void						MusicResyncChannel(MusicFile theMusicFileToMatch, MusicFile theMusicFileToSync);
 	bool						TodLoadMusic(MusicFile theMusicFile, const std::string& theFileName);
 	void						MusicTitleScreenInit();

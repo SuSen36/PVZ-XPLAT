@@ -419,6 +419,7 @@ SexyAppBase::~SexyAppBase()
 		SharedImage* aSharedImage = &aSharedImageItr->second;
 		DBG_ASSERTE(aSharedImage->mRefCount == 0);		
 		delete aSharedImage->mImage;
+        //TODO: 修复SharedImage的崩溃问题
 		mSharedImageMap.erase(aSharedImageItr++);		
 	}
 	
@@ -456,40 +457,6 @@ SexyAppBase::~SexyAppBase()
 
 }
 
-/*
-static BOOL CALLBACK ChangeDisplayWindowEnumProc(HWND hwnd, LPARAM lParam)
-{
-	typedef std::map<HWND,RECT> WindowMap;
-	static WindowMap aMap;
-
-	if (lParam==0 && aMap.find(hwnd)==aMap.end()) // record
-	{
-		RECT aRect;
-		if (!IsIconic(hwnd) && IsWindowVisible(hwnd))
-		{
-			if (GetWindowRect(hwnd,&aRect))
-			{
-//				char aBuf[4096];
-//				GetWindowText(hwnd,aBuf,4000);
-//				DWORD aProcessId = 0;
-//				GetWindowThreadProcessId(hwnd,&aProcessId);
-//				SEXY_TRACE(StrFormat("%s %d - %d %d %d %d",aBuf,aProcessId,aRect.left,aRect.top,aRect.right,aRect.bottom).c_str());
-				aMap[hwnd] = aRect;
-			}
-		}
-	}
-	else 
-	{
-		WindowMap::iterator anItr = aMap.find(hwnd);
-		if (anItr != aMap.end())
-		{
-			RECT &r = anItr->second;
-			MoveWindow(hwnd,r.left,r.top,abs(r.right-r.left),abs(r.bottom-r.top),TRUE);
-		}
-	}
-	return TRUE;
-}
-*/
 
 void SexyAppBase::ClearUpdateBacklog(bool relaxForASecond)
 {
@@ -4830,34 +4797,6 @@ void SexyAppBase::ParseCmdLine(const std::string& theCmdLine)
 
 static int GetMaxDemoFileNum(const std::string& theDemoPrefix, int theMaxToKeep, bool doErase)
 {
-	/*
-	WIN32_FIND_DATAA aData;
-	HANDLE aHandle = FindFirstFileA((theDemoPrefix + "*.dmo").c_str(), &aData);
-	if (aHandle==INVALID_HANDLE_VALUE)
-		return 0;
-
-	typedef std::set<int> IntSet;
-	IntSet aSet;
-
-	do {
-		int aNum = 0;
-		if (sscanf(aData.cFileName,(theDemoPrefix + "%d.dmo").c_str(), &aNum)==1)
-			aSet.insert(aNum);
-
-	} while(FindNextFileA(aHandle,&aData));
-	FindClose(aHandle);
-
-	IntSet::iterator anItr = aSet.begin();
-	if ((int)aSet.size()>theMaxToKeep-1 && doErase)
-		DeleteFile(StrFormat((theDemoPrefix + "%d.dmo").c_str(),*anItr).c_str());
-
-	if (aSet.empty())
-		return 0;
-
-	anItr = aSet.end();
-	--anItr;
-	return (*anItr);
-	*/
 	return 0;
 }
 

@@ -1223,6 +1223,7 @@ Image* ImageLib::GetImage(const std::string& theFilename, bool lookForAlphaImage
 
 	Image* anImage = NULL;
 
+    //TODO:修复.tga文件加载问题
 	if ((anImage == NULL) && ((strcasecmp(anExt.c_str(), ".tga") == 0) || (anExt.length() == 0)))
 		anImage = GetTGAImage(aFilename + ".tga");
 

@@ -66,39 +66,28 @@ void Music::SetupMusicFileForTune(MusicFile theMusicFile, MusicTune theMusicTune
 	{
 	case MusicTune::MUSIC_TUNE_DAY_GRASSWALK:
 		switch (theMusicFile) {
-		case MusicFile::MUSIC_FILE_MAIN_MUSIC:		aTrackCount = 29;	aTrackStart1 = 0;	aTrackEnd1 = 23;											break;
-		case MusicFile::MUSIC_FILE_HIHATS:			aTrackCount = 29;	aTrackStart1 = 27;	aTrackEnd1 = 27;											break;
-		case MusicFile::MUSIC_FILE_DRUMS:			aTrackCount = 29;	aTrackStart1 = 24;	aTrackEnd1 = 26;											break;
+		case MusicFile::MUSIC_FILE_DAY:		aTrackCount = 29;	aTrackStart1 = 0;	aTrackEnd1 = 23;											break;
 		default: break;
 		} break;
 	case MusicTune::MUSIC_TUNE_POOL_WATERYGRAVES:
 		switch (theMusicFile) {
-		case MusicFile::MUSIC_FILE_MAIN_MUSIC:		aTrackCount = 29;	aTrackStart1 = 0;	aTrackEnd1 = 17;											break;
-		case MusicFile::MUSIC_FILE_HIHATS:			aTrackCount = 29;	aTrackStart1 = 18;	aTrackEnd1 = 24;	aTrackStart2 = 29;	aTrackEnd2 = 29;	break;
-		case MusicFile::MUSIC_FILE_DRUMS:			aTrackCount = 29;	aTrackStart1 = 25;	aTrackEnd1 = 28;											break;
+		case MusicFile::MUSIC_FILE_POOL:		aTrackCount = 29;	aTrackStart1 = 0;	aTrackEnd1 = 17;											break;
 		default: break;
 		} break;
 	case MusicTune::MUSIC_TUNE_FOG_RIGORMORMIST:
 		switch (theMusicFile) {
-		case MusicFile::MUSIC_FILE_MAIN_MUSIC:		aTrackCount = 29;	aTrackStart1 = 0;	aTrackEnd1 = 15;											break;
-		case MusicFile::MUSIC_FILE_HIHATS:			aTrackCount = 29;	aTrackStart1 = 23;	aTrackEnd1 = 23;											break;
-		case MusicFile::MUSIC_FILE_DRUMS:			aTrackCount = 29;	aTrackStart1 = 16;	aTrackEnd1 = 22;											break;
+		case MusicFile::MUSIC_FILE_FOG:		aTrackCount = 29;	aTrackStart1 = 0;	aTrackEnd1 = 15;											break;
 		default: break;
 		} break;
 	case MusicTune::MUSIC_TUNE_ROOF_GRAZETHEROOF:
 		switch (theMusicFile) {
-		case MusicFile::MUSIC_FILE_MAIN_MUSIC:		aTrackCount = 29;	aTrackStart1 = 0;	aTrackEnd1 = 17;											break;
-		case MusicFile::MUSIC_FILE_HIHATS:			aTrackCount = 29;	aTrackStart1 = 21;	aTrackEnd1 = 21;											break;
-		case MusicFile::MUSIC_FILE_DRUMS:			aTrackCount = 29;	aTrackStart1 = 18;	aTrackEnd1 = 20;											break;
+		case MusicFile::MUSIC_FILE_ROOF:		aTrackCount = 29;	aTrackStart1 = 0;	aTrackEnd1 = 17;											break;
 		default: break;
 		} break;
 	default:
-		if (theMusicFile == MusicFile::MUSIC_FILE_MAIN_MUSIC || theMusicFile == MusicFile::MUSIC_FILE_DRUMS)
-		{
-			aTrackCount = 29;
-			aTrackStart1 = 0;
-			aTrackEnd1 = 29;
-		}
+		aTrackCount = 29;
+		aTrackStart1 = 0;
+		aTrackEnd1 = 29;
 		break;
 	}
 
@@ -138,8 +127,8 @@ void Music::LoadSong(MusicFile theMusicFile, const std::string& theFileName)
 void Music::MusicTitleScreenInit()
 {
 	TodTraceAndLog("MusicTitleScreenInit called.");
-	LoadSong(MusicFile::MUSIC_FILE_MAIN_MUSIC, "sounds/mainmusic.mo3");
-	TodTraceAndLog("MusicTitleScreenInit: mainmusic.mo3 加载完成.");
+	LoadSong(MusicFile::MUSIC_FILE_CRAZY_DAVE, "sounds/music/crazydave.ogg");
+	TodTraceAndLog("MusicTitleScreenInit: crazydave.ogg 加载完成.");
 	MakeSureMusicIsPlaying(MusicTune::MUSIC_TUNE_TITLE_CRAZY_DAVE_MAIN_THEME);
 	TodTraceAndLog("MusicTitleScreenInit: MakeSureMusicIsPlaying called.");
 }
@@ -152,17 +141,59 @@ void Music::MusicInit()
 	int aNumLoadingTasks = mApp->mCompletedLoadingThreadTasks + GetNumLoadingTasks();
 #endif
 
-	LoadSong(MusicFile::MUSIC_FILE_DRUMS, "sounds/mainmusic.mo3");
-	TodTraceAndLog("MusicInit: drums music 加载完成.");
-	mApp->mCompletedLoadingThreadTasks += /*原版*/3500;///*内测版*/800;
-	LoadSong(MusicFile::MUSIC_FILE_HIHATS, "sounds/mainmusic_hihats.mo3");
-	TodTraceAndLog("MusicInit: hihats music 加载完成.");
-	mApp->mCompletedLoadingThreadTasks += /*原版*/3500;///*内测版*/800;
-
 #ifdef _DEBUG
 	LoadSong(MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN, "sounds/ZombiesOnYourLawn.ogg");
 	TodTraceAndLog("MusicInit: credits music 加载完成.");
 	mApp->mCompletedLoadingThreadTasks += /*原版*/3500;///*内测版*/800;
+
+	LoadSong(MusicFile::MUSIC_FILE_ZEN_GARDEN, "sounds/music/zengarden.ogg");
+	TodTraceAndLog("MusicInit: zengarden.ogg 加载完成.");
+	mApp->mCompletedLoadingThreadTasks += /*原版*/3500;
+
+	LoadSong(MusicFile::MUSIC_FILE_ROOF, "sounds/music/roof.ogg");
+	TodTraceAndLog("MusicInit: roof.ogg 加载完成.");
+	mApp->mCompletedLoadingThreadTasks += /*原版*/3500;
+
+	LoadSong(MusicFile::MUSIC_FILE_POOL, "sounds/music/pool.ogg");
+	TodTraceAndLog("MusicInit: pool.ogg 加载完成.");
+	mApp->mCompletedLoadingThreadTasks += /*原版*/3500;
+
+	LoadSong(MusicFile::MUSIC_FILE_NIGHT, "sounds/music/night.ogg");
+	TodTraceAndLog("MusicInit: night.ogg 加载完成.");
+	mApp->mCompletedLoadingThreadTasks += /*原版*/3500;
+
+	LoadSong(MusicFile::MUSIC_FILE_LOONBOON, "sounds/music/loonboon.ogg");
+	TodTraceAndLog("MusicInit: loonboon.ogg 加载完成.");
+	mApp->mCompletedLoadingThreadTasks += /*原版*/3500;
+
+	LoadSong(MusicFile::MUSIC_FILE_FOG, "sounds/music/fog.ogg");
+	TodTraceAndLog("MusicInit: fog.ogg 加载完成.");
+	mApp->mCompletedLoadingThreadTasks += /*原版*/3500;
+
+	LoadSong(MusicFile::MUSIC_FILE_DAY, "sounds/music/day.ogg");
+	TodTraceAndLog("MusicInit: day.ogg 加载完成.");
+	mApp->mCompletedLoadingThreadTasks += /*原版*/3500;
+
+	LoadSong(MusicFile::MUSIC_FILE_CRAZY_DAVE, "sounds/music/crazydave.ogg");
+	TodTraceAndLog("MusicInit: crazydave.ogg 加载完成.");
+	mApp->mCompletedLoadingThreadTasks += /*原版*/3500;
+
+	LoadSong(MusicFile::MUSIC_FILE_CONVEYOR, "sounds/music/conveyor.ogg");
+	TodTraceAndLog("MusicInit: conveyor.ogg 加载完成.");
+	mApp->mCompletedLoadingThreadTasks += /*原版*/3500;
+
+	LoadSong(MusicFile::MUSIC_FILE_CHOOSE_YOUR_SEEDS, "sounds/music/chooseyourseeds.ogg");
+	TodTraceAndLog("MusicInit: chooseyourseeds.ogg 加载完成.");
+	mApp->mCompletedLoadingThreadTasks += /*原版*/3500;
+
+	LoadSong(MusicFile::MUSIC_FILE_CEREBRAWL, "sounds/music/cerebrawl.ogg");
+	TodTraceAndLog("MusicInit: cerebrawl.ogg 加载完成.");
+	mApp->mCompletedLoadingThreadTasks += /*原版*/3500;
+
+	LoadSong(MusicFile::MUSIC_FILE_BOSS, "sounds/music/boss.ogg");
+	TodTraceAndLog("MusicInit: boss.ogg 加载完成.");
+	mApp->mCompletedLoadingThreadTasks += /*原版*/3500;
+
 	if (mApp->mCompletedLoadingThreadTasks != aNumLoadingTasks)
 		TodTraceAndLog("Didn\'t calculate loading task count correctly!!!!");
 #endif
@@ -174,7 +205,7 @@ void Music::MusicCreditScreenInit()
 #ifndef _DEBUG
 	SDLMusicInterface* anSDL = (SDLMusicInterface*)mApp->mMusicInterface;
 	if (anSDL->mMusicMap.find((int)MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN) == anSDL->mMusicMap.end())  // 如果尚未加载
-		LoadSong(MusicFile::MUSIC_FILE_MAIN_MUSIC, "sounds/ZombiesOnYourLawn.ogg");
+		LoadSong(MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN, "sounds/ZombiesOnYourLawn.ogg");
 #endif
 }
 
@@ -221,14 +252,6 @@ void Music::PlayFromOffset(MusicFile theMusicFile, int theOffset, double theVolu
     TOD_ASSERT(anItr != anSDL->mMusicMap.end());
     SDLMusicInfo* aMusicInfo = &anItr->second;
 
-    /*
-    if (aMusicInfo->mHStream)
-    {
-        bool aNoLoop = theMusicFile == MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN;  // MV 音乐不循环
-        mMusicInterface->PlayMusic(theMusicFile, theOffset, aNoLoop);
-    }
-    else
-    */
     {
         Mix_HaltMusicStream(aMusicInfo->mHMusic);
         aMusicInfo->mStopOnFade = false;
@@ -242,18 +265,29 @@ void Music::PlayFromOffset(MusicFile theMusicFile, int theOffset, double theVolu
         Mix_ModMusicStreamJumpToOrder(aMusicInfo->mHMusic, theOffset);
         Mix_VolumeMusicStream(aMusicInfo->mHMusic, (int)(aMusicInfo->mVolume*128));
         SetupMusicFileForTune(theMusicFile, mCurMusicTune);  // 调整每条轨道的静音与否
-        /*
-        gBass->BASS_ChannelStop(aMusicInfo->mHMusic);  // 先停止正在播放的音乐
-        SetupMusicFileForTune(theMusicFile, mCurMusicTune);  // 调整每条轨道的静音与否
+    }
+}
+
+void Music::PlayMusicNoOffset(MusicFile theMusicFile, double theVolume)
+{
+    TodTrace("PlayMusicNoOffset called for MusicFile: %d, Volume: %f", theMusicFile, theVolume);
+    SDLMusicInterface* anSDL = (SDLMusicInterface*)mApp->mMusicInterface;
+    auto anItr = anSDL->mMusicMap.find((int)theMusicFile);
+    TOD_ASSERT(anItr != anSDL->mMusicMap.end());
+    SDLMusicInfo* aMusicInfo = &anItr->second;
+
+    {
+        Mix_HaltMusicStream(aMusicInfo->mHMusic);
         aMusicInfo->mStopOnFade = false;
         aMusicInfo->mVolume = aMusicInfo->mVolumeCap * theVolume;
         aMusicInfo->mVolumeAdd = 0.0;
-        //gBass->BASS_ChannelSetAttribute(aMusicInfo->mHMusic, -1, aMusicInfo->mVolume * 100.0, -101);  // 调整音乐音量
-        gBass->BASS_ChannelSetAttribute(aMusicInfo->mHMusic, BASS_ATTRIB_VOL, aMusicInfo->mVolume);
-        gBass->BASS_ChannelFlags(aMusicInfo->mHMusic, BASS_MUSIC_POSRESET | BASS_MUSIC_RAMP | BASS_MUSIC_LOOP, -1);
-        gBass->BASS_ChannelSetPosition(aMusicInfo->mHMusic, MAKELONG(theOffset, 0), BASS_POS_MUSIC_ORDER);  // 设置偏移位置
-        gBass->BASS_ChannelPlay(aMusicInfo->mHMusic, false);  // 重新开始播放
-        */
+        TodTrace("Attempting to play music with volume: %f", aMusicInfo->mVolume);
+        if (Mix_PlayMusicStream(aMusicInfo->mHMusic, -1) == -1)
+        {
+            TodTrace("Mix_PlayMusicStream failed: %s", Mix_GetError());
+        }
+        Mix_VolumeMusicStream(aMusicInfo->mHMusic, (int)(aMusicInfo->mVolume*128));
+        SetupMusicFileForTune(theMusicFile, mCurMusicTune);
     }
 }
 
@@ -272,115 +306,106 @@ void Music::PlayMusic(MusicTune theMusicTune, int theOffset, int theDrumsOffset)
 	switch (theMusicTune)
 	{
 	case MusicTune::MUSIC_TUNE_DAY_GRASSWALK:
-		mCurMusicFileMain = MusicFile::MUSIC_FILE_MAIN_MUSIC;
-		mCurMusicFileDrums = MusicFile::MUSIC_FILE_DRUMS;
-		mCurMusicFileHihats = MusicFile::MUSIC_FILE_HIHATS;
+		mCurMusicFileMain = MusicFile::MUSIC_FILE_DAY;
+		mCurMusicFileDrums = MusicFile::MUSIC_FILE_NONE;
+		mCurMusicFileHihats = MusicFile::MUSIC_FILE_NONE;
 		if (theOffset == -1)
 			theOffset = 0;
-		PlayFromOffset(mCurMusicFileMain, theOffset, 1.0);
-		PlayFromOffset(mCurMusicFileDrums, theOffset, 0.0);
-		PlayFromOffset(mCurMusicFileHihats, theOffset, 0.0);
+		PlayMusicNoOffset(mCurMusicFileMain, 1.0);
 		break;
 
 	case MusicTune::MUSIC_TUNE_NIGHT_MOONGRAINS:
-		mCurMusicFileMain = MusicFile::MUSIC_FILE_MAIN_MUSIC;
-		mCurMusicFileDrums = MusicFile::MUSIC_FILE_DRUMS;
+		mCurMusicFileMain = MusicFile::MUSIC_FILE_NIGHT;
+		mCurMusicFileDrums = MusicFile::MUSIC_FILE_NONE;
 		if (theOffset == -1)
 		{
 			theOffset = 0x30;
 			theDrumsOffset = 0x5C;
 		}
-		PlayFromOffset(mCurMusicFileMain, theOffset, 1.0);
-		PlayFromOffset(mCurMusicFileDrums, theDrumsOffset, 0.0);
+		PlayMusicNoOffset(mCurMusicFileMain, 1.0);
 		break;
 
 	case MusicTune::MUSIC_TUNE_POOL_WATERYGRAVES:
-		mCurMusicFileMain = MusicFile::MUSIC_FILE_MAIN_MUSIC;
-		mCurMusicFileDrums = MusicFile::MUSIC_FILE_DRUMS;
-		mCurMusicFileHihats = MusicFile::MUSIC_FILE_HIHATS;
+		mCurMusicFileMain = MusicFile::MUSIC_FILE_POOL;
+		mCurMusicFileDrums = MusicFile::MUSIC_FILE_NONE;
+		mCurMusicFileHihats = MusicFile::MUSIC_FILE_NONE;
 		if (theOffset == -1)
 			theOffset = 0x5E;
-		PlayFromOffset(mCurMusicFileMain, theOffset, 1.0);
-		PlayFromOffset(mCurMusicFileDrums, theOffset, 0.0);
-		PlayFromOffset(mCurMusicFileHihats, theOffset, 0.0);
+		PlayMusicNoOffset(mCurMusicFileMain, 1.0);
 		break;
 
 	case MusicTune::MUSIC_TUNE_FOG_RIGORMORMIST:
-		mCurMusicFileMain = MusicFile::MUSIC_FILE_MAIN_MUSIC;
-		mCurMusicFileDrums = MusicFile::MUSIC_FILE_DRUMS;
-		mCurMusicFileHihats = MusicFile::MUSIC_FILE_HIHATS;
+		mCurMusicFileMain = MusicFile::MUSIC_FILE_FOG;
+		mCurMusicFileDrums = MusicFile::MUSIC_FILE_NONE;
+		mCurMusicFileHihats = MusicFile::MUSIC_FILE_NONE;
 		if (theOffset == -1)
 			theOffset = 0x7D;
-		PlayFromOffset(mCurMusicFileMain, theOffset, 1.0);
-		PlayFromOffset(mCurMusicFileDrums, theOffset, 0.0);
-		PlayFromOffset(mCurMusicFileHihats, theOffset, 0.0);
+		PlayMusicNoOffset(mCurMusicFileMain, 1.0);
 		break;
 
 	case MusicTune::MUSIC_TUNE_ROOF_GRAZETHEROOF:
-		mCurMusicFileMain = MusicFile::MUSIC_FILE_MAIN_MUSIC;
-		mCurMusicFileDrums = MusicFile::MUSIC_FILE_DRUMS;
-		mCurMusicFileHihats = MusicFile::MUSIC_FILE_HIHATS;
+		mCurMusicFileMain = MusicFile::MUSIC_FILE_ROOF;
+		mCurMusicFileDrums = MusicFile::MUSIC_FILE_NONE;
+		mCurMusicFileHihats = MusicFile::MUSIC_FILE_NONE;
 		if (theOffset == -1)
 			theOffset = 0xB8;
-		PlayFromOffset(mCurMusicFileMain, theOffset, 1.0);
-		PlayFromOffset(mCurMusicFileDrums, theOffset, 0.0);
-		PlayFromOffset(mCurMusicFileHihats, theOffset, 0.0);
+		PlayMusicNoOffset(mCurMusicFileMain, 1.0);
 		break;
 
 	case MusicTune::MUSIC_TUNE_CHOOSE_YOUR_SEEDS:
-		mCurMusicFileMain = MusicFile::MUSIC_FILE_MAIN_MUSIC;
+		mCurMusicFileMain = MusicFile::MUSIC_FILE_CHOOSE_YOUR_SEEDS;
 		if (theOffset == -1)
 			theOffset = 0x7A;
-		PlayFromOffset(mCurMusicFileMain, theOffset, 1.0);
+		PlayMusicNoOffset(mCurMusicFileMain, 1.0);
 		break;
 
 	case MusicTune::MUSIC_TUNE_TITLE_CRAZY_DAVE_MAIN_THEME:
-		mCurMusicFileMain = MusicFile::MUSIC_FILE_MAIN_MUSIC;
+		mCurMusicFileMain = MusicFile::MUSIC_FILE_CRAZY_DAVE;
 		if (theOffset == -1)
 			theOffset = 0x98;
-		PlayFromOffset(mCurMusicFileMain, theOffset, 1.0);
+		PlayMusicNoOffset(mCurMusicFileMain, 1.0);
 		break;
 
 	case MusicTune::MUSIC_TUNE_ZEN_GARDEN:
-		mCurMusicFileMain = MusicFile::MUSIC_FILE_MAIN_MUSIC;
+		mCurMusicFileMain = MusicFile::MUSIC_FILE_ZEN_GARDEN;
 		if (theOffset == -1)
 			theOffset = 0xDD;
-		PlayFromOffset(mCurMusicFileMain, theOffset, 1.0);
+		PlayMusicNoOffset(mCurMusicFileMain, 1.0);
 		break;
 
 	case MusicTune::MUSIC_TUNE_PUZZLE_CEREBRAWL:
-		mCurMusicFileMain = MusicFile::MUSIC_FILE_MAIN_MUSIC;
+		mCurMusicFileMain = MusicFile::MUSIC_FILE_CEREBRAWL;
 		if (theOffset == -1)
 			theOffset = 0xB1;
-		PlayFromOffset(mCurMusicFileMain, theOffset, 1.0);
+		PlayMusicNoOffset(mCurMusicFileMain, 1.0);
 		break;
 
 	case MusicTune::MUSIC_TUNE_MINIGAME_LOONBOON:
-		mCurMusicFileMain = MusicFile::MUSIC_FILE_MAIN_MUSIC;
+		mCurMusicFileMain = MusicFile::MUSIC_FILE_LOONBOON;
 		if (theOffset == -1)
 			theOffset = 0xA6;
-		PlayFromOffset(mCurMusicFileMain, theOffset, 1.0);
+		PlayMusicNoOffset(mCurMusicFileMain, 1.0);
 		break;
 
 	case MusicTune::MUSIC_TUNE_CONVEYER:
-		mCurMusicFileMain = MusicFile::MUSIC_FILE_MAIN_MUSIC;
+		mCurMusicFileMain = MusicFile::MUSIC_FILE_CONVEYOR;
 		if (theOffset == -1)
 			theOffset = 0xD4;
-		PlayFromOffset(mCurMusicFileMain, theOffset, 1.0);
+		PlayMusicNoOffset(mCurMusicFileMain, 1.0);
 		break;
 
 	case MusicTune::MUSIC_TUNE_FINAL_BOSS_BRAINIAC_MANIAC:
-		mCurMusicFileMain = MusicFile::MUSIC_FILE_MAIN_MUSIC;
+		mCurMusicFileMain = MusicFile::MUSIC_FILE_BOSS;
 		if (theOffset == -1)
 			theOffset = 0x9E;
-		PlayFromOffset(mCurMusicFileMain, theOffset, 1.0);
+		PlayMusicNoOffset(mCurMusicFileMain, 1.0);
 		break;
 
 	case MusicTune::MUSIC_TUNE_CREDITS_ZOMBIES_ON_YOUR_LAWN:
 		mCurMusicFileMain = MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN;
 		if (theOffset == -1)
 			theOffset = 0;
-		PlayFromOffset(mCurMusicFileMain, theOffset, 1.0);
+		PlayMusicNoOffset(mCurMusicFileMain, 1.0);
 		break;
 
 	default:
@@ -394,12 +419,12 @@ void Music::PlayMusic(MusicTune theMusicTune, int theOffset, int theDrumsOffset)
             Mix_SetMusicTempo(aMusic, mBaseBPM);
             Mix_SetMusicSpeed(aMusic, mBaseModSpeed);
         }
-        if (mCurMusicFileDrums != -1) {
+        if (mCurMusicFileDrums != MusicFile::MUSIC_FILE_NONE) {
             Mix_Music* aMusic = GetMusicHandle(mCurMusicFileDrums);
             Mix_SetMusicTempo(aMusic, mBaseBPM);
             Mix_SetMusicSpeed(aMusic, mBaseModSpeed);
         }
-        if (mCurMusicFileHihats != -1) {
+        if (mCurMusicFileHihats != MusicFile::MUSIC_FILE_NONE) {
             Mix_Music* aMusic = GetMusicHandle(mCurMusicFileHihats);
             Mix_SetMusicTempo(aMusic, mBaseBPM);
             Mix_SetMusicSpeed(aMusic, mBaseModSpeed);
@@ -737,5 +762,5 @@ void Music::GameMusicPause(bool thePause) {
 int Music::GetNumLoadingTasks()
 {
 	//return 800 * 3;  // 内测版
-	return 3500 * 2;  // 原版
+	return 3500 * 13;  // 原版
 }
