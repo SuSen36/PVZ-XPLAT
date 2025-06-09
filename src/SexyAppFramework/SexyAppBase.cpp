@@ -5974,13 +5974,20 @@ SharedImageRef SexyAppBase::GetSharedImage(const std::string& theFileName, const
 	std::pair<SharedImageMap::iterator, bool> aResultPair;
 	SharedImageRef aSharedImageRef;
 
+	if (mGLInterface == nullptr)
+	{
+		if (isNew != nullptr)
+			*isNew = false;
+		return SharedImageRef();
+	}
+
 	{
 		AutoCrit anAutoCrit(mGLInterface->mCritSect);	
 		aResultPair = mSharedImageMap.insert(SharedImageMap::value_type(SharedImageMap::key_type(anUpperFileName, anUpperVariant), SharedImage()));
 		aSharedImageRef = &aResultPair.first->second;
 	}
 
-	if (isNew != NULL)
+	if (isNew != nullptr)
 		*isNew = aResultPair.second;
 
 	if (aResultPair.second)

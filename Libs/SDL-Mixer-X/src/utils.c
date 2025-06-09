@@ -1,6 +1,6 @@
 /*
   SDL_mixer:  An audio mixer library based on the SDL library
-  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2025 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -173,4 +173,9 @@ Sint64 _Mix_ParseTime(char *time, long samplerate_hz)
 
     if ((val = SDL_atoi(num_start)) < 0) return -1;
     return (result * 60 + val) * samplerate_hz;
+}
+
+int _Mix_MakeGainedVolume(int volume, float gain)
+{
+    return (int)SDL_floorf(((float)(volume) * (gain)) + 0.5f);
 }

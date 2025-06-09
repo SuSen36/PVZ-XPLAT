@@ -1,6 +1,6 @@
 /*
   SDL_mixer:  An audio mixer library based on the SDL library
-  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2025 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -31,6 +31,11 @@
 
 #include <fluidsynth.h>
 
+#ifdef USE_CUSTOM_AUDIO_STREAM
+#   include "stream_custom.h"
+#endif
+
+extern Mix_RWFromFile_cb _Mix_RWFromFile;
 
 typedef struct {
     int loaded;
@@ -39,9 +44,7 @@ typedef struct {
 #if (FLUIDSYNTH_VERSION_MAJOR >= 2)
     void (*delete_fluid_player)(fluid_player_t*);
     void (*delete_fluid_synth)(fluid_synth_t*);
-    int (*fluid_player_seek)(fluid_player_t*, int);
-    int (*fluid_player_get_total_ticks)(fluid_player_t*);
-    int (*fluid_player_get_current_tick)(fluid_player_t*);
+    int (*fluid_player_seek)(fluid_player_t *, int);
 #else
     int (*delete_fluid_player)(fluid_player_t*);
     int (*delete_fluid_synth)(fluid_synth_t*);
@@ -76,6 +79,10 @@ static fluidsynth_loader fluidsynth;
     fluidsynth.FUNC = FUNC;
 #endif
 
+#ifdef __APPLE__
+    /* Need to turn off optimizations so weak framework load check works */
+    __attribute__ ((optnone))
+#endif
 static int FLUIDSYNTH_Load()
 {
     if (fluidsynth.loaded == 0) {
@@ -88,9 +95,7 @@ static int FLUIDSYNTH_Load()
 #if (FLUIDSYNTH_VERSION_MAJOR >= 2)
         FUNCTION_LOADER(delete_fluid_player, void (*)(fluid_player_t*))
         FUNCTION_LOADER(delete_fluid_synth, void (*)(fluid_synth_t*))
-        FUNCTION_LOADER(fluid_player_seek, int (*)(fluid_player_t*, int))
-        FUNCTION_LOADER(fluid_player_get_total_ticks, int (*)(fluid_player_t*))
-        FUNCTION_LOADER(fluid_player_get_current_tick, int (*)(fluid_player_t*))
+        FUNCTION_LOADER(fluid_player_seek, int (*)(fluid_player_t *, int))
 #else
         FUNCTION_LOADER(delete_fluid_player, int (*)(fluid_player_t*))
         FUNCTION_LOADER(delete_fluid_synth, int (*)(fluid_synth_t*))
@@ -141,13 +146,15 @@ typedef struct {
     void *buffer;
     int buffer_size;
     int volume;
+    float gain;
+    SDL_bool is_paused;
 } FLUIDSYNTH_Music;
 
 static void FLUIDSYNTH_Delete(void *context);
 
 static int SDLCALL fluidsynth_check_soundfont(const char *path, void *data)
 {
-    SDL_RWops *rw = SDL_RWFromFile(path, "rb");
+    SDL_RWops *rw = _Mix_RWFromFile(path, "rb");
 
     (void)data;
     if (rw) {
@@ -191,6 +198,7 @@ static FLUIDSYNTH_Music *FLUIDSYNTH_LoadMusic(void *data)
         return NULL;
     }
 
+    music->gain = 1.0f;
     music->volume = MIX_MAX_VOLUME;
     music->buffer_size = music_spec.samples * sizeof(Sint16) * channels;
     music->synth_write = fluidsynth.fluid_synth_write_s16;
@@ -267,13 +275,27 @@ static void FLUIDSYNTH_SetVolume(void *context, int volume)
     FLUIDSYNTH_Music *music = (FLUIDSYNTH_Music *)context;
     /* FluidSynth's default gain is 0.2. Make 1.0 the maximum gain value to avoid sound overload. */
     music->volume = volume;
-    fluidsynth.fluid_synth_set_gain(music->synth, volume * 1.0f / MIX_MAX_VOLUME);
+    fluidsynth.fluid_synth_set_gain(music->synth, (volume * music->gain) / MIX_MAX_VOLUME);
 }
 
 static int FLUIDSYNTH_GetVolume(void *context)
 {
     FLUIDSYNTH_Music *music = (FLUIDSYNTH_Music *)context;
     return music->volume;
+}
+
+static void FLUIDSYNTH_SetGain(void *context, float gain)
+{
+    FLUIDSYNTH_Music *music = (FLUIDSYNTH_Music *)context;
+    /* FluidSynth's default gain is 0.2. Make 1.0 the maximum gain value to avoid sound overload. */
+    music->gain = gain;
+    fluidsynth.fluid_synth_set_gain(music->synth, (music->volume * music->gain) / MIX_MAX_VOLUME);
+}
+
+static float FLUIDSYNTH_GetGain(void *context)
+{
+    FLUIDSYNTH_Music *music = (FLUIDSYNTH_Music *)context;
+    return music->gain;
 }
 
 static int FLUIDSYNTH_Play(void *context, int play_count)
@@ -284,19 +306,21 @@ static int FLUIDSYNTH_Play(void *context, int play_count)
     fluidsynth.fluid_player_seek(music->player, 0);
 #endif
     fluidsynth.fluid_player_play(music->player);
+    music->is_paused = SDL_FALSE;
     return 0;
 }
 
 static void FLUIDSYNTH_Resume(void *context)
 {
-    FLUIDSYNTH_Music *music = (FLUIDSYNTH_Music*)context;
+    FLUIDSYNTH_Music *music = (FLUIDSYNTH_Music *)context;
     fluidsynth.fluid_player_play(music->player);
+    music->is_paused = SDL_FALSE;
 }
 
 static SDL_bool FLUIDSYNTH_IsPlaying(void *context)
 {
     FLUIDSYNTH_Music *music = (FLUIDSYNTH_Music *)context;
-    return fluidsynth.fluid_player_get_status(music->player) == FLUID_PLAYER_PLAYING ? SDL_TRUE : SDL_FALSE;
+    return music->is_paused || fluidsynth.fluid_player_get_status(music->player) == FLUID_PLAYER_PLAYING ? SDL_TRUE : SDL_FALSE;
 }
 
 static int FLUIDSYNTH_GetSome(void *context, void *data, int bytes, SDL_bool *done)
@@ -312,8 +336,7 @@ static int FLUIDSYNTH_GetSome(void *context, void *data, int bytes, SDL_bool *do
     }
 
     if (music->synth_write(music->synth, music_spec.samples, music->buffer, 0, 2, music->buffer, 1, 2) != FLUID_OK) {
-        Mix_SetError("Error generating FluidSynth audio");
-        return -1;
+        return Mix_SetError("Error generating FluidSynth audio");
     }
     if (SDL_AudioStreamPut(music->stream, music->buffer, music->buffer_size) < 0) {
         return -1;
@@ -332,12 +355,14 @@ static void FLUIDSYNTH_Stop(void *context)
 #if (FLUIDSYNTH_VERSION_MAJOR >= 2)
     fluidsynth.fluid_player_seek(music->player, 0);
 #endif
+    music->is_paused = SDL_FALSE;
 }
 
 static void FLUIDSYNTH_Pause(void *context)
 {
-    FLUIDSYNTH_Music *music = (FLUIDSYNTH_Music*)context;
+    FLUIDSYNTH_Music *music = (FLUIDSYNTH_Music *)context;
     fluidsynth.fluid_player_stop(music->player);
+    music->is_paused = SDL_TRUE;
 }
 
 static void FLUIDSYNTH_Delete(void *context)
@@ -362,27 +387,6 @@ static void FLUIDSYNTH_Delete(void *context)
     SDL_free(music);
 }
 
-#if (FLUIDSYNTH_VERSION_MAJOR >= 2)
-static int FLUIDSYNTH_Seek(void *context, double position)
-{
-    FLUIDSYNTH_Music *music = (FLUIDSYNTH_Music*)context;
-    fluidsynth.fluid_player_seek(music->player, (int)(position * 1000));
-    return 0;
-}
-
-static double FLUIDSYNTH_Tell(void *context)
-{
-    FLUIDSYNTH_Music *music = (FLUIDSYNTH_Music*)context;
-    return fluidsynth.fluid_player_get_current_tick(music->player) / 1000.0;
-}
-
-static double FLUIDSYNTH_Duration(void* context)
-{
-    FLUIDSYNTH_Music *music = (FLUIDSYNTH_Music*)context;
-    return fluidsynth.fluid_player_get_total_ticks(music->player) / 1000.0;
-}
-#endif
-
 Mix_MusicInterface Mix_MusicInterface_FLUIDSYNTH =
 {
     "FLUIDSYNTH",
@@ -399,22 +403,15 @@ Mix_MusicInterface Mix_MusicInterface_FLUIDSYNTH =
     NULL,   /* CreateFromFileEx [MIXER-X]*/
     FLUIDSYNTH_SetVolume,
     FLUIDSYNTH_GetVolume,
+    FLUIDSYNTH_SetGain,   /* SetGain [MIXER-X]*/
+    FLUIDSYNTH_GetGain,   /* GetGain [MIXER-X]*/
     FLUIDSYNTH_Play,
     FLUIDSYNTH_IsPlaying,
     FLUIDSYNTH_GetAudio,
     NULL,   /* Jump */
-    NULL,   /* GetOrder */
-    NULL,   /* MuteChannel */
-    NULL,   /* SetChannelVolume */
-#if (FLUIDSYNTH_VERSION_MAJOR >= 2)
-    FLUIDSYNTH_Seek,
-    FLUIDSYNTH_Tell,
-    FLUIDSYNTH_Duration,
-#else
     NULL,   /* Seek */
     NULL,   /* Tell */
     NULL,   /* Duration */
-#endif
     NULL,   /* SetTempo [MIXER-X] */
     NULL,   /* GetTempo [MIXER-X] */
     NULL,   /* SetSpeed [MIXER-X] */

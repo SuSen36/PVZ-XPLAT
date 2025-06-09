@@ -2,8 +2,6 @@ SDL Mixer X (aka SDL Mixer 2.0 Modded or SDL_mixer_ext),
 by Vitaly Novichkov <Wohlstand>,
 forked from SDL Mixer 2.0 by Sam Lantinga <slouken@libsdl.org>
 
-Fork with added libopenmpt support made by Headshotnoby (headshot2017)
-
 vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 WARNING: The licenses for libADLMIDI, libOPNMIDI, and GME is GPL,
          which means that in order to use it your application must
@@ -24,15 +22,15 @@ at the docs/SDL_mixer_ext.html
 
 Due to popular demand, here is a simple multi-channel audio mixer.
 It supports 8 channels of 16 bit stereo audio, plus a single channel
-of music, mixed by the libXMP, libOpenMPT, Modplug MOD, Timidity MIDI,
-libADLMIDI, libOPNMIDI, FluidSynth, FluidLite, GME, and drmp3 MP3 libraries.
+of music, mixed by the libXMP, Modplug MOD, Timidity MIDI, libADLMIDI,
+libOPNMIDI, FluidSynth, FluidLite, GME, and drmp3 MP3 libraries.
 
 See the header file SDL_mixer_ext.h for documentation on this mixer library.
 
 The mixer can currently load Microsoft WAVE files and Creative Labs VOC
 files as audio samples, and can load MIDI files via Timidity, libADLMIDI,
 libOPNMIDI, or by FluidSynth, and the following music formats via libXMP,
-libModPlug, libOpenMPT:  .MOD .S3M .IT .XM, and many other formats. It can load
+libModPlug:  .MOD .S3M .IT .XM, and many other formats. It can load
 Ogg Vorbis streams as music if built with Ogg Vorbis, Tremor, or stb-vrobis
 libraries, load Opus, FLAC, and finally it can load MP3 music
 using the drmp3 or libmpg123 libraries.

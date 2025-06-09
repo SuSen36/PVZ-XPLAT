@@ -698,17 +698,17 @@ void SexyMatrix3ExtractScale(const SexyMatrix3& m, float& theScaleX, float& theS
 
 void TodMarkImageForSanding(Image* theImage)
 {
-	((MemoryImage*)theImage)->mD3DFlags |= D3DIMAGEFLAG_SANDING;
+	((MemoryImage*)theImage)->mFlags |= D3DIMAGEFLAG_SANDING;
 }
 
 void TodSandImageIfNeeded(Image* theImage)
 {
 	MemoryImage* aImage = (MemoryImage*)theImage;
 	/*if (TestBit(aImage->mD3DFlags, D3DIMAGEFLAG_SANDING))*/ // UB shift by a billion
-	if (aImage->mD3DFlags & D3DIMAGEFLAG_SANDING)
+	if (aImage->mFlags & D3DIMAGEFLAG_SANDING)
 	{
 		FixPixelsOnAlphaEdgeForBlending(theImage);
-		((MemoryImage*)theImage)->mD3DFlags &= ~D3DIMAGEFLAG_SANDING; // Unset the sanding flag
+		((MemoryImage*)theImage)->mFlags &= ~D3DIMAGEFLAG_SANDING; // Unset the sanding flag
 		//SetBit((unsigned int&)aImage->mD3DFlags, D3DIMAGEFLAG_SANDING, false);  // 清除标记 Also UB!?!
 	}
 }

@@ -1,6 +1,6 @@
 /*
   SDL_mixer:  An audio mixer library based on the SDL library
-  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2024 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -224,7 +224,7 @@ static int init_midi_out(NativeMidiSong *seqi)
     if (err != MMSYSERR_NOERROR)
     {
         seqi->out = NULL;
-        return -1;
+        return 1;
     }
 
     for(i = 0; i < 16; i++)
@@ -277,8 +277,8 @@ int native_midi_detect(void)
     HMIDIOUT out;
     MMRESULT err = midiOutOpen(&out, 0, 0, 0, CALLBACK_NULL);
 
-    if (err == MMSYSERR_NOERROR) {
-        return -1;
+    if (err != MMSYSERR_NOERROR) {
+        return 0;
     }
 
     midiOutClose(out);
@@ -315,7 +315,10 @@ static int NativeMidiThread(void *context)
         return 1;
     }
 
-    init_midi_out(music);
+    if (init_midi_out(music)) {
+      Mix_SetError("Native MIDI Win32-Alt: midiOutOpen failed (%lu)\n", (unsigned long)GetLastError());
+      return 1;
+    }
 
     midi_seq_set_loop_enabled(music->song, 1);
     midi_seq_set_loop_count(music->song, music->loops < 0 ? -1 : (music->loops + 1));
@@ -733,6 +736,8 @@ Mix_MusicInterface Mix_MusicInterface_NATIVEMIDI =
     NULL,   /* CreateFromFileEx [MIXER-X]*/
     NATIVEMIDI_SetVolume,
     NATIVEMIDI_GetVolume,   /* GetVolume [MIXER-X]*/
+    NULL,   /* SetGain [MIXER-X]*/
+    NULL,   /* GetGain [MIXER-X]*/
     NATIVEMIDI_Play,
     NATIVEMIDI_IsPlaying,
     NULL,   /* GetAudio */
@@ -779,13 +784,12 @@ Mix_MusicInterface Mix_MusicInterface_NATIVEXMI =
     NULL,   /* CreateFromFileEx [MIXER-X]*/
     NATIVEMIDI_SetVolume,
     NATIVEMIDI_GetVolume,   /* GetVolume [MIXER-X]*/
+    NULL,   /* SetGain [MIXER-X]*/
+    NULL,   /* GetGain [MIXER-X]*/
     NATIVEMIDI_Play,
     NATIVEMIDI_IsPlaying,
     NULL,   /* GetAudio */
     NULL,   /* Jump */
-    NULL,   /* GetOrder */
-    NULL,   /* MuteChannel */
-    NULL,   /* SetChannelVolume */
     NATIVEMIDI_Seek,   /* Seek */
     NATIVEMIDI_Tell,   /* Tell [MIXER-X]*/
     NATIVEMIDI_Duration,   /* Duration */

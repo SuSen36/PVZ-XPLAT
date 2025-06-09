@@ -1,6 +1,6 @@
 /*
   SDL_mixer:    An audio mixer library based on the SDL library
-  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2025 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.    In no event will the authors be held liable for any damages
@@ -29,7 +29,12 @@
 #include "music_mpg123.h"
 #include "mp3utils.h"
 
+#ifdef USE_CUSTOM_AUDIO_STREAM
+#   include "stream_custom.h"
+#endif
+
 #include <stdio.h>      /* For SEEK_SET */
+#define MPG123_NO_LARGENAME /* disable the _FILE_OFFSET_BITS suffixes. */
 #ifdef MPG123_HEADER
 #include MPG123_HEADER
 #else
@@ -81,6 +86,10 @@ static mpg123_loader mpg123;
     if (mpg123.FUNC == NULL) { Mix_SetError("Missing mpg123.framework"); return -1; }
 #endif
 
+#ifdef __APPLE__
+    /* Need to turn off optimizations so weak framework load check works */
+    __attribute__ ((optnone))
+#endif
 static int MPG123_Load(void)
 {
     if (mpg123.loaded == 0) {
@@ -217,8 +226,7 @@ static int MPG123_Open(const SDL_AudioSpec *spec)
 {
     (void)spec;
     if (mpg123.mpg123_init() != MPG123_OK) {
-        Mix_SetError("mpg123_init() failed");
-        return -1;
+        return Mix_SetError("mpg123_init() failed");
     }
     return 0;
 }
@@ -388,8 +396,7 @@ static int MPG123_GetSome(void *context, void *data, int bytes, SDL_bool *done)
     case MPG123_NEW_FORMAT:
         result = mpg123.mpg123_getformat(music->handle, &rate, &channels, &encoding);
         if (result != MPG123_OK) {
-            Mix_SetError("mpg123_getformat: %s", mpg_err(music->handle, result));
-            return -1;
+            return Mix_SetError("mpg123_getformat: %s", mpg_err(music->handle, result));
         }
 #ifdef DEBUG_MPG123
         printf("MPG123 format: %s, channels: %d, rate: %ld\n",
@@ -432,8 +439,7 @@ static int MPG123_GetSome(void *context, void *data, int bytes, SDL_bool *done)
         }
         break;
     default:
-        Mix_SetError("mpg123_read: %s", mpg_err(music->handle, result));
-        return -1;
+        return Mix_SetError("mpg123_read: %s", mpg_err(music->handle, result));
     }
     return 0;
 }
@@ -525,13 +531,12 @@ Mix_MusicInterface Mix_MusicInterface_MPG123 =
     NULL,   /* CreateFromFileEx [MIXER-X]*/
     MPG123_SetVolume,
     MPG123_GetVolume,
+    NULL,   /* SetGain [MIXER-X]*/
+    NULL,   /* GetGain [MIXER-X]*/
     MPG123_Play,
     NULL,   /* IsPlaying */
     MPG123_GetAudio,
     NULL,   /* Jump */
-    NULL,   /* GetOrder */
-    NULL,   /* MuteChannel */
-    NULL,   /* SetChannelVolume */
     MPG123_Seek,
     MPG123_Tell,
     MPG123_Duration,

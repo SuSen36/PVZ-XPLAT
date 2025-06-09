@@ -89,7 +89,6 @@ set(USE_XMP OFF CACHE BOOL "SDL Mixer X xmp" FORCE)
 set(USE_OPUS OFF CACHE BOOL "SDL Mixer X opus" FORCE)
 set(USE_DRFLAC OFF CACHE BOOL "SDL Mixer X flac" FORCE)
 set(USE_PXTONE OFF CACHE BOOL "SDL Mixer X pxtone" FORCE)
-set(USE_OPENMPT ON CACHE BOOL "SDL Mixer X openmpt" FORCE) # 启用 OpenMPT 支持
 
 if(ANDROID)
 set(BUILD_SHARED_LIBS ON CACHE BOOL "Build static libraries for Emscripten" FORCE)
@@ -194,7 +193,9 @@ target_compile_definitions(re-plants-vs-zombies PRIVATE _DEBUG)
 if(ANDROID)
 target_link_libraries(re-plants-vs-zombies SDL2 SDL2_mixer_ext) # 为 Android 链接 OpenMPT
 else()
-target_link_libraries(re-plants-vs-zombies SDL2-static SDL2_mixer_ext_Static) # 为其他平台链接 OpenMPT
+target_link_libraries(re-plants-vs-zombies
+    SDL2-static SDL2main SDL2_mixer_ext_Static
+)
 endif()
 
 if (EMSCRIPTEN)

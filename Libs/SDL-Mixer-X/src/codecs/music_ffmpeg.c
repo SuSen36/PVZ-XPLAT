@@ -1,6 +1,6 @@
 /*
   SDL_mixer:  An audio mixer library based on the SDL library
-  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2024 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -42,6 +42,9 @@
 #include <libavutil/dict.h>
 #include <libswresample/swresample.h>
 
+#ifdef USE_CUSTOM_AUDIO_STREAM
+#   include "stream_custom.h"
+#endif
 
 #define AUDIO_INBUF_SIZE 4096
 
@@ -53,9 +56,17 @@
 #define AVFORMAT_NEW_avcodec_find_decoder
 #endif
 
+#if LIBAVFORMAT_VERSION_INT >= AV_VERSION_INT(60, 12, 100)
+#define AVFORMAT_NEW_avio_alloc_context
+#endif
+
 #if LIBAVFORMAT_VERSION_INT >= AV_VERSION_INT(59, 0, 100)
 #define AVFORMAT_NEW_avformat_open_input
 #define AVFORMAT_NEW_av_find_best_stream
+#endif
+
+#if LIBSWRESAMPLE_VERSION_INT >= AV_VERSION_INT(4, 14, 100)
+#define AVFORMAT_NEW_swr_convert
 #endif
 
 typedef struct ffmpeg_loader {
@@ -67,7 +78,11 @@ typedef struct ffmpeg_loader {
 
     unsigned (*avformat_version)(void);
     AVFormatContext *(*avformat_alloc_context)(void);
-    AVIOContext *(*avio_alloc_context)(unsigned char *,int,int,void *,int (*)(void *,uint8_t *,int),int (*)(void *, uint8_t *, int),int64_t (*)(void *,int64_t,int));
+#ifdef AVFORMAT_NEW_avio_alloc_context
+    AVIOContext *(*avio_alloc_context)(unsigned char *, int, int, void *, int (*)(void *,uint8_t *,int), int (*)(void *, const uint8_t *, int), int64_t (*)(void *,int64_t,int));
+#else
+    AVIOContext *(*avio_alloc_context)(unsigned char *, int, int, void *, int (*)(void *,uint8_t *,int), int (*)(void *, uint8_t *, int), int64_t (*)(void *,int64_t,int));
+#endif
 #if defined(AVFORMAT_NEW_avformat_open_input)
     int (*avformat_open_input)(AVFormatContext **, const char *,const AVInputFormat *,AVDictionary **);
 #else
@@ -107,6 +122,10 @@ typedef struct ffmpeg_loader {
     unsigned (*avutil_version)(void);
     int (*av_opt_set_int)(void *, const char *, int64_t , int);
     int (*av_opt_set_sample_fmt)(void *, const char *, enum AVSampleFormat, int);
+#if defined(AVCODEC_NEW_CHANNEL_LAYOUT)
+    int (*av_opt_set_chlayout)(void *, const char *, const AVChannelLayout *, int);
+    void (*av_channel_layout_uninit)(AVChannelLayout *channel_layout);
+#endif
     void *(*av_malloc)(size_t);
     int (*av_strerror)(int, char *, size_t);
     AVFrame *(*av_frame_alloc)(void);
@@ -120,7 +139,11 @@ typedef struct ffmpeg_loader {
     struct SwrContext *(*swr_alloc)(void);
     int (*swr_init)(struct SwrContext *s);
     int (*av_get_bytes_per_sample)(enum AVSampleFormat);
+#ifdef AVFORMAT_NEW_swr_convert
+    int (*swr_convert)(struct SwrContext *, uint8_t * const*, int,const uint8_t * const* , int);
+#else
     int (*swr_convert)(struct SwrContext *, uint8_t **, int,const uint8_t ** , int);
+#endif
     void (*swr_free)(struct SwrContext **);
 
 } ffmpeg_loader;
@@ -169,6 +192,10 @@ static inline char *mix_av_make_error_string(char *errbuf, size_t errbuf_size, i
     mix_av_make_error_string((char[AV_ERROR_MAX_STRING_SIZE]){0}, AV_ERROR_MAX_STRING_SIZE, errnum)
 
 
+#ifdef __APPLE__
+    /* Need to turn off optimizations so weak framework load check works */
+    __attribute__ ((optnone))
+#endif
 static int FFMPEG_Load(void)
 {
     unsigned ver_avcodec, ver_avformat, ver_avutil, ver_swresample;
@@ -199,7 +226,11 @@ static int FFMPEG_Load(void)
         /* AVFormat */
         FUNCTION_LOADER(handle_avformat, avformat_version, unsigned (*)(void))
         FUNCTION_LOADER(handle_avformat, avformat_alloc_context, AVFormatContext *(*)(void))
+#ifdef AVFORMAT_NEW_avio_alloc_context
+        FUNCTION_LOADER(handle_avformat, avio_alloc_context, AVIOContext *(*)(unsigned char *,int,int,void *,int (*)(void *,uint8_t *,int),int (*)(void *, const uint8_t *, int),int64_t (*)(void *,int64_t,int)))
+#else
         FUNCTION_LOADER(handle_avformat, avio_alloc_context, AVIOContext *(*)(unsigned char *,int,int,void *,int (*)(void *,uint8_t *,int),int (*)(void *, uint8_t *, int),int64_t (*)(void *,int64_t,int)))
+#endif
 #if defined(AVFORMAT_NEW_avformat_open_input)
         FUNCTION_LOADER(handle_avformat, avformat_open_input, int (*)(AVFormatContext **, const char *,const AVInputFormat *,AVDictionary **))
 #else
@@ -239,6 +270,10 @@ static int FFMPEG_Load(void)
         FUNCTION_LOADER(handle_avutil, avutil_version,  unsigned (*)(void))
         FUNCTION_LOADER(handle_avutil, av_opt_set_int,  int (*)(void *, const char *, int64_t , int))
         FUNCTION_LOADER(handle_avutil, av_opt_set_sample_fmt,  int (*)(void *, const char *, enum AVSampleFormat, int))
+#if defined(AVCODEC_NEW_CHANNEL_LAYOUT)
+        FUNCTION_LOADER(handle_avutil, av_opt_set_chlayout,  int (*)(void *, const char *, const AVChannelLayout *, int))
+        FUNCTION_LOADER(handle_avutil, av_channel_layout_uninit,  void (*)(AVChannelLayout *))
+#endif
         FUNCTION_LOADER(handle_avutil, av_malloc,  void *(*)(size_t))
         FUNCTION_LOADER(handle_avutil, av_strerror,  int (*)(int, char *, size_t))
         FUNCTION_LOADER(handle_avutil, av_frame_alloc,  AVFrame *(*)(void))
@@ -252,7 +287,11 @@ static int FFMPEG_Load(void)
         FUNCTION_LOADER(handle_swresample, swr_alloc, struct SwrContext *(*)(void))
         FUNCTION_LOADER(handle_swresample, swr_init, int (*)(struct SwrContext *s))
         FUNCTION_LOADER(handle_swresample, av_get_bytes_per_sample, int (*)(enum AVSampleFormat))
+#ifdef AVFORMAT_NEW_swr_convert
+        FUNCTION_LOADER(handle_swresample, swr_convert, int (*)(struct SwrContext *, uint8_t * const*, int,const uint8_t * const* , int))
+#else
         FUNCTION_LOADER(handle_swresample, swr_convert, int (*)(struct SwrContext *, uint8_t **, int,const uint8_t ** , int))
+#endif
         FUNCTION_LOADER(handle_swresample, swr_free, void (*)(struct SwrContext **))
 
         ver_avcodec = ffmpeg.avcodec_version();
@@ -377,13 +416,20 @@ static int FFMPEG_UpdateStream(FFMPEG_Music *music)
     SDL_assert(music->audio_stream->codecpar);
     enum AVSampleFormat sfmt = music->audio_stream->codecpar->format;
     int srate = music->audio_stream->codecpar->sample_rate;
+
 #if defined(AVCODEC_NEW_CHANNEL_LAYOUT)
     int channels = music->audio_stream->codecpar->ch_layout.nb_channels;
 #else
     int channels = music->audio_stream->codecpar->channels;
 #endif
+
     int fmt = 0;
+
+#if defined(AVCODEC_NEW_CHANNEL_LAYOUT)
+    AVChannelLayout layout;
+#else
     int layout;
+#endif
 
     if (srate == 0 || channels == 0) {
         return -1;
@@ -454,10 +500,27 @@ static int FFMPEG_UpdateStream(FFMPEG_Music *music)
         if (music->planar) {
             music->swr_ctx = ffmpeg.swr_alloc();
 #if defined(AVCODEC_NEW_CHANNEL_LAYOUT)
-            layout = music->audio_stream->codecpar->ch_layout.u.mask;
+            layout = music->audio_stream->codecpar->ch_layout;
 #else
             layout = music->audio_stream->codecpar->channel_layout;
 #endif
+
+#if defined(AVCODEC_NEW_CHANNEL_LAYOUT)
+            if (layout.u.mask == 0) {
+                layout.order = AV_CHANNEL_ORDER_NATIVE;
+                layout.nb_channels = channels;
+                if(channels > 2) {
+                    layout.u.mask = AV_CH_LAYOUT_SURROUND;
+                } else if(channels == 2) {
+                    layout.u.mask = AV_CH_LAYOUT_STEREO;
+                } else if(channels == 1) {
+                    layout.u.mask = AV_CH_LAYOUT_MONO;
+                }
+            }
+
+            ffmpeg.av_opt_set_chlayout(music->swr_ctx, "in_chlayout",  &layout, 0);
+            ffmpeg.av_opt_set_chlayout(music->swr_ctx, "out_chlayout", &layout, 0);
+#else
             if (layout == 0) {
                 if(channels > 2) {
                     layout = AV_CH_LAYOUT_SURROUND;
@@ -467,13 +530,19 @@ static int FFMPEG_UpdateStream(FFMPEG_Music *music)
                     layout = AV_CH_LAYOUT_MONO;
                 }
             }
+
             ffmpeg.av_opt_set_int(music->swr_ctx, "in_channel_layout",  layout, 0);
             ffmpeg.av_opt_set_int(music->swr_ctx, "out_channel_layout", layout, 0);
+#endif
             ffmpeg.av_opt_set_int(music->swr_ctx, "in_sample_rate",     srate, 0);
             ffmpeg.av_opt_set_int(music->swr_ctx, "out_sample_rate",    srate, 0);
             ffmpeg.av_opt_set_sample_fmt(music->swr_ctx, "in_sample_fmt",  sfmt, 0);
             ffmpeg.av_opt_set_sample_fmt(music->swr_ctx, "out_sample_fmt", music->dst_sample_fmt,  0);
             ffmpeg.swr_init(music->swr_ctx);
+
+#if defined(AVCODEC_NEW_CHANNEL_LAYOUT)
+            ffmpeg.av_channel_layout_uninit(&layout);
+#endif
 
             music->merge_buffer_size = channels * ffmpeg.av_get_bytes_per_sample(sfmt) * 4096;
             music->merge_buffer = (Uint8*)SDL_calloc(1, music->merge_buffer_size);
@@ -534,6 +603,7 @@ static void *FFMPEG_NewRW(struct SDL_RWops *src, int freesrc)
 {
     FFMPEG_Music *music = NULL;
     const AVDictionaryEntry *tag = NULL;
+    char proto[] = "file:///sdl_rwops";
     int ret;
 
     music = (FFMPEG_Music *)SDL_calloc(1, sizeof *music);
@@ -575,6 +645,7 @@ static void *FFMPEG_NewRW(struct SDL_RWops *src, int freesrc)
     }
 
     music->fmt_ctx->pb = music->avio_in;
+    music->fmt_ctx->url = proto;
 
     ret = ffmpeg.avformat_open_input(&music->fmt_ctx, NULL, NULL, NULL);
     if (ret < 0) {
@@ -977,13 +1048,12 @@ Mix_MusicInterface Mix_MusicInterface_FFMPEG =
     NULL,   /* CreateFromFileEx [MIXER-X]*/
     FFMPEG_SetVolume,
     FFMPEG_GetVolume,   /* GetVolume [MIXER-X]*/
+    NULL,   /* SetGain [MIXER-X]*/
+    NULL,   /* GetGain [MIXER-X]*/
     FFMPEG_Play,
     NULL,   /* IsPlaying */
     FFMPEG_PlayAudio,
     NULL,   /* Jump */
-    NULL,   /* GetOrder */
-    NULL,   /* MuteChannel */
-    NULL,   /* SetChannelVolume */
     FFMPEG_Seek, /* Seek */
     FFMPEG_Tell, /* Tell [MIXER-X]*/
     FFMPEG_Duration, /* Duration */

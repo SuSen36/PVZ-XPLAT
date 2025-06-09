@@ -37,17 +37,17 @@ MemoryImage::MemoryImage(SexyAppBase* theApp)
 }
 
 MemoryImage::MemoryImage(const MemoryImage& theMemoryImage) :
-	Image(theMemoryImage),
-	mBitsChangedCount(theMemoryImage.mBitsChangedCount),
-	mD3DData(NULL),
-	mD3DFlags(theMemoryImage.mD3DFlags),
-	mHasTrans(theMemoryImage.mHasTrans),
-	mHasAlpha(theMemoryImage.mHasAlpha),
-	mIsVolatile(theMemoryImage.mIsVolatile),
-	mPurgeBits(theMemoryImage.mPurgeBits),
-	mWantPal(theMemoryImage.mWantPal),
-	mBitsChanged(theMemoryImage.mBitsChanged),
-	mApp(theMemoryImage.mApp)
+        Image(theMemoryImage),
+        mBitsChangedCount(theMemoryImage.mBitsChangedCount),
+        mData(NULL),
+        mFlags(theMemoryImage.mFlags),
+        mHasTrans(theMemoryImage.mHasTrans),
+        mHasAlpha(theMemoryImage.mHasAlpha),
+        mIsVolatile(theMemoryImage.mIsVolatile),
+        mPurgeBits(theMemoryImage.mPurgeBits),
+        mWantPal(theMemoryImage.mWantPal),
+        mBitsChanged(theMemoryImage.mBitsChanged),
+        mApp(theMemoryImage.mApp)
 {
 	bool deleteBits = false;
 
@@ -154,8 +154,8 @@ void MemoryImage::Init()
 	mForcedMode = false;
 	mIsVolatile = false;
 
-	mD3DData = NULL;
-	mD3DFlags = 0;
+    mData = NULL;
+    mFlags = 0;
 	mBitsChangedCount = 0;
 
 	mPurgeBits = false;
@@ -1119,7 +1119,7 @@ void MemoryImage::PurgeBits()
 	{
 		// Due to potential D3D threading issues we have to defer the texture creation
 		//  and therefore the actual purging
-		if (mD3DData == NULL)
+		if (mData == NULL)
 			return;
 	}
 	else
@@ -1133,7 +1133,7 @@ void MemoryImage::PurgeBits()
 	delete [] mBits;
 	mBits = NULL;
 	
-	if (mD3DData != NULL)
+	if (mData != NULL)
 	{
 		delete [] mColorIndices;
 		mColorIndices = NULL;
@@ -1284,7 +1284,7 @@ uint32_t* MemoryImage::GetBits()
 				*(aDestPtr++) = (r << 16) | (g << 8) | (b) | (anAlpha << 24);
 			}
 		}
-		else if ((mD3DData == NULL) || (!mApp->mGLInterface->RecoverBits(this)))
+		else if ((mData == NULL) || (!mApp->mGLInterface->RecoverBits(this)))
 		{
 			memset(mBits, 0, aSize*sizeof(uint32_t));
 		}

@@ -1,6 +1,6 @@
 /*
   SDL_mixer:  An audio mixer library based on the SDL library
-  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2025 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -46,6 +46,9 @@
 #define DRFLAC_FREE(p) SDL_free((p))
 #include "dr_libs/dr_flac.h"
 
+#ifdef USE_CUSTOM_AUDIO_STREAM
+#   include "stream_custom.h"
+#endif
 
 typedef struct {
     struct mp3file_t file;
@@ -265,8 +268,7 @@ static int DRFLAC_GetSome(void *context, void *data, int bytes, SDL_bool *done)
 
     if (music->loop_flag) {
         if (!drflac_seek_to_pcm_frame(music->dec, music->loop_start)) {
-            SDL_SetError("drflac_seek_to_pcm_frame() failed");
-            return -1;
+            return Mix_SetError("drflac_seek_to_pcm_frame() failed");
         } else {
             int play_count = -1;
             if (music->play_count > 0) {
@@ -400,13 +402,12 @@ Mix_MusicInterface Mix_MusicInterface_DRFLAC =
     NULL,   /* CreateFromFileEx [MIXER-X]*/
     DRFLAC_SetVolume,
     DRFLAC_GetVolume,
+    NULL,   /* SetGain [MIXER-X]*/
+    NULL,   /* GetGain [MIXER-X]*/
     DRFLAC_Play,
     NULL,   /* IsPlaying */
     DRFLAC_GetAudio,
     NULL,   /* Jump */
-    NULL,   /* GetOrder */
-    NULL,   /* MuteChannel */
-    NULL,   /* SetChannelVolume */
     DRFLAC_Seek,
     DRFLAC_Tell,
     DRFLAC_Duration,

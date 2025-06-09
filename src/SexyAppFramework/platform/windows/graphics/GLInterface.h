@@ -27,12 +27,12 @@ class TriVertex;
 
 typedef std::set<GLImage*> GLImageSet;
 
-enum D3DImageFlags 
+enum ImageFlags
 {
-	D3DImageFlag_MinimizeNumSubdivisions	=			0x0001,		// subdivide image into fewest possible textures (may use more memory)
-	D3DImageFlag_Use64By64Subdivisions		=			0x0002,		// good to use with image strips so the entire texture isn't pulled in when drawing just a piece
-	D3DImageFlag_UseA4R4G4B4				=			0x0004,		// images with not too many color gradients work well in this format
-	D3DImageFlag_UseA8R8G8B8				=			0x0008		// non-alpha images will be stored as R5G6B5 by default so use this option if you want a 32-bit non-alpha image
+	ImageFlag_MinimizeNumSubdivisions	=			0x0001,		// subdivide image into fewest possible textures (may use more memory)
+	ImageFlag_Use64By64Subdivisions		=			0x0002,		// good to use with image strips so the entire texture isn't pulled in when drawing just a piece
+    ImageFlag_UseA4R4G4B4				=			0x0004,		// images with not too many color gradients work well in this format
+	ImageFlag_UseA8R8G8B8				=			0x0008		// non-alpha images will be stored as R5G6B5 by default so use this option if you want a 32-bit non-alpha image
 };
 
 ///////////////////////////////////////////////////////////////////////////////

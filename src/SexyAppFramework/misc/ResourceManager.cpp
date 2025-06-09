@@ -771,13 +771,13 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes)
 	*/
 
 	if (theRes->mA4R4G4B4)
-		aGLImage->mD3DFlags |= D3DImageFlag_UseA4R4G4B4;
+		aGLImage->mFlags |= ImageFlag_UseA4R4G4B4;
 
 	if (theRes->mA8R8G8B8)
-		aGLImage->mD3DFlags |= D3DImageFlag_UseA8R8G8B8;
+		aGLImage->mFlags |= ImageFlag_UseA8R8G8B8;
 
 	if (theRes->mMinimizeSubdivisions)
-		aGLImage->mD3DFlags |= D3DImageFlag_MinimizeNumSubdivisions;
+		aGLImage->mFlags |= ImageFlag_MinimizeNumSubdivisions;
 
 	if (theRes->mAnimInfo.mAnimType != AnimType_None)
 		aGLImage->mAnimInfo = new AnimInfo(theRes->mAnimInfo);

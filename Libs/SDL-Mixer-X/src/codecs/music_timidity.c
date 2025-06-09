@@ -1,6 +1,6 @@
 /*
   SDL_mixer:  An audio mixer library based on the SDL library
-  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2025 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -26,6 +26,10 @@
 #include "music_timidity.h"
 
 #include <timidity.h>
+
+#ifdef USE_CUSTOM_AUDIO_STREAM
+#   include "stream_custom.h"
+#endif
 
 
 typedef struct
@@ -295,13 +299,12 @@ Mix_MusicInterface Mix_MusicInterface_TIMIDITY =
     NULL,   /* CreateFromFileEx [MIXER-X]*/
     TIMIDITY_SetVolume,
     TIMIDITY_GetVolume,
+    NULL,   /* SetGain [MIXER-X]*/
+    NULL,   /* GetGain [MIXER-X]*/
     TIMIDITY_Play,
     TIMIDITY_IsPlaying,
     TIMIDITY_GetAudio,
     NULL,   /* Jump */
-    NULL,   /* GetOrder */
-    NULL,   /* MuteChannel */
-    NULL,   /* SetChannelVolume */
     TIMIDITY_Seek,
     TIMIDITY_Tell,
     TIMIDITY_Duration,

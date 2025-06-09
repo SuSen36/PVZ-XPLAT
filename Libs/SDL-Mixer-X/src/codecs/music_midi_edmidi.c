@@ -1,6 +1,6 @@
 /*
   SDL_mixer:  An audio mixer library based on the SDL library
-  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2024 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -72,6 +72,10 @@ static edmidi_loader EDMIDI;
     if (EDMIDI.FUNC == NULL) { Mix_SetError("Missing EDMIDI.framework"); return -1; }
 #endif
 
+#ifdef __APPLE__
+    /* Need to turn off optimizations so weak framework load check works */
+    __attribute__ ((optnone))
+#endif
 static int EDMIDI_Load(void)
 {
     if (EDMIDI.loaded == 0) {
@@ -154,6 +158,7 @@ typedef struct
     int play_count;
     struct EDMIDIPlayer *edmidi;
     int volume;
+    int volume_real;
     double tempo;
     float gain;
 
@@ -165,20 +170,34 @@ typedef struct
     struct EDMIDI_AudioFormat sample_format;
 } EDMIDI_Music;
 
-/* Set the volume for a EDMIDI stream */
+/* Set the volume_real for a EDMIDI stream */
 static void EDMIDI_setvolume(void *music_p, int volume)
 {
     EDMIDI_Music *music = (EDMIDI_Music *)music_p;
-    float v = SDL_floorf(((float)(volume) * music->gain) + 0.5f);
-    music->volume = (int)v;
+    music->volume = volume;
+    music->volume_real = _Mix_MakeGainedVolume(volume, music->gain);
 }
 
 /* Get the volume for a EDMIDI stream */
 static int EDMIDI_getvolume(void *music_p)
 {
     EDMIDI_Music *music = (EDMIDI_Music *)music_p;
-    float v = SDL_floorf(((float)(music->volume) / music->gain) + 0.5f);
-    return (int)v;
+    return music->volume;
+}
+
+/* Set the gaining factor for an ADLMIDI stream */
+static void EDMIDI_setgain(void *music_p, float gain)
+{
+    EDMIDI_Music *music = (EDMIDI_Music *)music_p;
+    music->gain = gain;
+    music->volume_real = _Mix_MakeGainedVolume(music->volume, gain);
+}
+
+/* Get the gaining factor for an ADLMIDI stream */
+static float EDMIDI_getgain(void *music_p)
+{
+    EDMIDI_Music *music = (EDMIDI_Music *)music_p;
+    return music->gain;
 }
 
 static void process_args(const char *args, EDMidi_Setup *setup)
@@ -272,6 +291,7 @@ static EDMIDI_Music *EDMIDI_LoadSongRW(SDL_RWops *src, const char *args)
     music->tempo = setup.tempo;
     music->gain = setup.gain;
     music->volume = MIX_MAX_VOLUME;
+    music->volume_real = _Mix_MakeGainedVolume(MIX_MAX_VOLUME, setup.gain);
 
     switch (music_spec.format) {
     case AUDIO_U8:
@@ -452,7 +472,7 @@ static int EDMIDI_playSome(void *context, void *data, int bytes, SDL_bool *done)
 static int EDMIDI_playAudio(void *music_p, void *stream, int len)
 {
     EDMIDI_Music *music = (EDMIDI_Music *)music_p;
-    return music_pcm_getaudio(music_p, stream, len, music->volume, EDMIDI_playSome);
+    return music_pcm_getaudio(music_p, stream, len, music->volume_real, EDMIDI_playSome);
 }
 
 /* Close the given Game Music Emulators stream */
@@ -616,6 +636,8 @@ Mix_MusicInterface Mix_MusicInterface_EDMIDI =
     NULL,   /* CreateFromFileEx [MIXER-X]*/
     EDMIDI_setvolume,
     EDMIDI_getvolume,
+    EDMIDI_setgain,   /* SetGain [MIXER-X]*/
+    EDMIDI_getgain,   /* GetGain [MIXER-X]*/
     EDMIDI_play,
     NULL,   /* IsPlaying */
     EDMIDI_playAudio,
@@ -661,13 +683,12 @@ Mix_MusicInterface Mix_MusicInterface_EDXMI =
     NULL,   /* CreateFromFileEx [MIXER-X]*/
     EDMIDI_setvolume,
     EDMIDI_getvolume,
+    EDMIDI_setgain,   /* SetGain [MIXER-X]*/
+    EDMIDI_getgain,   /* GetGain [MIXER-X]*/
     EDMIDI_play,
     NULL,   /* IsPlaying */
     EDMIDI_playAudio,
     NULL,       /* Jump */
-    NULL,   /* GetOrder */
-    NULL,   /* MuteChannel */
-    NULL,   /* SetChannelVolume */
     EDMIDI_Seek,
     EDMIDI_Tell,   /* Tell [MIXER-X]*/
     EDMIDI_Duration,

@@ -1,6 +1,6 @@
 /*
   SDL_mixer:  An audio mixer library based on the SDL library
-  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2025 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -45,6 +45,8 @@ extern void _Mix_ParseMidiMetaTag(Mix_MusicMetaTags *dst_tags,
 extern Sint64 _Mix_ParseTime(char *time, long samplerate_hz);
 
 extern SDL_bool _Mix_IsLoopTag(const char *tag);
+
+extern int _Mix_MakeGainedVolume(int volume, float gain);
 
 #endif /* UTILS_H_ */
 

@@ -1,6 +1,6 @@
 /*
   SDL_mixer:  An audio mixer library based on the SDL library
-  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2025 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -31,6 +31,10 @@
 #include <math.h> /* for missing exp() */
 #endif
 
+#ifdef USE_CUSTOM_AUDIO_STREAM
+#   include "stream_custom.h"
+#endif
+
 #define STB_VORBIS_SDL 1 /* for SDL_mixer-specific stuff. */
 #define STB_VORBIS_NO_STDIO 1
 #define STB_VORBIS_NO_CRT 1
@@ -40,7 +44,7 @@
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 #define STB_VORBIS_BIG_ENDIAN 1
 #endif
-#define STBV_CDECL SDLCALL /* for SDL_qsort */
+#define STBV_CDECL SDLCALL /* for SDL_qsort() */
 
 #ifdef assert
 #undef assert
@@ -195,18 +199,13 @@ static int OGG_UpdateSpeed(OGG_music *music)
         return 0;
     }
 
-    if (music->stream) {
-        SDL_AudioStreamFlush(music->stream);
-        if (SDL_AudioStreamAvailable(music->stream) > 0) {
-            return -1;
-        }
-        SDL_FreeAudioStream(music->stream);
-        music->stream = NULL;
-    }
-
     music->computed_src_rate = music->vi.sample_rate * music->speed;
     if (music->computed_src_rate < 1000) {
         music->computed_src_rate = 1000;
+    }
+
+    if (music->stream) {
+        SDL_FreeAudioStream(music->stream);
     }
 
     music->stream = SDL_NewAudioStream(AUDIO_F32SYS, (Uint8)(music->multitrack ? music->multitrack_channels : music->vi.channels), music->computed_src_rate,
@@ -409,6 +408,14 @@ static void *OGG_CreateFromRWex(SDL_RWops *src, int freesrc, const char *args)
     }
 
     rate = music->vi.sample_rate;
+
+    music->full_length = stb_vorbis_stream_length_in_samples(music->vf);
+    if (music->full_length <= 0) {
+        Mix_SetError("No samples in ogg/vorbis stream.");
+        OGG_Delete(music);
+        return NULL;
+    }
+
     vc = stb_vorbis_get_comment(music->vf);
     if (vc.comment_list != NULL) {
         for (i = 0; i < vc.comment_list_length; i++) {
@@ -461,7 +468,6 @@ static void *OGG_CreateFromRWex(SDL_RWops *src, int freesrc, const char *args)
         }
     }
 
-    music->full_length = stb_vorbis_stream_length_in_samples(music->vf);
     if ((music->loop_end > 0) && (music->loop_end <= music->full_length) &&
         (music->loop_start < music->loop_end)) {
         music->loop = 1;
@@ -516,13 +522,14 @@ static void OGG_Stop(void *context)
 static int OGG_GetSome(void *context, void *data, int bytes, SDL_bool *done)
 {
     OGG_music *music = (OGG_music *)context;
-    SDL_bool looped = SDL_FALSE;
-    int filled, amount, channels, result, i, j, k;
+    SDL_bool looped = SDL_FALSE, retry_get = SDL_FALSE;
+    int filled, amount, channels, result, div_chans, i, j, k;
     int section;
     Sint64 pcmPos;
     float *cur;
     float *cur_src[STB_VORBIS_MAX_CHANNELS];
 
+try_get:
     filled = SDL_AudioStreamGet(music->stream, data, bytes);
     if (filled != 0) {
         return filled;
@@ -534,10 +541,19 @@ static int OGG_GetSome(void *context, void *data, int bytes, SDL_bool *done)
         return 0;
     }
 
+    if (music->computed_src_rate < 0) {
+        result = OGG_UpdateSpeed(music);
+        if (result < 0) {
+            return -1; /* Error has occured */
+        }
+        retry_get = SDL_TRUE;
+    }
+
     section = music->section;
 
     if (music->multitrack) {
         channels = music->multitrack_channels;
+        div_chans = (music->vi.channels / music->multitrack_channels);
         amount = stb_vorbis_get_samples_float(music->vf,
                                               music->multitrack_channels * music->multitrack_tracks,
                                               music->multitrack_buffer,
@@ -554,7 +570,7 @@ static int OGG_GetSome(void *context, void *data, int bytes, SDL_bool *done)
                 }
 
                 for (k = 0; k < music->multitrack_channels; ++k) {
-                    cur[k] += *(cur_src[(j * music->multitrack_channels) + k]++);
+                    cur[k] += *(cur_src[(j * music->multitrack_channels) + k]++) / div_chans;
                 }
             }
 
@@ -574,15 +590,6 @@ static int OGG_GetSome(void *context, void *data, int bytes, SDL_bool *done)
         music->section = section;
         if (OGG_UpdateSection(music) < 0) {
             return -1;
-        }
-    }
-
-    if (music->computed_src_rate < 0) {
-        result = OGG_UpdateSpeed(music);
-        if (result == -1) {
-            return 0; /* Has data to be flush */
-        } else if (result == -2) {
-            return -1; /* Error has occured */
         }
     }
 
@@ -621,6 +628,11 @@ static int OGG_GetSome(void *context, void *data, int bytes, SDL_bool *done)
             }
         }
     }
+
+    if (retry_get) {
+        goto try_get; /* Prevent the false-positive "too many zero loop cycles" break condition match */
+    }
+
     return 0;
 }
 static int OGG_GetAudio(void *context, void *data, int bytes)
@@ -761,13 +773,12 @@ Mix_MusicInterface Mix_MusicInterface_OGG =
     NULL,   /* CreateFromFileEx [MIXER-X]*/
     OGG_SetVolume,
     OGG_GetVolume,
+    NULL,   /* SetGain [MIXER-X]*/
+    NULL,   /* GetGain [MIXER-X]*/
     OGG_Play,
     NULL,   /* IsPlaying */
     OGG_GetAudio,
     NULL,   /* Jump */
-    NULL,   /* GetOrder */
-    NULL,   /* MuteChannel */
-    NULL,   /* SetChannelVolume */
     OGG_Seek,
     OGG_Tell,
     OGG_Duration,

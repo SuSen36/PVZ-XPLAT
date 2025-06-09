@@ -1,6 +1,6 @@
 /*
   SDL_mixer:  An audio mixer library based on the SDL library
-  Copyright (C) 1997-2023 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2025 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -29,7 +29,6 @@ typedef enum
 {
     MIX_MUSIC_CMD,
     MIX_MUSIC_WAVE,
-    MIX_MUSIC_OPENMPT,
     MIX_MUSIC_MODPLUG,
     MIX_MUSIC_FLUIDSYNTH,
     MIX_MUSIC_TIMIDITY,
@@ -120,6 +119,12 @@ typedef struct
     /* Get the volume */
     int (*GetVolume)(void *music);
 
+    /* Set the gaining factor */
+    void (*SetGain)(void *music, float gain);
+
+    /* Get the gaining factor */
+    float (*GetGain)(void *music);
+
     /* Start playing music from the beginning with an optional loop count */
     int (*Play)(void *music, int play_count);
 
@@ -131,15 +136,6 @@ typedef struct
 
     /* Jump to a given order in mod music */
     int (*Jump)(void *music, int order);
-
-	/* Get current order in mod music */
-    int (*GetOrder)(void *music, int* outOrder);
-
-    /* Mod music: Toggle muted channel */
-    int (*MuteChannel)(void *music, int channel, int mute);
-
-    /* Mod music: Set a channel's volume */
-    int (*SetChannelVolume)(void *music, int channel, int volume);
 
     /* Seek to a play position (in seconds) */
     int (*Seek)(void *music, double position);
