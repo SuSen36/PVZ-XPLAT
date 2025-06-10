@@ -135,7 +135,7 @@ public:
 
 typedef std::multimap<int, RenderCommand> RenderCommandMap;
 
-class ImageFont : public _Font
+class ImageFont : public Font
 {
 public:	
 	FontData*				mFontData;
@@ -166,7 +166,7 @@ public:
 	virtual int				StringWidth(const SexyString& theString);
 	virtual void			DrawString(Graphics* g, int theX, int theY, const SexyString& theString, const Color& theColor, const Rect& theClipRect);
 
-	virtual _Font*			Duplicate();
+	virtual Font*			Duplicate();
 
 	virtual void			SetPointSize(int thePointSize);
 	virtual int				GetPointSize();

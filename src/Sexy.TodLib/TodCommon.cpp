@@ -430,7 +430,7 @@ float RandRangeFloat(float theMin, float theMax)
 }
 
 //0x511CE0
-void TodDrawString(Graphics* g, const SexyString& theText, int thePosX, int thePosY, _Font* theFont, const Color& theColor, DrawStringJustification theJustification)
+void TodDrawString(Graphics* g, const SexyString& theText, int thePosX, int thePosY, Font* theFont, const Color& theColor, DrawStringJustification theJustification)
 {
 	SexyString aFinalString = TodStringTranslate(theText);
 
@@ -466,7 +466,7 @@ static RenderCommand* gRenderTail[256];
 static RenderCommand* gRenderHead[256];
 
 //0x511E50
-void TodDrawStringMatrix(Graphics* g, const _Font* theFont, const SexyMatrix3& theMatrix, const SexyString& theString, const Color& theColor)
+void TodDrawStringMatrix(Graphics* g, const Font* theFont, const SexyMatrix3& theMatrix, const SexyString& theString, const Color& theColor)
 {
 	SexyString aFinalString = TodStringTranslate(theString);
 
@@ -1122,6 +1122,7 @@ void TodResourceManager::AddImageToMap(SharedImageRef* theImage, const std::stri
 	ImageRes* aImageRes = new ImageRes();
 	aImageRes->mImage = *theImage;
 	aImageRes->mPath = thePath;
+    //TODO:修复崩溃问题
 	mImageMap.insert(ResMap::value_type(thePath, aImageRes));
 }
 
@@ -1209,16 +1210,16 @@ bool TodFindImagePath(Image* theImage, std::string* thePath)
 }
 
 // @Patoke implemented
-bool TodFindFontPath(_Font* theFont, std::string* thePath) {
+bool TodFindFontPath(Font* theFont, std::string* thePath) {
 	return ((TodResourceManager*)gSexyAppBase->mResourceManager)->FindFontPath(theFont, thePath);
 }
 
-bool TodResourceManager::FindFontPath(_Font* theFont, std::string* thePath)
+bool TodResourceManager::FindFontPath(Font* theFont, std::string* thePath)
 {
 	for (auto anItr = mFontMap.begin(); anItr != mFontMap.end(); anItr++)
 	{
 		FontRes* aFontRes = (FontRes*)anItr->second;
-		_Font* aFont = (_Font*)aFontRes->mFont;
+		Font* aFont = (Font*)aFontRes->mFont;
 		if (aFont == theFont)
 		{
 			*thePath = anItr->first;

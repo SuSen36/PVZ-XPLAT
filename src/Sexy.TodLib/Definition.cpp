@@ -269,7 +269,7 @@ unsigned int DefGetSizeImage(Image** theValue) {
     return aImagePath.length() + sizeof(unsigned int);
 }
 
-unsigned int DefGetSizeFont(_Font** theValue) {
+unsigned int DefGetSizeFont(Font** theValue) {
     std::string aFontPath{};
     if (*theValue)
         TodFindFontPath(*theValue, &aFontPath);
@@ -294,7 +294,7 @@ unsigned int DefinitionGetDeepSize(DefMap* theDefMap, void* theDefinition) {
             aResult += DefGetSizeImage((Image**)aDest);
             break;
         case DefFieldType::DT_FONT:
-            aResult += DefGetSizeFont((_Font**)aDest);
+            aResult += DefGetSizeFont((Font**)aDest);
             break;
         default:
             continue;
@@ -357,9 +357,9 @@ bool DefinitionLoadImage(Image** theImage, const SexyString& theName)
 }
 
 //0x443F60
-bool DefinitionLoadFont(_Font** theFont, const SexyString& theName)
+bool DefinitionLoadFont(Font** theFont, const SexyString& theName)
 {
-    _Font* aFont = gSexyAppBase->mResourceManager->LoadFont(SexyStringToString(theName));
+    Font* aFont = gSexyAppBase->mResourceManager->LoadFont(SexyStringToString(theName));
     *theFont = aFont;
     return aFont != nullptr;
 }
@@ -438,7 +438,7 @@ inline bool DefReadFromCacheImage(void*& theReadPtr, Image** theImage)
 }
 
 //0x444220
-inline bool DefReadFromCacheFont(void*& theReadPtr, _Font** theFont)
+inline bool DefReadFromCacheFont(void*& theReadPtr, Font** theFont)
 {
     int aLen;
     SMemR(theReadPtr, &aLen, sizeof(int));  // 读取字体标签字符数组的长度
@@ -470,7 +470,7 @@ bool DefMapReadFromCache(void*& theReadPtr, DefMap* theDefMap, void* theDefiniti
             aSucceed = DefReadFromCacheImage(theReadPtr, (Image**)aDest);
             break;
         case DefFieldType::DT_FONT:
-            aSucceed = DefReadFromCacheFont(theReadPtr, (_Font**)aDest);
+            aSucceed = DefReadFromCacheFont(theReadPtr, (Font**)aDest);
             break;
         case DefFieldType::DT_TRACK_FLOAT:
             aSucceed = DefReadFromCacheFloatTrack(theReadPtr, (FloatParameterTrack*)aDest);
@@ -1053,7 +1053,7 @@ bool DefinitionReadImageField(XMLParser* theXmlParser, Image** theImage)
     return false;
 }
 
-bool DefinitionReadFontField(XMLParser* theXmlParser, _Font** theFont)
+bool DefinitionReadFontField(XMLParser* theXmlParser, Font** theFont)
 {
     SexyString aStringValue;
     if (!DefinitionReadXMLString(theXmlParser, aStringValue))
@@ -1122,7 +1122,7 @@ bool DefinitionReadField(XMLParser* theXmlParser, DefMap* theDefMap, void* theDe
                 aSuccess = DefinitionReadImageField(theXmlParser, (Image**)pVar);
                 break;
             case DefFieldType::DT_FONT:
-                aSuccess = DefinitionReadFontField(theXmlParser, (_Font**)pVar);
+                aSuccess = DefinitionReadFontField(theXmlParser, (Font**)pVar);
                 break;
             default:
                 aSuccess = false;
@@ -1186,7 +1186,7 @@ void DefWriteToCacheImage(void*& theWritePtr, Image** theValue) {
         SMemW(theWritePtr, aImageName.c_str(), aImageSize);
 }
 
-void DefWriteToCacheFont(void*& theWritePtr, _Font** theValue) {
+void DefWriteToCacheFont(void*& theWritePtr, Font** theValue) {
     std::string aFontName{};
     if (*theValue) {
         TodFindFontPath(*theValue, &aFontName);
@@ -1215,7 +1215,7 @@ void DefMapWriteToCache(void*& theWritePtr, DefMap* theDefMap, void* theDefiniti
 			DefWriteToCacheImage(theWritePtr, (Image**)aDest);
 			break;
 		case DefFieldType::DT_FONT:
-			DefWriteToCacheFont(theWritePtr, (_Font**)aDest);
+			DefWriteToCacheFont(theWritePtr, (Font**)aDest);
 			break;
 		default:
 			break;

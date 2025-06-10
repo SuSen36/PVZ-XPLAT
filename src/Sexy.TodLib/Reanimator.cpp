@@ -211,7 +211,7 @@ bool ReanimationLoadDefinition(const SexyString& theFileName, ReanimatorDefiniti
 		float aPrevFrame = 0.0f;
 		float aPrevAlpha = 1.0f;
 		Image* aPrevImage = nullptr;
-		_Font* aPrevFont = nullptr;
+		Font* aPrevFont = nullptr;
 		const char* aPrevText = "";
 
 		// 遍历每一帧，依次用前一帧的数据填充后一帧的未定义数据，并重新记录前一帧的数据

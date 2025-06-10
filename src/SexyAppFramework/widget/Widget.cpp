@@ -312,7 +312,7 @@ void Widget::MouseWheel(int){}
 
 Rect Widget::WriteCenteredLine(Graphics* g, int anOffset, const SexyString& theLine)
 {
-	_Font* aFont = g->GetFont();
+	Font* aFont = g->GetFont();
 	int aWidth = aFont->StringWidth(theLine);
 	int aX = (mWidth - aWidth) / 2;
 
@@ -323,7 +323,7 @@ Rect Widget::WriteCenteredLine(Graphics* g, int anOffset, const SexyString& theL
 
 Rect Widget::WriteCenteredLine(Graphics* g, int anOffset, const SexyString& theLine, Color theColor1, Color theColor2, const Point& theShadowOffset)
 {
-	_Font* aFont = g->GetFont();
+	Font* aFont = g->GetFont();
 	int aWidth = aFont->StringWidth(theLine);
 	int aX = (mWidth - aWidth) / 2;
 	

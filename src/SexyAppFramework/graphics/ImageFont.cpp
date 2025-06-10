@@ -1207,13 +1207,13 @@ ImageFont::ImageFont(Image* theFontImage)
 }
 
 ImageFont::ImageFont(const ImageFont& theImageFont) :
-	_Font(theImageFont),
-	mFontData(theImageFont.mFontData),
-	mPointSize(theImageFont.mPointSize),
-	mTagVector(theImageFont.mTagVector),
-	mActiveListValid(theImageFont.mActiveListValid),
-	mScale(theImageFont.mScale),
-	mForceScaledImagesWhite(theImageFont.mForceScaledImagesWhite)
+        Font(theImageFont),
+        mFontData(theImageFont.mFontData),
+        mPointSize(theImageFont.mPointSize),
+        mTagVector(theImageFont.mTagVector),
+        mActiveListValid(theImageFont.mActiveListValid),
+        mScale(theImageFont.mScale),
+        mForceScaledImagesWhite(theImageFont.mForceScaledImagesWhite)
 {
 	mFontData->Ref();
 
@@ -1777,7 +1777,7 @@ void ImageFont::DrawString(Graphics* g, int theX, int theY, const SexyString& th
 	DrawStringEx(g, theX, theY, theString, theColor, NULL, NULL);
 }
 
-_Font* ImageFont::Duplicate()
+Font* ImageFont::Duplicate()
 {
 	return new ImageFont(*this);
 }

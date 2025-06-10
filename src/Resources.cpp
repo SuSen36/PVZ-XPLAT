@@ -311,8 +311,8 @@ bool Sexy::ExtractDelayLoad_ChallengeScreenResources(ResourceManager* theManager
 }
 
 // DelayLoad_Credits Resources
-_Font* Sexy::FONT_BRIANNETOD32;
-_Font* Sexy::FONT_BRIANNETOD32BLACK;
+Font* Sexy::FONT_BRIANNETOD32;
+Font* Sexy::FONT_BRIANNETOD32BLACK;
 Image* Sexy::IMAGE_CREDITS_PLAYBUTTON;
 Image* Sexy::IMAGE_CREDITS_ZOMBIENOTE;
 Image* Sexy::IMAGE_REANIM_CREDITS_DISCOLIGHTS;
@@ -1112,7 +1112,7 @@ bool Sexy::ExtractInitResources(ResourceManager* theManager)
 }
 
 // LoaderBar Resources
-_Font* Sexy::FONT_BRIANNETOD16;
+Font* Sexy::FONT_BRIANNETOD16;
 Image* Sexy::IMAGE_LOADBAR_DIRT;
 Image* Sexy::IMAGE_LOADBAR_GRASS;
 Image* Sexy::IMAGE_PVZ_LOGO;
@@ -1147,24 +1147,24 @@ bool Sexy::ExtractLoaderBarResources(ResourceManager* theManager)
 }
 
 // LoadingFonts Resources
-_Font* Sexy::FONT_BRIANNETOD12;
-_Font* Sexy::FONT_CONTINUUMBOLD14;
-_Font* Sexy::FONT_CONTINUUMBOLD14OUTLINE;
-_Font* Sexy::FONT_DWARVENTODCRAFT12;
-_Font* Sexy::FONT_DWARVENTODCRAFT15;
-_Font* Sexy::FONT_DWARVENTODCRAFT18;
-_Font* Sexy::FONT_DWARVENTODCRAFT18BRIGHTGREENINSET;
-_Font* Sexy::FONT_DWARVENTODCRAFT18GREENINSET;
-_Font* Sexy::FONT_DWARVENTODCRAFT18YELLOW;
-_Font* Sexy::FONT_DWARVENTODCRAFT24;
-_Font* Sexy::FONT_DWARVENTODCRAFT36BRIGHTGREENINSET;
-_Font* Sexy::FONT_DWARVENTODCRAFT36GREENINSET;
-_Font* Sexy::FONT_HOUSEOFTERROR16;
-_Font* Sexy::FONT_HOUSEOFTERROR20;
-_Font* Sexy::FONT_HOUSEOFTERROR28;
+Font* Sexy::FONT_BRIANNETOD12;
+Font* Sexy::FONT_CONTINUUMBOLD14;
+Font* Sexy::FONT_CONTINUUMBOLD14OUTLINE;
+Font* Sexy::FONT_DWARVENTODCRAFT12;
+Font* Sexy::FONT_DWARVENTODCRAFT15;
+Font* Sexy::FONT_DWARVENTODCRAFT18;
+Font* Sexy::FONT_DWARVENTODCRAFT18BRIGHTGREENINSET;
+Font* Sexy::FONT_DWARVENTODCRAFT18GREENINSET;
+Font* Sexy::FONT_DWARVENTODCRAFT18YELLOW;
+Font* Sexy::FONT_DWARVENTODCRAFT24;
+Font* Sexy::FONT_DWARVENTODCRAFT36BRIGHTGREENINSET;
+Font* Sexy::FONT_DWARVENTODCRAFT36GREENINSET;
+Font* Sexy::FONT_HOUSEOFTERROR16;
+Font* Sexy::FONT_HOUSEOFTERROR20;
+Font* Sexy::FONT_HOUSEOFTERROR28;
 Image* Sexy::FONT_IMAGE_HOUSEOFTERROR28;
-_Font* Sexy::FONT_PICO129;
-_Font* Sexy::FONT_TINYBOLD;
+Font* Sexy::FONT_PICO129;
+Font* Sexy::FONT_TINYBOLD;
 
 bool Sexy::ExtractLoadingFontsResources(ResourceManager* theManager)
 {
@@ -3192,9 +3192,9 @@ Sexy::Image* Sexy::GetImageById(ResourceId theId)
 	return *(Sexy::Image**)gResources[(int)theId];
 }
 
-Sexy::_Font* Sexy::GetFontById(ResourceId theId)
+Sexy::Font* Sexy::GetFontById(ResourceId theId)
 {
-	return *(Sexy::_Font**)gResources[(int)theId];
+	return *(Sexy::Font**)gResources[(int)theId];
 }
 
 int Sexy::GetSoundById(ResourceId theId)
@@ -3207,9 +3207,9 @@ Image*& Sexy::GetImageRefById(ResourceId theId)
 	return *(Image**)gResources[(int)theId];
 }
 
-_Font*& Sexy::GetFontRefById(ResourceId theId)
+Font*& Sexy::GetFontRefById(ResourceId theId)
 {
-	return *(_Font**)gResources[(int)theId];
+	return *(Font**)gResources[(int)theId];
 }
 
 int& Sexy::GetSoundRefById(ResourceId theId)
@@ -3222,7 +3222,7 @@ Sexy::ResourceId Sexy::GetIdByImage(Image* theImage)
 	return GetIdByVariable(theImage);
 }
 
-Sexy::ResourceId Sexy::GetIdByFont(_Font* theFont)
+Sexy::ResourceId Sexy::GetIdByFont(Font* theFont)
 {
 	return GetIdByVariable(theFont);
 }

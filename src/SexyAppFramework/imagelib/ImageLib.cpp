@@ -1236,14 +1236,6 @@ Image* ImageLib::GetImage(const std::string& theFilename, bool lookForAlphaImage
 	if ((anImage == NULL) && ((strcasecmp(anExt.c_str(), ".gif") == 0) || (anExt.length() == 0)))
 		anImage = GetGIFImage(aFilename + ".gif");
 
-	if ((anImage == NULL) && (strcasecmp(anExt.c_str(), ".j2k") == 0))
-		unreachable(); // There are no JPEG2000 files in the project
-		//anImage = GetJPEG2000Image(aFilename + ".j2k");
-	if ((anImage == NULL) && (strcasecmp(anExt.c_str(), ".jp2") == 0))
-		unreachable(); // There are no JPEG2000 files in the project
-		//anImage = GetJPEG2000Image(aFilename + ".jp2");
-
-
 	// Check for alpha images
 	Image* anAlphaImage = NULL;
 	if(lookForAlphaImage)

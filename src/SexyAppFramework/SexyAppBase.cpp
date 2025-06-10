@@ -5921,7 +5921,8 @@ SharedImageRef SexyAppBase::GetSharedImage(const std::string& theFileName, const
 	}
 
 	{
-		AutoCrit anAutoCrit(mGLInterface->mCritSect);	
+		AutoCrit anAutoCrit(mGLInterface->mCritSect);
+        //TODO:修复崩溃问题
 		aResultPair = mSharedImageMap.insert(SharedImageMap::value_type(SharedImageMap::key_type(anUpperFileName, anUpperVariant), SharedImage()));
 		aSharedImageRef = &aResultPair.first->second;
 	}
