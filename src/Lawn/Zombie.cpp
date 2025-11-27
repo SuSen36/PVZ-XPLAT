@@ -87,7 +87,7 @@ Zombie::Zombie()
 // GOTY @Patoke: 0x5329A0
 void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Zombie* theParentZombie, int theFromWave)
 {
-    TOD_ASSERT(theType >= 0 && theType <= ZombieType::NUM_ZOMBIE_TYPES);
+    //TOD_ASSERT(theType >= 0 && theType <= ZombieType::NUM_ZOMBIE_TYPES);
 
     mFromWave = theFromWave;
     mRow = theRow;
@@ -5228,7 +5228,6 @@ void Zombie::UpdateReanim()
             aBodyReanim->SetImageOverride("Zombie_catapult_pole", IMAGE_REANIM_ZOMBIE_CATAPULT_POLE);
         }
     }
-
     ZombieDrawPosition aDrawPos;
     GetDrawPos(aDrawPos);
     float anOffsetX = aDrawPos.mImageOffsetX + 15.0f;
@@ -10595,6 +10594,7 @@ void Zombie::PreloadZombieResources(ZombieType theZombieType)
     {
         ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_DIGGER_DIRT, true);
         ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_ZOMBIE_CHARRED_DIGGER, true);
+        ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_DIGGER, true);
     }
     else if (theZombieType == ZombieType::ZOMBIE_BOSS)
     {

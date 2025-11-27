@@ -143,7 +143,6 @@ public:
 
 SexyString /**/  DefinitionGetCompiledFilePathFromXMLFilePath(const SexyString& theXMLFilePath);
 bool                    IsFileInPakFile(const SexyString& theFilePath);
-bool                    DefinitionIsCompiled(const SexyString& theXMLFilePath);
 bool                    DefinitionReadCompiledFile(const SexyString& theCompiledFilePath, DefMap* theDefMap, void* theDefinition);
 void                    DefinitionFillWithDefaults(DefMap* theDefMap, void* theDefinition);
 void                    DefinitionXmlError(XMLParser* theXmlParser, char* theFormat, ...);
@@ -158,7 +157,7 @@ bool                    DefinitionReadArrayField(XMLParser* theXmlParser, Defini
 bool                    DefinitionReadFloatTrackField(XMLParser* theXmlParser, FloatParameterTrack* theTrack);
 bool                    DefinitionReadFlagField(XMLParser* theXmlParser, const SexyString& theElementName, uint* theResultValue, DefSymbol* theSymbolMap);
 bool                    DefinitionReadImageField(XMLParser* theXmlParser, Image** theImage);
-bool                    DefinitionReadFontField(XMLParser* theXmlParser, _Font** theFont);
+bool                    DefinitionReadFontField(XMLParser* theXmlParser, Font** theFont);
 bool                    DefinitionReadField(XMLParser* theXmlParser, DefMap* theDefMap, void* theDefinition, bool* theDone);
 bool                    DefinitionWriteCompiledFile(const SexyString& theCompiledFilePath, DefMap* theDefMap, void* theDefinition);
 bool                    DefinitionCompileFile(const SexyString theXMLFilePath, const SexyString& theCompiledFilePath, DefMap* theDefMap, void* theDefinition);
@@ -168,7 +167,7 @@ void                    DefWriteToCacheString(void*& theWritePtr, char** theValu
 void                    DefWriteToCacheArray(void*& theWritePtr, DefinitionArrayDef* theValue, DefMap* theDefMap);
 void                    DefWriteToCacheFloatTrack(void*& theWritePtr, FloatParameterTrack* theValue);
 void                    DefWriteToCacheImage(void*& theWritePtr, Image** theValue);
-void                    DefWriteToCacheFont(void*& theWritePtr, _Font** theValue);
+void                    DefWriteToCacheFont(void*& theWritePtr, Font** theValue);
 
 void*                   DefinitionCompressCompiledBuffer(void* theBuffer, unsigned int theBufferSize, unsigned int* theResultSize);
 
@@ -176,10 +175,11 @@ void*                   DefinitionCompressCompiledBuffer(void* theBuffer, unsign
 /*inline*/ unsigned int DefinitionGetArraySize(DefinitionArrayDef* theValue, DefMap* theDefMap);
 /*inline*/ unsigned int DefGetSizeFloatTrack(FloatParameterTrack* theValue);
 /*inline*/ unsigned int DefGetSizeImage(Image** theValue);
-/*inline*/ unsigned int DefGetSizeFont(_Font** theValue);
+/*inline*/ unsigned int DefGetSizeFont(Font** theValue);
 
 /*inline*/ unsigned int DefinitionGetDeepSize(DefMap* theDefMap, void* theDefinition);
 /*inline*/ unsigned int DefinitionGetSize(DefMap* theDefMap, void* theDefinition);
+/*inline*/ void*        DefinitionAlloc(int theSize);
 void*                   DefinitionUncompressCompiledBuffer(void* theCompressedBuffer, size_t theCompressedBufferSize, size_t& theUncompressedSize, const SexyString& theCompiledFilePath);
 uint /**/        DefinitionCalcHashSymbolMap(int aSchemaHash, DefSymbol* theSymbolMap);
 uint /**/        DefinitionCalcHashDefMap(int aSchemaHash, DefMap* theDefMap, TodList<DefMap*>& theProgressMaps);
@@ -187,13 +187,13 @@ uint /**/        DefinitionCalcHash(DefMap* theDefMap);
 inline bool             DefReadFromCacheString(void*& theReadPtr, char** theString);
 inline bool             DefReadFromCacheArray(void*& theReadPtr, DefinitionArrayDef* theArray, DefMap* theDefMap);
 inline bool             DefReadFromCacheImage(void*& theReadPtr, Image** theImage);
-inline bool             DefReadFromCacheFont(void*& theReadPtr, _Font** theFont);
+inline bool             DefReadFromCacheFont(void*& theReadPtr, Font** theFont);
 inline bool             DefReadFromCacheFloatTrack(void*& theReadPtr, FloatParameterTrack* theTrack);
 bool                    DefMapReadFromCache(void*& theReadPtr, DefMap* theDefMap, void* theDefinition);
 bool                    DefinitionCompileAndLoad(const SexyString& theXMLFilePath, DefMap* theDefMap, void* theDefinition);
 bool                    DefinitionLoadMap(XMLParser* theXmlParser, DefMap* theDefMap, void* theDefinition);
 bool                    DefinitionLoadImage(Image** theImage, const SexyString& theName);
-bool                    DefinitionLoadFont(_Font** theFont, const SexyString& theName);
+bool                    DefinitionLoadFont(Font** theFont, const SexyString& theName);
 bool                    DefinitionLoadXML(const SexyString& theFilename, DefMap* theDefMap, void* theDefinition);
 void                    DefinitionFreeArrayField(DefinitionArrayDef* theArray, DefMap* theDefMap);
 void                    DefinitionFreeMap(DefMap* theDefMap, void* theDefinition);

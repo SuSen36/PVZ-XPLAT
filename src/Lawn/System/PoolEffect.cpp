@@ -5,7 +5,7 @@
 #include "../../Sexy.TodLib/TodDebug.h"
 #include "SexyAppFramework/graphics/GLImage.h"
 #include "SexyAppFramework/graphics/Graphics.h"
-#include "graphics/GLInterface.h"
+#include "SexyAppFramework/graphics/GLInterface.h"
 //#include "SexyAppFramework/graphics/D3DInterface.h"
 
 //0x469A60

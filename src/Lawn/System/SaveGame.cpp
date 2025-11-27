@@ -357,15 +357,13 @@ template <typename T> inline static void SyncDataArray(SaveGameContext& theConte
 	theContext.SyncUint(theDataArray.mFreeListHead);
 	theContext.SyncUint(theDataArray.mMaxUsedCount);
 	theContext.SyncUint(theDataArray.mSize);
-	theContext.SyncBytes(theDataArray.mBlock, theDataArray.mMaxUsedCount * sizeof(*theDataArray.mBlock));
+	theContext.SyncBytes(theDataArray.mBlock, theDataArray.mMaxUsedCount * sizeof(typename DataArray<T>::DataArrayItem));
 }
 
 //0x4819D0
 void SyncBoard(SaveGameContext& theContext, Board* theBoard)
 {
-	// TODO test if gives sane results
-	size_t offset = size_t(&theBoard->mPaused) - size_t(theBoard);
-	theContext.SyncBytes(&theBoard->mPaused, sizeof(Board) - offset);
+	theContext.SyncBytes(&theBoard->mPaused, sizeof(Board) - offsetof(Board, mPaused));
 
 	SyncDataArray(theContext, theBoard->mZombies);													//0x482190
 	SyncDataArray(theContext, theBoard->mPlants);													//0x482280

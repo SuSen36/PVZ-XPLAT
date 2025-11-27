@@ -31,7 +31,7 @@ TodStringListFormat::TodStringListFormat()
 	mFormatFlags = 0U;
 }
 
-TodStringListFormat::TodStringListFormat(const char* theFormatName, _Font** theFont, const Color& theColor, int theLineSpacingOffset, unsigned int theFormatFlags) : 
+TodStringListFormat::TodStringListFormat(const char* theFormatName, Font** theFont, const Color& theColor, int theLineSpacingOffset, unsigned int theFormatFlags) :
 	mFormatName(theFormatName), mNewFont(theFont), mNewColor(theColor), mLineSpacingOffset(theLineSpacingOffset), mFormatFlags(theFormatFlags)
 { 
 }
@@ -245,7 +245,7 @@ bool CharIsSpaceInFormat(char theChar, const TodStringListFormat& theCurrentForm
 //0x519870
 int TodWriteString(Graphics* g, const SexyString& theString, int theX, int theY, TodStringListFormat& theCurrentFormat, int theWidth, DrawStringJustification theJustification, bool drawString, int theOffset, int theLength)
 {
-	_Font* aFont = *theCurrentFormat.mNewFont;
+	Font* aFont = *theCurrentFormat.mNewFont;
 	if (drawString)  // 如果需要实际绘制
 	{
 		int aSpareX = theWidth - TodWriteString(g, theString, theX, theY, theCurrentFormat, theWidth, DrawStringJustification::DS_ALIGN_LEFT, false, theOffset, theLength);
@@ -288,7 +288,7 @@ int TodWriteString(Graphics* g, const SexyString& theString, int theX, int theY,
 				aXOffset += aFont->StringWidth(aString);  // 横向偏移值加上绘制的字符串的宽度
 				aString.assign("");  // 清空字符串
 				TodWriteStringSetFormat(aFormatStart + 1, theCurrentFormat);  // 根据当前控制字符调整格式
-				// _Font* aFont = *theCurrentFormat.mNewFont; // unused
+				// Font* aFont = *theCurrentFormat.mNewFont; // unused
 			}
 		}
 		else
@@ -327,7 +327,7 @@ int TodWriteWordWrappedHelper(Graphics* g, const SexyString& theString, int theX
 
 //0x519B50
 // GOTY @Patoke: 0x5241C0
-int TodDrawStringWrappedHelper(Graphics* g, const SexyString& theText, const Rect& theRect, _Font* theFont, const Color& theColor, DrawStringJustification theJustification, bool drawString)
+int TodDrawStringWrappedHelper(Graphics* g, const SexyString& theText, const Rect& theRect, Font* theFont, const Color& theColor, DrawStringJustification theJustification, bool drawString)
 {
 	int theMaxChars = theText.size();
 	TodStringListFormat aCurrentFormat;
@@ -476,7 +476,7 @@ int TodDrawStringWrappedHelper(Graphics* g, const SexyString& theText, const Rec
 
 //0x51A040
 // GOTY @Patoke: 0x5246A0
-void TodDrawStringWrapped(Graphics* g, const SexyString& theText, const Rect& theRect, _Font* theFont, const Color& theColor, DrawStringJustification theJustification)
+void TodDrawStringWrapped(Graphics* g, const SexyString& theText, const Rect& theRect, Font* theFont, const Color& theColor, DrawStringJustification theJustification)
 {
 	SexyString aTextFinal = TodStringTranslate(theText);
 	Rect aRectTodUse = theRect;

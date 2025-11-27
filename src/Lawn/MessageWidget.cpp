@@ -146,7 +146,7 @@ void MessageWidget::LayoutReanimText()
 {
 	float aMaxWidth = 0;
 	int aCurLine = 0, aCurPos = 0;
-	_Font* aFont = GetFont();
+	Font* aFont = GetFont();
 	int aLabelLen = sexystrlen(mLabel);
 	mSlideOffTime = aLabelLen + 100;
 
@@ -249,7 +249,7 @@ void MessageWidget::Update()
 }
 
 //0x459710
-void MessageWidget::DrawReanimatedText(Graphics* g, _Font* theFont, const Color& theColor, float thePosY)
+void MessageWidget::DrawReanimatedText(Graphics* g, Font* theFont, const Color& theColor, float thePosY)
 {
 	int aLabelLen = sexystrlen(mLabel);
 	for (int aPos = 0; aPos < aLabelLen; aPos++)
@@ -289,7 +289,7 @@ void MessageWidget::DrawReanimatedText(Graphics* g, _Font* theFont, const Color&
 
 //0x459990
 // GOTY @Patoke: inlined 0x45CAEF
-_Font* MessageWidget::GetFont()
+Font* MessageWidget::GetFont()
 {
 	switch (mMessageStyle)
 	{
@@ -329,8 +329,8 @@ void MessageWidget::Draw(Graphics* g)
 	if (mDuration <= 0)
 		return;
 	
-	_Font* aFont = GetFont();
-	_Font* aOutlineFont = nullptr;
+	Font* aFont = GetFont();
+	Font* aOutlineFont = nullptr;
 	int aPosX = BOARD_WIDTH / 2;
 	int aPosY = 596;
 	int aTextOffsetY = 0;

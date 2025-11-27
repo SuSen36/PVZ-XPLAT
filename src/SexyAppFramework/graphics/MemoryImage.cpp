@@ -2,7 +2,7 @@
 
 #include "../misc/CritSect.h"
 #include "GLImage.h"
-#include "graphics/GLInterface.h"
+#include "SexyAppFramework/graphics/GLInterface.h"
 #include "../SexyAppBase.h"
 #include "Graphics.h"
 #include "NativeDisplay.h"

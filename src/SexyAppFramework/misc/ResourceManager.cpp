@@ -3,7 +3,7 @@
 #include "XMLParser.h"
 #include "SexyAppFramework/sound/SoundManager.h"
 #include "../graphics/GLImage.h"
-#include "graphics/GLInterface.h"
+#include "SexyAppFramework/graphics/GLInterface.h"
 #include "../graphics/ImageFont.h"
 //#include "../graphics/SysFont.h"
 #include "SexyAppFramework/imagelib/ImageLib.h"
@@ -770,14 +770,14 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes)
 	}
 	*/
 
-	if (theRes->mA4R4G4B4)
-		aGLImage->mD3DFlags |= D3DImageFlag_UseA4R4G4B4;
-
-	if (theRes->mA8R8G8B8)
-		aGLImage->mD3DFlags |= D3DImageFlag_UseA8R8G8B8;
-
-	if (theRes->mMinimizeSubdivisions)
-		aGLImage->mD3DFlags |= D3DImageFlag_MinimizeNumSubdivisions;
+	//if (theRes->mA4R4G4B4)
+	//	aGLImage->mD3DFlags |= D3DImageFlag_UseA4R4G4B4;
+    //
+	//if (theRes->mA8R8G8B8)
+	//	aGLImage->mD3DFlags |= D3DImageFlag_UseA8R8G8B8;
+    //
+	//if (theRes->mMinimizeSubdivisions)
+	//	aGLImage->mD3DFlags |= D3DImageFlag_MinimizeNumSubdivisions;
 
 	if (theRes->mAnimInfo.mAnimType != AnimType_None)
 		aGLImage->mAnimInfo = new AnimInfo(theRes->mAnimInfo);
@@ -852,7 +852,7 @@ bool ResourceManager::DoLoadSound(SoundRes* theRes)
 ///////////////////////////////////////////////////////////////////////////////
 bool ResourceManager::DoLoadFont(FontRes* theRes)
 {
-	_Font *aFont = NULL;
+	Font *aFont = NULL;
 
 	SEXY_PERF_BEGIN("ResourceManager:DoLoadFont");
 
@@ -876,7 +876,7 @@ bool ResourceManager::DoLoadFont(FontRes* theRes)
 		if (strncmp(theRes->mPath.c_str(),"!ref:",5)==0)
 		{
 			std::string aRefName = theRes->mPath.substr(5);
-			_Font *aRefFont = GetFont(aRefName);
+			Font *aRefFont = GetFont(aRefName);
 			if (aRefFont==NULL)
 				return Fail("Ref font not found: " + aRefName);
 
@@ -928,7 +928,7 @@ bool ResourceManager::DoLoadFont(FontRes* theRes)
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-_Font* ResourceManager::LoadFont(const std::string &theName)
+Font* ResourceManager::LoadFont(const std::string &theName)
 {
 	ResMap::iterator anItr = mFontMap.find(theName);
 	if (anItr == mFontMap.end())
@@ -1142,7 +1142,7 @@ int	ResourceManager::GetSound(const std::string &theId)
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-_Font* ResourceManager::GetFont(const std::string &theId)
+Font* ResourceManager::GetFont(const std::string &theId)
 {
 	ResMap::iterator anItr = mFontMap.find(theId);
 	if (anItr != mFontMap.end())
@@ -1193,7 +1193,7 @@ int	ResourceManager::GetSoundThrow(const std::string &theId)
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-_Font* ResourceManager::GetFontThrow(const std::string &theId)
+Font* ResourceManager::GetFontThrow(const std::string &theId)
 {
 	ResMap::iterator anItr = mFontMap.find(theId);
 	if (anItr != mFontMap.end())
@@ -1251,7 +1251,7 @@ bool ResourceManager::ReplaceSound(const std::string &theId, int theSound)
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-bool ResourceManager::ReplaceFont(const std::string &theId, _Font *theFont)
+bool ResourceManager::ReplaceFont(const std::string &theId, Font *theFont)
 {
 	ResMap::iterator anItr = mFontMap.find(theId);
 	if (anItr != mFontMap.end())

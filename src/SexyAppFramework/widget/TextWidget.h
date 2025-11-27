@@ -8,7 +8,7 @@ namespace Sexy
 {
 
 class ScrollbarWidget;
-class _Font;
+class Font;
 
 typedef std::vector<SexyString> SexyStringVector;
 typedef std::vector<int> IntVector;
@@ -16,7 +16,7 @@ typedef std::vector<int> IntVector;
 class TextWidget : public Widget, public ScrollListener
 {
 public:
-	_Font*				mFont;
+	Font*				mFont;
 	ScrollbarWidget*	mScrollbar;		
 	
 	SexyStringVector	mLogicalLines;

@@ -55,7 +55,7 @@ void EditWidget::ClearWidthCheckFonts()
 	mWidthCheckList.clear();
 }
 
-void EditWidget::AddWidthCheckFont(_Font *theFont, int theMaxPixels)
+void EditWidget::AddWidthCheckFont(Font *theFont, int theMaxPixels)
 {
 	mWidthCheckList.push_back(WidthCheck());
 	WidthCheck &aCheck = mWidthCheckList.back();
@@ -104,7 +104,7 @@ void EditWidget::Resize(int theX, int theY, int theWidth, int theHeight)
 	FocusCursor(false);		
 }
 
-void EditWidget::SetFont(_Font* theFont, _Font* theWidthCheckFont)
+void EditWidget::SetFont(Font* theFont, Font* theWidthCheckFont)
 {
 	delete mFont;
 	mFont = theFont->Duplicate();

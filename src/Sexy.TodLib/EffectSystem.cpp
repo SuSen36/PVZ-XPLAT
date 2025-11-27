@@ -6,7 +6,7 @@
 #include "EffectSystem.h"
 #include "../GameConstants.h"
 #include "SexyAppFramework/graphics/GLImage.h"
-#include "graphics/GLInterface.h"
+#include "SexyAppFramework/graphics/GLInterface.h"
 
 EffectSystem* gEffectSystem = nullptr;  //[0x6A9EB8]
 

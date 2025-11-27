@@ -58,7 +58,7 @@ class TodResourceManager : public ResourceManager
 {
 public:
 	bool				FindImagePath(Image* theImage, std::string* thePath);
-	bool 				FindFontPath(_Font* theFont, std::string* thePath);
+	bool 				FindFontPath(Font* theFont, std::string* thePath);
 	void				AddImageToMap(SharedImageRef* theImage, const std::string& thePath);
 	bool				TodLoadNextResource();
 	bool				TodLoadResources(const std::string& theGroup);
@@ -68,7 +68,7 @@ public:
 /*inline*/ bool			TodLoadNextResource();
 void					TodAddImageToMap(SharedImageRef* theImage, const std::string& thePath);
 bool					TodFindImagePath(Image* theImage, std::string* thePath);
-bool					TodFindFontPath(_Font* theFont, std::string* thePath);
+bool					TodFindFontPath(Font* theFont, std::string* thePath);
 
 // #################################################################################################### //
 
@@ -101,8 +101,8 @@ void					SexyMatrix3Inverse(const SexyMatrix3& m, SexyMatrix3& r);  // r = m ^ -
 void					SexyMatrix3Multiply(SexyMatrix3& m, const SexyMatrix3& l, const SexyMatrix3& r);  // m = l × r
 bool					TodIsPointInPolygon(const SexyVector2* thePolygonPoint, int theNumberPolygonPoints, const SexyVector2& theCheckPoint);
 
-void					TodDrawString(Graphics* g, const SexyString& theText, int thePosX, int thePosY, _Font* theFont, const Color& theColor, DrawStringJustification theJustification);
-void					TodDrawStringMatrix(Graphics* g, const _Font* theFont, const SexyMatrix3& theMatrix, const SexyString& theString, const Color& theColor);
+void					TodDrawString(Graphics* g, const SexyString& theText, int thePosX, int thePosY, Font* theFont, const Color& theColor, DrawStringJustification theJustification);
+void					TodDrawStringMatrix(Graphics* g, const Font* theFont, const SexyMatrix3& theMatrix, const SexyString& theString, const Color& theColor);
 void					TodDrawImageScaledF(Graphics* g, Image* theImage, float thePosX, float thePosY, float theScaleX, float theScaleY);
 void					TodDrawImageCenterScaledF(Graphics* g, Image* theImage, float thePosX, float thePosY, float theScaleX, float theScaleY);
 void					TodDrawImageCelF(Graphics* g, Image* theImageStrip, float thePosX, float thePosY, int theCelCol, int theCelRow);

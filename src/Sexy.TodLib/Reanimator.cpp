@@ -210,7 +210,7 @@ bool ReanimationLoadDefinition(const SexyString& theFileName, ReanimatorDefiniti
 		float aPrevFrame = 0.0f;
 		float aPrevAlpha = 1.0f;
 		Image* aPrevImage = nullptr;
-		_Font* aPrevFont = nullptr;
+		Font* aPrevFont = nullptr;
 		const char* aPrevText = "";
 
 		// 遍历每一帧，依次用前一帧的数据填充后一帧的未定义数据，并重新记录前一帧的数据
@@ -1163,13 +1163,13 @@ void ReanimatorLoadDefinitions(ReanimationParams* theReanimationParamArray, int 
 	gReanimatorDefArray = new ReanimatorDefinition[theReanimationParamArraySize];
 
 #ifndef LOW_MEMORY
-	for (unsigned int i = 0; i < gReanimationParamArraySize; i++)
-	{
-		ReanimationParams* aReanimationParams = &theReanimationParamArray[i];
-		TOD_ASSERT(aReanimationParams->mReanimationType == i);
-		if (DefinitionIsCompiled(StringToSexyString(aReanimationParams->mReanimFileName)))
-			ReanimatorEnsureDefinitionLoaded(aReanimationParams->mReanimationType, true);
-	}
+	//for (unsigned int i = 0; i < gReanimationParamArraySize; i++)
+	//{
+	//	ReanimationParams* aReanimationParams = &theReanimationParamArray[i];
+	//	TOD_ASSERT(aReanimationParams->mReanimationType == i);
+	//	//if (DefinitionIsCompiled(StringToSexyString(aReanimationParams->mReanimFileName)))
+    //    ReanimatorEnsureDefinitionLoaded(aReanimationParams->mReanimationType, true);
+	//}
 #endif
 }
 

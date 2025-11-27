@@ -357,8 +357,6 @@ protected:
 	void					RestoreScreenResolution();
 	void					DoExit(int theCode);
 
-	void					TakeScreenshot();
-	void					DumpProgramInfo();	
 	void					ShowMemoryUsage();			
 
 	// Registry helpers

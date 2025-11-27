@@ -122,7 +122,7 @@ public:
     int                             mMouseDragStartX;                                       //+0x154
     int                             mMouseDragStartY;                                       //+0x158
     ToolTipWidget*					mToolTip;												//+0x154
-	//_Font*							mDebugFont;											//+0x158
+	//Font*							mDebugFont;											//+0x158
 	CutScene*						mCutScene;												//+0x15C
 	Challenge*						mChallenge;												//+0x160
 	bool							mPaused;												//+0x164

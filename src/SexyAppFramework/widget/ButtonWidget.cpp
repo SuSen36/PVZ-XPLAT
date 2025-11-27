@@ -43,7 +43,7 @@ ButtonWidget::~ButtonWidget()
 	delete mFont;
 }
 
-void ButtonWidget::SetFont(_Font* theFont)
+void ButtonWidget::SetFont(Font* theFont)
 {
 	delete mFont;
 	mFont = theFont->Duplicate();

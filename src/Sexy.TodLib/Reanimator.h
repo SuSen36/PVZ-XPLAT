@@ -17,7 +17,7 @@ class ReanimatorTransform;
 class ReanimatorDefinition;
 namespace Sexy
 {
-    class _Font;
+    class Font;
     class Image;
     class Graphics;
     class MemoryImage;
@@ -150,7 +150,7 @@ public:
     float                           mFrame;
     float                           mAlpha;
     Image*                          mImage;
-    _Font*                           mFont;
+    Font*                           mFont;
     const char*                     mText;
 
 public:

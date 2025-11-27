@@ -4,7 +4,8 @@
 #include "EffectSystem.h"
 #include "../GameConstants.h"
 #include "SexyAppFramework/graphics/Graphics.h"
-#include "graphics/GLInterface.h"
+#include "SexyAppFramework/graphics/GLInterface.h"
+#include "SexyAppFramework/platform/android/graphics/GLInterface.h"
 
 int gParticleDefCount;                      // [0x6A9F08]
 TodParticleDefinition* gParticleDefArray;   // [0x6A9F0C]
@@ -173,9 +174,7 @@ bool TodParticleLoadADef(TodParticleDefinition* theParticleDef, const char* theP
 			FloatTrackSetDefault(aDef.mClipLeft, 0.0f);
 			FloatTrackSetDefault(aDef.mClipRight, 0.0f);
 			FloatTrackSetDefault(aDef.mAnimationRate, 0.0f);
-			if (aDef.mImage)
-				((MemoryImage*)aDef.mImage)->mD3DFlags |= D3DImageFlags::D3DImageFlag_MinimizeNumSubdivisions;
-		}
+        }
 		return true;
 	}
 }

@@ -10,13 +10,7 @@ set(CMAKE_JOB_POOL_LINK link_job_pool)
 set_property(GLOBAL PROPERTY JOB_POOLS compile_job_pool=8 link_job_pool=2)
 
 # 添加编译优化选项
-if(MSVC)
-	add_compile_options(/MP)  # 启用多处理器编译
-	add_compile_options(/O2)  # 优化级别
-else()
-	add_compile_options(-O2)  # 优化级别
-	add_compile_options(-fPIC)  # 位置无关代码
-endif()
+
 
 file(GLOB SOURCES
 		src/*.cpp
@@ -35,7 +29,7 @@ file(GLOB SOURCES
 		src/SexyAppFramework/glad/*.c
 		src/SexyAppFramework/imagelib/png/*.c
 		src/SexyAppFramework/imagelib/jpeg/*.c
-		src/SexyAppFramework/zlib/*.c
+		src/SexyAppFramework/imagelib/zlib/*.c
 )
 
 # these files are included and must not be built in the project
@@ -48,16 +42,25 @@ list(REMOVE_ITEM SOURCES
 if(ANDROID)
 	list(APPEND SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/android/graphics/Window.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/android/graphics/GLInterface.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/android/graphics/Interface.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/android/Input.cpp
 	)
 	list(APPEND PLAT_INCLUDES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/android
 	)
+elseif (EMSCRIPTEN)
+    list(APPEND SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/emscripten/graphics/Window.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/emscripten/graphics/GLInterface.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/emscripten/Input.cpp
+    )
+    list(APPEND PLAT_INCLUDES
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/emscripten
+    )
 else()
 	list(APPEND SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/pc/graphics/Window.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/pc/graphics/GLInterface.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/pc/graphics/Interface.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/pc/Input.cpp
 	)
 	list(APPEND PLAT_INCLUDES
@@ -68,7 +71,10 @@ endif()
 set(SDL_STATIC OFF CACHE BOOL "Build static library of SDL" FORCE)
 set(SDL_SHARED ON CACHE BOOL "Build shared library of SDL" FORCE)
 
-add_subdirectory(Libs/SDL)
+# For Emscripten, SDL is usually handled by the toolchain itself
+if(NOT EMSCRIPTEN)
+    add_subdirectory(Libs/SDL)
+endif()
 
 include(FetchContent)
 
@@ -105,40 +111,48 @@ elseif (UNIX)
 	else()
 		message(FATAL_ERROR "仅支持Android平台的构建.")
 	endif()  # 结束针对 UNIX 的判断
-
+elseif (EMSCRIPTEN)
+    # BASS is generally not supported directly in Emscripten.
+    # You would typically use Web Audio API directly from C++ or a JS wrapper.
+    message(WARNING "BASS audio library is not directly supported by Emscripten. Audio will need to be handled via Web Audio API.")
 endif()  # 结束针对 WIN32 的判断
 
 message(STATUS "Current ABI: ${ANDROID_ABI}")
 
-FetchContent_Declare(
-		bass
-		URL ${BASS_SRC}
-		#DOWNLOAD_EXTRACT_TIMESTAMP TRUE
-)
+if(NOT EMSCRIPTEN) # Fetch bass only if not Emscripten
+    FetchContent_Declare(
+            bass
+            URL ${BASS_SRC}
+            #DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+    )
 
-FetchContent_GetProperties(bass)
-if (NOT bass_POPULATED)
-	FetchContent_Populate(bass)
-	file(COPY ${bass_SOURCE_DIR}/${BASS_LIB} DESTINATION ${CMAKE_BINARY_DIR})
+    FetchContent_GetProperties(bass)
+    if (NOT bass_POPULATED)
+        FetchContent_Populate(bass)
+        file(COPY ${bass_SOURCE_DIR}/${BASS_LIB} DESTINATION ${CMAKE_BINARY_DIR})
+    endif()
+
+    get_filename_component(bassfile ${BASS_LIB} NAME)
+
+    if(UNIX AND NOT APPLE AND NOT ANDROID)
+        add_library(bass STATIC IMPORTED GLOBAL)
+    else ()
+        add_library(bass STATIC IMPORTED GLOBAL)
+    endif()
+
+    set_target_properties(bass PROPERTIES
+            IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/${bassfile}
+    )
 endif()
-
-get_filename_component(bassfile ${BASS_LIB} NAME)
-
-if(UNIX AND NOT APPLE AND NOT ANDROID)
-	add_library(bass STATIC IMPORTED GLOBAL)
-else ()
-	add_library(bass STATIC IMPORTED GLOBAL)
-endif()
-
-set_target_properties(bass PROPERTIES
-		IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/${bassfile}
-)
 
 if (WIN32)
 	add_executable(re-plants-vs-zombies ${SOURCES})
 elseif (ANDROID)
 	add_library(re-plants-vs-zombies SHARED ${SOURCES})
-elseif (UNIX AND NOT APPLE AND NOT ANDROID)
+elseif (EMSCRIPTEN)
+    add_executable(re-plants-vs-zombies ${SOURCES}) # Emscripten output is an executable (.js or .html)
+    set_target_properties(re-plants-vs-zombies PROPERTIES SUFFIX ".html") # Set suffix to .html for convenience
+else ()
 	add_executable(re-plants-vs-zombies ${SOURCES})
 endif()
 
@@ -152,7 +166,11 @@ target_include_directories(re-plants-vs-zombies PRIVATE
 target_compile_definitions(re-plants-vs-zombies PRIVATE _DEBUG)
 
 
-target_link_libraries(re-plants-vs-zombies SDL2::SDL2 bass)
+if (NOT EMSCRIPTEN)
+    target_link_libraries(re-plants-vs-zombies SDL2::SDL2 bass)
+else()
+    target_link_libraries(re-plants-vs-zombies SDL2) # Emscripten provides its own SDL2
+endif()
 
 if (WIN32)
 	target_link_options(re-plants-vs-zombies PRIVATE -static -static-libgcc -static-libstdc++)
@@ -165,6 +183,8 @@ if (WIN32)
 elseif (ANDROID)  # 增加安卓平台的支持
     target_link_libraries(re-plants-vs-zombies android log EGL)  # 链接需要的库
 	target_compile_definitions(re-plants-vs-zombies PRIVATE ANDROID)  # 定义ANDROID宏
+elseif (EMSCRIPTEN)
+    target_link_libraries(re-plants-vs-zombies GLESv2) # For WebGL
 else()
 	target_link_libraries(re-plants-vs-zombies GL)
 endif()

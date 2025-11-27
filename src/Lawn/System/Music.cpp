@@ -98,12 +98,12 @@ void Music::SetupMusicFileForTune(MusicFile theMusicFile, MusicTune theMusicTune
 	switch (theMusicTune)
 	{
 	case MusicTune::MUSIC_TUNE_DAY_GRASSWALK:
-		switch (theMusicFile) {
-		case MusicFile::MUSIC_FILE_MAIN_MUSIC:		aTrackCount = 29;	aTrackStart1 = 0;	aTrackEnd1 = 23;											break;
-		case MusicFile::MUSIC_FILE_HIHATS:			aTrackCount = 29;	aTrackStart1 = 27;	aTrackEnd1 = 27;											break;
-		case MusicFile::MUSIC_FILE_DRUMS:			aTrackCount = 29;	aTrackStart1 = 24;	aTrackEnd1 = 26;											break;
-		default: break;
-		} break;
+        switch (theMusicFile) {
+            case MusicFile::MUSIC_FILE_MAIN_MUSIC:		aTrackCount = 29;	aTrackStart1 = 0;	aTrackEnd1 = 17;											break;
+            case MusicFile::MUSIC_FILE_HIHATS:			aTrackCount = 29;	aTrackStart1 = 21;	aTrackEnd1 = 21;											break;
+            case MusicFile::MUSIC_FILE_DRUMS:			aTrackCount = 29;	aTrackStart1 = 18;	aTrackEnd1 = 20;											break;
+            default: break;
+        } break;
 	case MusicTune::MUSIC_TUNE_POOL_WATERYGRAVES:
 		switch (theMusicFile) {
 		case MusicFile::MUSIC_FILE_MAIN_MUSIC:		aTrackCount = 29;	aTrackStart1 = 0;	aTrackEnd1 = 17;											break;
@@ -144,7 +144,7 @@ void Music::SetupMusicFileForTune(MusicFile theMusicFile, MusicTune theMusicTune
 
         BASS_ChannelSetAttribute(
                 aHMusic, BASS_ATTRIB_MUSIC_VOL_CHAN + aTrack, aVolume
-        ); // 设置音乐每条轨道的音量属性（静音与否）
+        );       // 设置音乐每条轨道的音量属性（静音与否）
     }
 }
 
@@ -158,7 +158,7 @@ void Music::LoadSong(MusicFile theMusicFile, const std::string& theFileName)
 	}
 	else
 	{
-		//gBass->BASS_ChannelSetAttribute(GetBassMusicHandle(theMusicFile), BASS_ATTRIB_MUSIC_PSCALER, 4);  // 设置音乐定位精确度属性
+		BASS_ChannelSetAttribute(GetMusicHandle(theMusicFile), BASS_ATTRIB_MUSIC_PSCALER, 4);  // 设置音乐定位精确度属性
 		TodHesitationTrace("song '%s'", theFileName.c_str());
 	}
 }

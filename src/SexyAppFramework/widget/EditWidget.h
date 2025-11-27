@@ -6,7 +6,7 @@
 namespace Sexy
 {
 
-class _Font;
+class Font;
 class EditListener;
 
 class EditWidget : public Widget
@@ -25,11 +25,11 @@ public:
 	int						mId;
 	SexyString				mString;
 	SexyString				mPasswordDisplayString;
-	_Font*					mFont;
+	Font*					mFont;
 
 	struct WidthCheck
 	{
-		_Font *mFont;
+		Font *mFont;
 		int mWidth;
 	};
 	typedef std::list<WidthCheck> WidthCheckList;
@@ -61,7 +61,7 @@ protected:
 	void					UpdateCaretPos();
 
 public:
-	virtual void			SetFont(_Font* theFont, _Font* theWidthCheckFont = NULL);
+	virtual void			SetFont(Font* theFont, Font* theWidthCheckFont = NULL);
 	virtual void			SetText(const SexyString& theText, bool leftPosToZero = true);
 	virtual bool			IsPartOfWord(SexyChar theChar);
 	virtual int				GetCharAt(int x, int y);
@@ -89,7 +89,7 @@ public:
 	virtual void			MouseEnter();
 	virtual void			MouseLeave();
 	void					ClearWidthCheckFonts();
-	void					AddWidthCheckFont(_Font *theFont, int theMaxPixels = -1); // defaults to mMaxPixels
+	void					AddWidthCheckFont(Font *theFont, int theMaxPixels = -1); // defaults to mMaxPixels
 	void					EnforceMaxPixels();
 
 public:
