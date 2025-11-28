@@ -1319,10 +1319,16 @@ int Challenge::MouseDown(int x, int y, int theClickCount, HitResult* theHitResul
 		MouseDownWhackAZombie(x, y);
 		return true;
 	}
-
-	if (mApp->mGameMode == GAMEMODE_CHALLENGE_ZOMBIQUARIUM && theClickCount <= 0)
+	else if (mApp->mGameMode == GAMEMODE_CHALLENGE_ZOMBIQUARIUM)
 	{
-		mApp->PlaySample(Sexy::SOUND_TAPGLASS);
+		if (theClickCount <= 0)
+		{
+			mApp->PlaySample(Sexy::SOUND_TAPGLASS);
+		}
+		else if (theHitResult->mObjectType == OBJECT_TYPE_NONE)
+		{
+			ZombiquariumMouseDown(x, y);
+		}
 		return true;
 	}
 

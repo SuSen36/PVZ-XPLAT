@@ -1504,6 +1504,12 @@ void Board::InitLevel()
 		mSeedBank->mSeedPackets[4].SetPacketType(SeedType::SEED_SNOWPEA);
 		mSeedBank->mSeedPackets[5].SetPacketType(SeedType::SEED_CHOMPER);
 	}
+	else if (aGameMode == GameMode::GAMEMODE_CHALLENGE_ZOMBIQUARIUM)
+	{
+		TOD_ASSERT(mSeedBank->mNumPackets == 2);
+		mSeedBank->mSeedPackets[0].SetPacketType(SeedType::SEED_ZOMBIQUARIUM_SNORKLE);
+		mSeedBank->mSeedPackets[1].SetPacketType(SeedType::SEED_ZOMBIQUARIUM_TROPHY);
+	}
 	else if (aGameMode == GameMode::GAMEMODE_PUZZLE_I_ZOMBIE_1)
 	{
 		TOD_ASSERT(mSeedBank->mNumPackets == 3);
