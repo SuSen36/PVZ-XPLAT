@@ -11,25 +11,24 @@ set_property(GLOBAL PROPERTY JOB_POOLS compile_job_pool=8 link_job_pool=2)
 
 # 添加编译优化选项
 
-
 file(GLOB SOURCES
-		src/*.cpp
-		src/SexyAppFramework/*.cpp
-		src/SexyAppFramework/graphics/*.cpp
-		src/SexyAppFramework/imagelib/*.cpp
-		src/SexyAppFramework/misc/*.cpp
-		src/SexyAppFramework/paklib/*.cpp
-		src/SexyAppFramework/sound/*.cpp
-		src/SexyAppFramework/widget/*.cpp
-		src/SexyAppFramework/fcaseopen/*.c
-		src/Sexy.TodLib/*.cpp
-		src/Lawn/*.cpp
-		src/Lawn/Widget/*.cpp
-		src/Lawn/System/*.cpp
-		src/SexyAppFramework/glad/*.c
-		src/SexyAppFramework/imagelib/png/*.c
-		src/SexyAppFramework/imagelib/jpeg/*.c
-		src/SexyAppFramework/imagelib/zlib/*.c
+		${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/*.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/graphics/*.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/imagelib/*.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/misc/*.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/paklib/*.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/sound/*.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/widget/*.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/fcaseopen/*.c
+		${CMAKE_CURRENT_SOURCE_DIR}/src/Sexy.TodLib/*.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/Lawn/*.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/Lawn/Widget/*.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/Lawn/System/*.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/glad/*.c
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/imagelib/png/*.c
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/imagelib/jpeg/*.c
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/imagelib/zlib/*.c
 )
 
 # these files are included and must not be built in the project
@@ -42,7 +41,6 @@ list(REMOVE_ITEM SOURCES
 if(ANDROID)
 	list(APPEND SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/android/graphics/Window.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/android/graphics/Interface.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/android/Input.cpp
 	)
 	list(APPEND PLAT_INCLUDES
@@ -60,7 +58,6 @@ elseif (EMSCRIPTEN)
 else()
 	list(APPEND SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/pc/graphics/Window.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/pc/graphics/Interface.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/pc/Input.cpp
 	)
 	list(APPEND PLAT_INCLUDES
@@ -181,7 +178,7 @@ if (WIN32)
 		target_link_options(re-plants-vs-zombies PRIVATE -mwindows)
 	endif()
 elseif (ANDROID)  # 增加安卓平台的支持
-    target_link_libraries(re-plants-vs-zombies android log EGL)  # 链接需要的库
+    target_link_libraries(re-plants-vs-zombies android log EGL GLESv2)  # 链接需要的库
 	target_compile_definitions(re-plants-vs-zombies PRIVATE ANDROID)  # 定义ANDROID宏
 elseif (EMSCRIPTEN)
     target_link_libraries(re-plants-vs-zombies GLESv2) # For WebGL
