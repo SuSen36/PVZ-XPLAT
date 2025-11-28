@@ -563,10 +563,10 @@ int Challenge::BeghouledTwistMoveCausesMatch(int theGridX, int theGridY, Beghoul
 	SeedType aSeed3 = theBoardState->mSeedType[theGridX][theGridY + 1];
 	SeedType aSeed4 = theBoardState->mSeedType[theGridX + 1][theGridY + 1];
 
+	theBoardState->mSeedType[theGridX][theGridY] = aSeed3;
 	theBoardState->mSeedType[theGridX + 1][theGridY] = aSeed1;
-	theBoardState->mSeedType[theGridX][theGridY + 1] = aSeed2;
-	theBoardState->mSeedType[theGridX + 1][theGridY + 1] = aSeed3;
-	theBoardState->mSeedType[theGridX][theGridY] = aSeed4;
+	theBoardState->mSeedType[theGridX][theGridY + 1] = aSeed4;
+	theBoardState->mSeedType[theGridX + 1][theGridY + 1] = aSeed2;
 
 	int aHasMatch = BeghouledBoardHasMatch(theBoardState);
 
@@ -676,7 +676,7 @@ void Challenge::BeghouledDragUpdate(int x, int y)
 		int aGridXFrom = mBoard->PixelToGridX(mBeghouledMouseDownX, mBeghouledMouseDownY);
 		int aGridYFrom = mBoard->PixelToGridY(mBeghouledMouseDownX, mBeghouledMouseDownY);
 		int aGridXTo, aGridYTo;
-		if (aDeltaX > aDeltaY)
+		if (abs(aDeltaX) > abs(aDeltaY))
 		{
 			aGridXTo = aGridXFrom + (aDeltaX > 0 ? 1 : -1);
 			aGridYTo = aGridYFrom;
