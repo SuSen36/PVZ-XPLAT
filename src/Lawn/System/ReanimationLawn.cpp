@@ -239,6 +239,62 @@ MemoryImage* ReanimatorCache::MakeCachedPlantFrame(SeedType theSeedType, DrawVar
 		}
 	}
 
+	// 只修复万寿菊的花瓣颜色问题：当使用颜色变化时，mTrackColor 在颜色混合时格式不对
+	// 问题在于 mTrackColor 通过 Color::ToInt() 转换为 ARGB 格式进行混合，但 MemoryImage 期望 BGRA 格式
+	// 这导致只有通过 mTrackColor 进行颜色混合的花瓣部分出现颜色错误
+	// 为了不影响其他部分（叶子、茎等），先绘制一个不使用颜色变化的版本作为参考
+	// 然后只修复有差异的像素（这些应该是花瓣部分）
+	if (theSeedType == SeedType::SEED_MARIGOLD && theDrawVariation >= DrawVariation::VARIATION_MARIGOLD_WHITE && theDrawVariation <= DrawVariation::VARIATION_MARIGOLD_LIGHT_GREEN)
+	{
+		// 先绘制一个不使用颜色变化的版本作为参考
+		MemoryImage* aReferenceImage = MakeBlankMemoryImage(aWidth, aHeight);
+		Graphics aReferenceGraphics(aReferenceImage);
+		aReferenceGraphics.SetLinearBlend(true);
+		DrawReanimatorFrame(&aReferenceGraphics, -aOffsetX, -aOffsetY, aPlantDef.mReanimationType, "anim_idle", DrawVariation::VARIATION_NORMAL);
+		
+		// 比较两个图像，只修复有差异的像素（花瓣部分）
+		uint32_t* aBits = aMemoryImage->GetBits();
+		uint32_t* aRefBits = aReferenceImage->GetBits();
+		int aPixelCount = aWidth * aHeight;
+		for (int i = 0; i < aPixelCount; i++)
+		{
+			uint32_t pixel = aBits[i];
+			uint32_t refPixel = aRefBits[i];
+			
+			// 只处理有显著差异的像素（这些应该是花瓣部分）
+			// 提取 Alpha 通道，只处理非透明像素
+			uint32_t a = (pixel >> 24) & 0xFF;
+			uint32_t refA = (refPixel >> 24) & 0xFF;
+			
+			// 如果 Alpha 通道不同，或者像素值有明显差异（说明被 mTrackColor 修改过），则修复
+			if (a > 0 && (pixel != refPixel))
+			{
+				// 检查颜色差异是否显著（避免因抗锯齿导致的小差异）
+				uint32_t r = (pixel >> 0) & 0xFF;
+				uint32_t g = (pixel >> 8) & 0xFF;
+				uint32_t b = (pixel >> 16) & 0xFF;
+				uint32_t refR = (refPixel >> 0) & 0xFF;
+				uint32_t refG = (refPixel >> 8) & 0xFF;
+				uint32_t refB = (refPixel >> 16) & 0xFF;
+				
+				// 如果颜色差异超过阈值（说明被 mTrackColor 修改过），则修复
+				int rDiff = (r > refR) ? (r - refR) : (refR - r);
+				int gDiff = (g > refG) ? (g - refG) : (refG - g);
+				int bDiff = (b > refB) ? (b - refB) : (refB - b);
+				int colorDiff = rDiff + gDiff + bDiff;
+				if (colorDiff > 10)  // 颜色差异阈值，避免误判
+				{
+					// 从 ARGB 格式提取各个通道（Color::ToInt() 返回的格式）
+					// 转换为 BGRA 格式（MemoryImage 期望的格式）：Blue(0-7), Green(8-15), Red(16-23), Alpha(24-31)
+					aBits[i] = (b << 0) | (g << 8) | (r << 16) | (a << 24);
+				}
+			}
+		}
+		aMemoryImage->BitsChanged();
+		
+		delete aReferenceImage;
+	}
+
 	return aMemoryImage;
 }
 
