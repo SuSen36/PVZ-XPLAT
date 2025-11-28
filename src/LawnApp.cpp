@@ -324,12 +324,10 @@ void LawnApp::GotFocus()
 //0x44F460
 void LawnApp::LostFocus()
 {
-	/*
 	if (!mTodCheatKeys && CanPauseNow())
 	{
 		DoPauseDialog();
 	}
-	*/
 }
 
 //0x44F480
