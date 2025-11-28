@@ -12,7 +12,6 @@
 #include "../System/Music.h"
 #include "SeedChooserScreen.h"
 #include "../../GameConstants.h"
-#include "../System/PopDRMComm.h"
 #include "../../Sexy.TodLib/TodFoley.h"
 #include "../../Sexy.TodLib/TodCommon.h"
 #include "../../Sexy.TodLib/Reanimator.h"
@@ -1142,7 +1141,7 @@ void StoreScreen::MouseDown(int x, int y, int theClickCount)
                 mWaitForDialog = false;
                 if (aResult == ID_OK)
                 {
-                    if (mApp->mDRM) mApp->mDRM->BuyGame();
+                   // @Patoke: implemented
                 }
             }
             else if(!IsItemSoldOut(aItemType) && !IsItemUnavailable(aItemType) && !IsComingSoon(aItemType))

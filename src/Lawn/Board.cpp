@@ -1,13 +1,11 @@
 #include <ctime>
 #include <SDL.h>
 #include "ZenGarden.h"
-#include "BoardInclude.h"
 #include "System/Music.h"
 #include "System/SaveGame.h"
 #include "Widget/LawnDialog.h"
 #include "System/PlayerInfo.h"
 #include "System/PoolEffect.h"
-#include "System/PopDRMComm.h"
 #include "Widget/StoreScreen.h"
 #include "Widget/AwardScreen.h"
 #include "../Sexy.TodLib/Trail.h"
@@ -20,7 +18,25 @@
 #include "SexyAppFramework/widget/Dialog.h"
 #include "SexyAppFramework/misc/MTRand.h"
 #include "../Sexy.TodLib/TodParticle.h"
-//#include "SexyAppFramework/graphics/SysFont.h"
+#include "Coin.h"
+#include "Board.h"
+#include "Plant.h"
+#include "Zombie.h"
+#include "Cutscene.h"
+#include "GridItem.h"
+#include "Challenge.h"
+#include "LawnMower.h"
+#include "SeedPacket.h"
+#include "../LawnApp.h"
+#include "Projectile.h"
+#include "../Resources.h"
+#include "CursorObject.h"
+#include "ToolTipWidget.h"
+#include "MessageWidget.h"
+#include "../GameConstants.h"
+#include "Widget/GameButton.h"
+#include "SexyAppFramework/misc/Debug.h"
+#include "SexyAppFramework/graphics/Graphics.h"
 #include "../Sexy.TodLib/EffectSystem.h"
 #include "../Sexy.TodLib/TodStringFile.h"
 #include "SexyAppFramework/graphics/ImageFont.h"
@@ -4949,10 +4965,6 @@ void Board::MouseUp(int x, int y, int theClickCount)
 			}
 			else if (mApp->mGameMode == GameMode::GAMEMODE_UPSELL)
 			{
-				if (mApp->mDRM)
-				{
-					mApp->mDRM->BuyGame();
-				}
 				mApp->DoBackToMain();
 			}
 		}
