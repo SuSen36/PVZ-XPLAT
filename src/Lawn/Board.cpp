@@ -4925,19 +4925,7 @@ void Board::MouseUp(int x, int y, int theClickCount)
 	if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED && mChallenge->MouseUp(x, y) && theClickCount > 0)
 		return;
     if (mMouseDragging) {
-		CursorType aCursor = mCursorObject->mCursorType;
-		// Only process drag-and-drop planting and Cob Cannon dragging on tablet/touch devices
-		if (mApp->mTabletPC && (IsPlantInCursor() || aCursor == CURSOR_TYPE_COBCANNON_TARGET))
-		{
-			// Allow drag-and-drop planting and Cob Cannon drag-and-release firing on touch devices
-			MouseTouch(x, y);
-		}
-		else if (IsPlantInCursor())
-		{
-			// Cancel planting by putting seed packet back (PC doesn't support drag-and-drop planting)
-			RefreshSeedPacketFromCursor();
-			mApp->PlayFoley(FoleyType::FOLEY_DROP);
-		}
+        MouseTouch(x,y);
         mMouseDragging = false;
         mMouseDragStartX = 0;
         mMouseDragStartY = 0;
