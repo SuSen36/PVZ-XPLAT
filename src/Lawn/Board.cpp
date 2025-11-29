@@ -4921,7 +4921,17 @@ void Board::MouseUp(int x, int y, int theClickCount)
 	if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED && mChallenge->MouseUp(x, y) && theClickCount > 0)
 		return;
     if (mMouseDragging) {
-        MouseTouch(x,y);
+		// If tablet PC mode is off and plant is in cursor, cancel planting on drag release
+		if (!mApp->mTabletPC && IsPlantInCursor())
+		{
+			// Cancel planting by putting seed packet back
+			RefreshSeedPacketFromCursor();
+			mApp->PlayFoley(FoleyType::FOLEY_DROP);
+		}
+		else
+		{
+			MouseTouch(x, y);
+		}
         mMouseDragging = false;
         mMouseDragStartX = 0;
         mMouseDragStartY = 0;

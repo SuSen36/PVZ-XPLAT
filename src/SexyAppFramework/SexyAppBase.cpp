@@ -6671,14 +6671,16 @@ SexyAppBase::SexyAppBase()
 
 	mPrimaryThreadId = 0;
 
-	/*
-	if (GetSystemMetrics(86)) // check for tablet pc
-	{
-		mTabletPC = true;
-		mFullScreenPageFlip = false; // so that tablet keyboard can show up
-	}
-	else*/
+#ifdef ANDROID
+	// Android is a touch platform, enable tablet PC mode by default
+	mTabletPC = true;
+#elif defined(__APPLE__) || defined(__IOS__) || defined(TARGET_OS_IPHONE)
+	// iOS/Apple platforms support touch, enable tablet PC mode by default
+	mTabletPC = true;
+#else
+	// Default to false, can be detected later after SDL initialization
 	mTabletPC = false;
+#endif
 
 	//gSEHCatcher.mApp = this;	
 	
