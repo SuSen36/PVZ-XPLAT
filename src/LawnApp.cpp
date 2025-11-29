@@ -3203,7 +3203,7 @@ void LawnApp::EnforceCursor()
 {
 	// Call parent class implementation which uses SDL
 	SexyAppBase::EnforceCursor();
-}
+																																																																																																																																																												}
 
 //0x455AA0
 SexyString LawnApp::Pluralize(int theCount, const SexyChar* theSingular, const SexyChar* thePlural)
