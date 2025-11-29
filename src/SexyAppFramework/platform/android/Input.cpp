@@ -75,21 +75,12 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
                     {
                         int zDelta = (deltaY > 0) ? -1 : 1; // 向下拖拽为 -1，向上拖拽为 1
                         mWidgetManager->MouseWheel(zDelta);
-                        gLastTouchY = y;
-                        gLastTouchX = x;
-                    }
-                    else
-                    {
-                        gLastTouchX = x;
-                        gLastTouchY = y;
                     }
                 }
-                else
-                {
-                    // 首次触摸，记录初始位置
-                    gLastTouchX = x;
-                    gLastTouchY = y;
-                }
+                
+                // 更新触摸位置（无论是否触发滚轮事件）
+                gLastTouchX = x;
+                gLastTouchY = y;
                 
                 mWidgetManager->RemapMouse(x, y);
 
@@ -134,6 +125,11 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 
                 int x = event.button.x;
                 int y = event.button.y;
+                
+                // 重置拖拽跟踪状态，结束拖拽手势
+                gLastTouchY = -1.0f;
+                gLastTouchX = -1.0f;
+                
                 mWidgetManager->RemapMouse(x, y);
 
                 mLastUserInputTick = mLastTimerTime;
