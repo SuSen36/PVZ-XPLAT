@@ -622,6 +622,12 @@ void EditWidget::MouseDown(int x, int y, int theBtnNum, int theClickCount)
 	{
 		mHadDoubleClick = true;
 		HiliteWord();
+	}else if (theClickCount == 1)
+	{
+		std::string value;
+		bool wrote = mWidgetManager->mApp->StartTextInput(value);
+		if (wrote)
+			SetText(value);
 	}
 	
 	MarkDirty();
