@@ -3191,7 +3191,10 @@ void Board::MouseDrag(int x, int y)
 	Widget::MouseDrag(x, y);
 	mChallenge->MouseMove(x, y);
 
-    mMouseDragging = true;
+	if (mApp->mTabletPC)
+	{
+		mMouseDragging = true;
+	}
 
     HitResult aHitResult;
     MouseHitTest(x, y, &aHitResult);
@@ -3230,7 +3233,8 @@ void Board::MouseTouch(int x, int y) {
 
     if (aHitResult.mObjectType == GameObjectType::OBJECT_TYPE_NONE)
     {
-        if (aCursor == CURSOR_TYPE_COBCANNON_TARGET)
+        // Cob Cannon target cursor dragging only works on tablet/touch devices
+        if (aCursor == CURSOR_TYPE_COBCANNON_TARGET && mApp->mTabletPC)
         {
             MouseDownCobcannonFire(x, y, 1);
             UpdateCursor();
@@ -4921,7 +4925,19 @@ void Board::MouseUp(int x, int y, int theClickCount)
 	if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_BEGHOULED && mChallenge->MouseUp(x, y) && theClickCount > 0)
 		return;
     if (mMouseDragging) {
-        MouseTouch(x,y);
+		CursorType aCursor = mCursorObject->mCursorType;
+		// Only process drag-and-drop planting and Cob Cannon dragging on tablet/touch devices
+		if (mApp->mTabletPC && (IsPlantInCursor() || aCursor == CURSOR_TYPE_COBCANNON_TARGET))
+		{
+			// Allow drag-and-drop planting and Cob Cannon drag-and-release firing on touch devices
+			MouseTouch(x, y);
+		}
+		else if (IsPlantInCursor())
+		{
+			// Cancel planting by putting seed packet back (PC doesn't support drag-and-drop planting)
+			RefreshSeedPacketFromCursor();
+			mApp->PlayFoley(FoleyType::FOLEY_DROP);
+		}
         mMouseDragging = false;
         mMouseDragStartX = 0;
         mMouseDragStartY = 0;

@@ -180,6 +180,10 @@ public:
 	//WindowsMessageList		mDeferredMessages;
 	bool					mNoDefer;	
 	bool					mFullScreenPageFlip;	
+	// mTabletPC: Indicates if the device is a tablet/touch device.
+	// When true: Enables touch-specific features like drag-and-drop planting, virtual keyboard support.
+	// When false: Uses traditional mouse/keyboard input (PC mode).
+	// Android/iOS platforms default to true, PC platforms default to false.
 	bool					mTabletPC;
 	GLInterface*			mGLInterface;
 	bool					mAlphaDisabled;
