@@ -1284,9 +1284,24 @@ uint32_t* MemoryImage::GetBits()
 				*(aDestPtr++) = (r << 16) | (g << 8) | (b) | (anAlpha << 24);
 			}
 		}
-		else if ((mD3DData == NULL) || (!mApp->mGLInterface->RecoverBits(this)))
+		else if (mD3DData == NULL || mApp == NULL || mApp->mGLInterface == NULL)
 		{
 			memset(mBits, 0, aSize*sizeof(uint32_t));
+		}
+		else
+		{
+			// Additional safety check before calling RecoverBits
+			if (mApp != NULL && mApp->mGLInterface != NULL)
+			{
+				if (!mApp->mGLInterface->RecoverBits(this))
+				{
+					memset(mBits, 0, aSize*sizeof(uint32_t));
+				}
+			}
+			else
+			{
+				memset(mBits, 0, aSize*sizeof(uint32_t));
+			}
 		}
 	}	
 

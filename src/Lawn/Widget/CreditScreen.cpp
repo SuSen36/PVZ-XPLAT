@@ -378,6 +378,7 @@ void CreditScreen::RemovedFromManager(WidgetManager* theWidgetManager)
 void CreditScreen::PreLoadCredits()
 {
     mPreloaded = true;
+    mApp->mMusic->MusicCreditScreenInit();
 	mLoadedResourceNames.push_back("DelayLoad_Background1");
 	mLoadedResourceNames.push_back("DelayLoad_Background2");
 	mLoadedResourceNames.push_back("DelayLoad_Background3");
@@ -414,8 +415,8 @@ void CreditScreen::PreLoadCredits()
     ReanimationPreload(ReanimationType::REANIM_CREDITS_CRAZYDAVE);
     ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_ZOMBIE, true);
     ReanimationPreload(ReanimationType::REANIM_ZOMBIE);
-    //ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_DIGGER, true);
-    //ReanimationPreload(ReanimationType::REANIM_DIGGER);
+    ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_DIGGER, true);
+    ReanimationPreload(ReanimationType::REANIM_DIGGER);
     ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_ZOMBIE_FOOTBALL, true);
     ReanimationPreload(ReanimationType::REANIM_ZOMBIE_FOOTBALL);
     ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_ZOMBIE_CREDITS_CONEHEAD, true);
@@ -604,8 +605,6 @@ Reanimation* CreditScreen::PlayReanim(int aIndex)
 //0x434F20
 void DrawDisco(Graphics* g, float aCenterX, float aCenterY, float theTime)
 {
-    if (!gSexyAppBase->Is3DAccelerated())
-        return;
 
     float x1 = cos(theTime) * 600.0f;
     float y1 = sin(theTime) * 200.0f;

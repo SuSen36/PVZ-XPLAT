@@ -1531,21 +1531,73 @@ bool GLInterface::RecoverBits(MemoryImage* theImage)
 
     printf("recover\n");
     fflush(stdout);
+    
+    uint32_t* imageBits = theImage->GetBits();
+    if (imageBits == NULL)
+        return false;
+    
     for (int aPieceRow = 0; aPieceRow < aData->mTexVecHeight; aPieceRow++)
     {
         for (int aPieceCol = 0; aPieceCol < aData->mTexVecWidth; aPieceCol++)
         {
             TextureDataPiece* aPiece = &aData->mTextures[aPieceRow*aData->mTexVecWidth + aPieceCol];
+            
+            // Check if texture is valid
+            if (aPiece->mTexture == 0 || aPiece->mWidth <= 0 || aPiece->mHeight <= 0)
+                continue;
 
             int offx = aPieceCol*aData->mTexPieceWidth;
             int offy = aPieceRow*aData->mTexPieceHeight;
             int aWidth = std::min(theImage->mWidth-offx, aPiece->mWidth);
             int aHeight = std::min(theImage->mHeight-offy, aPiece->mHeight);
+            
+            if (aWidth <= 0 || aHeight <= 0)
+                continue;
+
+            // Allocate temporary buffer for this texture piece
+            uint32_t* tempBuffer = new uint32_t[aPiece->mWidth * aPiece->mHeight];
+            if (tempBuffer == NULL)
+                continue;
 
             glEnable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, aPiece->mTexture);
+            
+            // Check for OpenGL errors before glGetTexImage
+            GLenum glError = glGetError();
+            if (glError != GL_NO_ERROR)
+            {
+                delete[] tempBuffer;
+                continue;
+            }
 
-            glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, theImage->GetBits());
+            glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, tempBuffer);
+            
+            // Check for OpenGL errors after glGetTexImage
+            glError = glGetError();
+            if (glError != GL_NO_ERROR)
+            {
+                delete[] tempBuffer;
+                continue;
+            }
+            
+            // Copy from temporary buffer to image bits at correct offset
+            for (int y = 0; y < aHeight; y++)
+            {
+                if (offy + y >= theImage->mHeight)
+                    break;
+                    
+                for (int x = 0; x < aWidth; x++)
+                {
+                    if (offx + x >= theImage->mWidth)
+                        break;
+                        
+                    int srcIdx = y * aPiece->mWidth + x;
+                    int dstIdx = (offy + y) * theImage->mWidth + (offx + x);
+                    imageBits[dstIdx] = tempBuffer[srcIdx];
+                }
+            }
+            
+            delete[] tempBuffer;
 
             /*
             switch (aData->mPixelFormat)

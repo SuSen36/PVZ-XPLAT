@@ -193,11 +193,9 @@ void Music::MusicInit()
 //0x45AAC0
 void Music::MusicCreditScreenInit()
 {
-#ifndef _DEBUG
 	BassMusicInterface* anSDL = (BassMusicInterface*)mApp->mMusicInterface;
 	if (anSDL->mMusicMap.find((int)MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN) == anSDL->mMusicMap.end())  // 如果尚未加载
-		LoadSong(MusicFile::MUSIC_FILE_MAIN_MUSIC, "sounds/ZombiesOnYourLawn.ogg");
-#endif
+		LoadSong(MusicFile::MUSIC_FILE_CREDITS_ZOMBIES_ON_YOUR_LAWN, "sounds/ZombiesOnYourLawn.ogg");
 }
 
 //0x45ABB0

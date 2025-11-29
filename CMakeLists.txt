@@ -9,7 +9,11 @@ set(CMAKE_JOB_POOL_COMPILE compile_job_pool)
 set(CMAKE_JOB_POOL_LINK link_job_pool)
 set_property(GLOBAL PROPERTY JOB_POOLS compile_job_pool=8 link_job_pool=2)
 
-# 添加编译优化选项
+# 根据构建类型设置默认优化级别
+if(NOT CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
+
 
 file(GLOB SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
