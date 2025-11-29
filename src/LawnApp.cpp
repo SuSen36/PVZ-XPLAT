@@ -3201,78 +3201,8 @@ void LawnApp::PreloadForUser()
 //0x455930
 void LawnApp::EnforceCursor()
 {
-	/*
-	if (mSEHOccured || !mMouseIn)
-	{
-		::SetCursor(LoadCursor(NULL, IDC_ARROW));
-		return;
-	}
-
-	if (mOverrideCursor)
-	{
-		::SetCursor(mOverrideCursor);
-		return;
-	}
-
-	switch (mCursorNum)
-	{
-	case CURSOR_POINTER:
-		::SetCursor(LoadCursor(GetModuleHandle(NULL), MAKEINTRESOURCE(IDC_CURSOR1)));
-		return;
-
-	case CURSOR_HAND:
-		::SetCursor(mHandCursor);
-		return;
-
-	case CURSOR_TEXT:
-		::SetCursor(LoadCursor(NULL, IDC_IBEAM));
-		return;
-
-	case CURSOR_DRAGGING:
-		::SetCursor(mDraggingCursor);
-		return;
-
-	case CURSOR_CIRCLE_SLASH:
-		::SetCursor(LoadCursor(NULL, IDC_NO));
-		return;
-
-	case CURSOR_SIZEALL:
-		::SetCursor(LoadCursor(NULL, IDC_SIZEALL));
-		return;
-
-	case CURSOR_SIZENESW:
-		::SetCursor(LoadCursor(NULL, IDC_SIZENESW));
-		return;
-
-	case CURSOR_SIZENS:
-		::SetCursor(LoadCursor(NULL, IDC_SIZENS));
-		return;
-
-	case CURSOR_SIZENWSE:
-		::SetCursor(LoadCursor(NULL, IDC_SIZENWSE));
-		return;
-
-	case CURSOR_SIZEWE:
-		::SetCursor(LoadCursor(NULL, IDC_SIZEWE));
-		return;
-
-	case CURSOR_WAIT:
-		::SetCursor(LoadCursor(NULL, IDC_WAIT));
-		return;
-
-	case CURSOR_CUSTOM:
-		::SetCursor(NULL);
-		return;
-
-	case CURSOR_NONE:
-		::SetCursor(NULL);
-		return;
-
-	default:
-		::SetCursor(LoadCursor(NULL, IDC_ARROW));
-		return;
-	}
-	*/
+	// Call parent class implementation which uses SDL
+	SexyAppBase::EnforceCursor();
 }
 
 //0x455AA0

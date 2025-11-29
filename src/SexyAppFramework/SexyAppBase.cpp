@@ -9988,103 +9988,89 @@ void SexyAppBase::SetAlphaDisabled(bool isDisabled)
 
 void SexyAppBase::EnforceCursor()
 {
-	/*
-	bool wantSysCursor = true;
-
-	if (mDDInterface == NULL)
-		return;
-
+	// Handle error state or mouse not in window
 	if ((mSEHOccured) || (!mMouseIn))
 	{
-		::SetCursor(::LoadCursor(NULL, IDC_ARROW));	
-		if (mDDInterface->SetCursorImage(NULL))
-			mCustomCursorDirty = true;
-	}
-	else
-	{
-		if ((mCursorImages[mCursorNum] == NULL) || 
-			((!mPlayingDemoBuffer) && (!mCustomCursorsEnabled) && (mCursorNum != CURSOR_CUSTOM)))
+		SDL_Cursor* aCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+		if (aCursor)
 		{
-			if (mOverrideCursor != NULL)
-				::SetCursor(mOverrideCursor);
-			else if (mCursorNum == CURSOR_POINTER)
-				::SetCursor(::LoadCursor(NULL, IDC_ARROW));
-			else if (mCursorNum == CURSOR_HAND)
-				::SetCursor(mHandCursor);
-			else if (mCursorNum == CURSOR_TEXT)
-				::SetCursor(::LoadCursor(NULL, IDC_IBEAM));
-			else if (mCursorNum == CURSOR_DRAGGING)
-				::SetCursor(mDraggingCursor);
-			else if (mCursorNum == CURSOR_CIRCLE_SLASH)
-				::SetCursor(::LoadCursor(NULL, IDC_NO));
-			else if (mCursorNum == CURSOR_SIZEALL)
-				::SetCursor(::LoadCursor(NULL, IDC_SIZEALL));
-			else if (mCursorNum == CURSOR_SIZENESW)
-				::SetCursor(::LoadCursor(NULL, IDC_SIZENESW));
-			else if (mCursorNum == CURSOR_SIZENS)
-				::SetCursor(::LoadCursor(NULL, IDC_SIZENS));
-			else if (mCursorNum == CURSOR_SIZENWSE)
-				::SetCursor(::LoadCursor(NULL, IDC_SIZENWSE));
-			else if (mCursorNum == CURSOR_SIZEWE)
-				::SetCursor(::LoadCursor(NULL, IDC_SIZEWE));
-			else if (mCursorNum == CURSOR_WAIT)
-				::SetCursor(::LoadCursor(NULL, IDC_WAIT));
-			else if (mCursorNum == CURSOR_CUSTOM) 
-				::SetCursor(NULL); // Default to not showing anything
-			else if (mCursorNum == CURSOR_NONE)
-				::SetCursor(NULL);			
-			else
-				::SetCursor(::LoadCursor(NULL, IDC_ARROW));
-
-			if (mDDInterface->SetCursorImage(NULL))
-				mCustomCursorDirty = true;
+			SDL_SetCursor(aCursor);
+			SDL_ShowCursor(SDL_ENABLE);
 		}
-		else
-		{
-			if (mDDInterface->SetCursorImage(mCursorImages[mCursorNum]))
-				mCustomCursorDirty = true;
-
-			if (!mPlayingDemoBuffer)
-			{
-				::SetCursor(NULL);
-			}
-			else
-			{
-				// Give the NO cursor in the client area and an arrow on the title bar
-
-				POINT aULCorner = {0, 0};
-				::ClientToScreen(mHWnd, &aULCorner);
-
-				POINT aBRCorner = {mWidth, mHeight};
-				::ClientToScreen(mHWnd, &aBRCorner);
-
-				POINT aPoint;
-				::GetCursorPos(&aPoint);			
-									
-				if ((aPoint.x >= aULCorner.x) && (aPoint.y >= aULCorner.y) &&
-					(aPoint.x < aBRCorner.x) && (aPoint.y < aBRCorner.y))
-				{
-					::SetCursor(::LoadCursor(NULL, IDC_NO));
-				}
-				else
-				{
-					::SetCursor(::LoadCursor(NULL, IDC_ARROW));
-				}
-			}
-
-			wantSysCursor = false;
-		}
+		mSysCursor = true;
+		return;
 	}
 
-	if (wantSysCursor != mSysCursor)
+	// Check if we should use custom cursor image (game-drawn cursor)
+	if ((mCursorImages[mCursorNum] != NULL) && 
+		((mPlayingDemoBuffer) || (mCustomCursorsEnabled) || (mCursorNum == CURSOR_CUSTOM)))
 	{
-		mSysCursor = wantSysCursor;
-
-		// Don't hide the hardware cursor when playing back a demo buffer
-//		if (!mPlayingDemoBuffer)
-//			::ShowCursor(mSysCursor);
+		// Using custom cursor, hide system cursor so game can draw its own
+		SDL_ShowCursor(SDL_DISABLE);
+		mSysCursor = false;
+		return;
 	}
-	*/
+
+	// Use SDL system cursor based on cursor type
+	SDL_SystemCursor aSystemCursor = SDL_SYSTEM_CURSOR_ARROW;
+	bool shouldShowCursor = true;
+
+	switch (mCursorNum)
+	{
+	case CURSOR_POINTER:
+		aSystemCursor = SDL_SYSTEM_CURSOR_ARROW;
+		break;
+	case CURSOR_HAND:
+		aSystemCursor = SDL_SYSTEM_CURSOR_HAND;
+		break;
+	case CURSOR_TEXT:
+		aSystemCursor = SDL_SYSTEM_CURSOR_IBEAM;
+		break;
+	case CURSOR_DRAGGING:
+		aSystemCursor = SDL_SYSTEM_CURSOR_SIZEALL;
+		break;
+	case CURSOR_CIRCLE_SLASH:
+		aSystemCursor = SDL_SYSTEM_CURSOR_NO;
+		break;
+	case CURSOR_SIZEALL:
+		aSystemCursor = SDL_SYSTEM_CURSOR_SIZEALL;
+		break;
+	case CURSOR_SIZENESW:
+		aSystemCursor = SDL_SYSTEM_CURSOR_SIZENESW;
+		break;
+	case CURSOR_SIZENS:
+		aSystemCursor = SDL_SYSTEM_CURSOR_SIZENS;
+		break;
+	case CURSOR_SIZENWSE:
+		aSystemCursor = SDL_SYSTEM_CURSOR_SIZENWSE;
+		break;
+	case CURSOR_SIZEWE:
+		aSystemCursor = SDL_SYSTEM_CURSOR_SIZEWE;
+		break;
+	case CURSOR_WAIT:
+		aSystemCursor = SDL_SYSTEM_CURSOR_WAIT;
+		break;
+	case CURSOR_CUSTOM:
+	case CURSOR_NONE:
+		SDL_ShowCursor(SDL_DISABLE);
+		mSysCursor = false;
+		return;
+	default:
+		aSystemCursor = SDL_SYSTEM_CURSOR_ARROW;
+		break;
+	}
+
+	// Set the system cursor
+	SDL_Cursor* aCursor = SDL_CreateSystemCursor(aSystemCursor);
+	if (aCursor)
+	{
+		SDL_SetCursor(aCursor);
+		if (shouldShowCursor)
+		{
+			SDL_ShowCursor(SDL_ENABLE);
+		}
+		mSysCursor = true;
+	}
 }
 
 void SexyAppBase::ProcessSafeDeleteList()

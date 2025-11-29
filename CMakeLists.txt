@@ -160,7 +160,8 @@ target_include_directories(re-plants-vs-zombies PRIVATE
 	${PLAT_INCLUDES}
 	${bass_SOURCE_DIR}/${BASS_INCLUDE}
 )
-target_compile_definitions(re-plants-vs-zombies PRIVATE _DEBUG)
+
+#target_compile_definitions(re-plants-vs-zombies PRIVATE _DEBUG)
 
 
 if (NOT EMSCRIPTEN)

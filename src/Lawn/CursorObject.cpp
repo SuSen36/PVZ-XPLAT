@@ -6,6 +6,7 @@
 #include "../Resources.h"
 #include "../Sexy.TodLib/Reanimator.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
+#include "SDL.h"
 
 //0x438640
 CursorObject::CursorObject()
@@ -56,7 +57,14 @@ void CursorObject::Update()
     {
         aCursorReanim->Update();
     }
-
+    if (mCursorType == CursorType::CURSOR_TYPE_NORMAL)
+    {
+        SDL_ShowCursor(SDL_ENABLE);
+    }
+    else
+    {
+        SDL_ShowCursor(SDL_DISABLE);
+    }
     mVisible = true;
     mX = mApp->mWidgetManager->mLastMouseX - 25;
     mY = mApp->mWidgetManager->mLastMouseY - 35;

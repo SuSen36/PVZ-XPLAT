@@ -42,18 +42,36 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 						mWidgetManager->Resize(mScreenBounds, mGLInterface->mPresentationRect);
 						break;
 
-					case SDL_WINDOWEVENT_FOCUS_GAINED:
-					case SDL_WINDOWEVENT_FOCUS_LOST:
-						mActive = event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED;
-						RehupFocus();
-						break;
+				case SDL_WINDOWEVENT_FOCUS_GAINED:
+				case SDL_WINDOWEVENT_FOCUS_LOST:
+					mActive = event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED;
+					RehupFocus();
+					EnforceCursor();
+					break;
+				case SDL_WINDOWEVENT_ENTER:
+					if (!mMouseIn)
+					{
+						mMouseIn = true;
+						EnforceCursor();
+					}
+					break;
+				case SDL_WINDOWEVENT_LEAVE:
+					if (mMouseIn)
+					{
+						mMouseIn = false;
+						EnforceCursor();
+					}
+					break;
 				}
 				break;
 
 			case SDL_MOUSEMOTION:
 			{
 				if (!mMouseIn)
+				{
 					mMouseIn = true;
+					EnforceCursor();
+				}
 
 				int x = event.motion.x;
 				int y = event.motion.y;
@@ -68,7 +86,10 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 			case SDL_MOUSEBUTTONDOWN:
 			{
 				if (!mMouseIn)
+				{
 					mMouseIn = true;
+					EnforceCursor();
+				}
 
 				int x = event.button.x;
 				int y = event.button.y;
@@ -91,7 +112,10 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 			case SDL_MOUSEBUTTONUP:
 			{
 				if (!mMouseIn)
+				{
 					mMouseIn = true;
+					EnforceCursor();
+				}
 
 				int x = event.button.x;
 				int y = event.button.y;
