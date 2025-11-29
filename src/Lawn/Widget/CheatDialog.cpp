@@ -13,7 +13,7 @@ CheatDialog::CheatDialog(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_C
 	mApp = theApp;
 	mVerticalCenterText = false;
     mCheatEditWidget = CreateEditWidget(0, this, this);
-    mCheatEditWidget->mMaxChars = 12;
+    mCheatEditWidget->mMaxChars = 20;
     mCheatEditWidget->AddWidthCheckFont(FONT_BRIANNETOD12, 220);
 
 	SexyString aCheatStr;
@@ -21,13 +21,17 @@ CheatDialog::CheatDialog(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_C
 	{
 		aCheatStr = StrFormat(__S("C%d"), (int)mApp->mGameMode);
 	}
-	else if (mApp->HasFinishedAdventure())
+	else if (mApp->mPlayerInfo && mApp->HasFinishedAdventure())
 	{
 		aCheatStr = StrFormat(__S("F%s"), mApp->GetStageString(mApp->mPlayerInfo->GetLevel()).c_str());
 	}
-	else
+	else if (mApp->mPlayerInfo)
 	{
 		aCheatStr = mApp->GetStageString(mApp->mPlayerInfo->GetLevel());
+	}
+	else
+	{
+		aCheatStr = __S("1-1");
 	}
     mCheatEditWidget->SetText(aCheatStr, true);
 
@@ -78,7 +82,8 @@ void CheatDialog::EditWidgetText(int theId, const SexyString& theString)
 bool CheatDialog::AllowChar(int theId, SexyChar theChar)
 {
 	(void)theId;
-	return sexyisdigit(theChar) || theChar == __S('-') || theChar == __S('c') || theChar == __S('C') || theChar == __S('f') || theChar == __S('F');
+	// 允许数字、连字符和所有字母（支持彩蛋代码）
+	return sexyisdigit(theChar) || theChar == __S('-') || (theChar >= __S('a') && theChar <= __S('z')) || (theChar >= __S('A') && theChar <= __S('Z'));
 }
 
 bool CheatDialog::ApplyCheat()
@@ -133,8 +138,11 @@ bool CheatDialog::ApplyCheat()
 	}
 
 	mApp->mGameMode = GameMode::GAMEMODE_ADVENTURE;
-	mApp->mPlayerInfo->SetLevel(aLevel);
-	mApp->mPlayerInfo->mFinishedAdventure = aFinishedAdventure;
-	mApp->WriteCurrentUserConfig();
+	if (mApp->mPlayerInfo)
+	{
+		mApp->mPlayerInfo->SetLevel(aLevel);
+		mApp->mPlayerInfo->mFinishedAdventure = aFinishedAdventure;
+		mApp->WriteCurrentUserConfig();
+	}
 	return true;
 }

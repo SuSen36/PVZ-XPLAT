@@ -56,7 +56,7 @@ NewOptionsDialog::NewOptionsDialog(LawnApp* theApp, bool theFromGameSelector) :
     mSfxVolumeSlider->SetValue(theApp->GetSfxVolume() / 0.65);
 
     mFullscreenCheckbox = MakeNewCheckbox(NewOptionsDialog::NewOptionsDialog_Fullscreen, this, !theApp->mIsWindowed);
-    mCheatButton = MakeButton(NewOptionsDialog::NewOptionsDialog_HardwareAcceleration, this, __S("C"));
+    mCheatButton = MakeButton(NewOptionsDialog::NewOptionsDialog_CheatCode, this, __S("Cheat Code"));
 
     if (mFromGameSelector)
     {
@@ -146,19 +146,22 @@ void NewOptionsDialog::Resize(int theX, int theY, int theWidth, int theHeight)
     Dialog::Resize(theX, theY, theWidth, theHeight);
     mMusicVolumeSlider->Resize(199, 116, 135, 40);
     mSfxVolumeSlider->Resize(199, 143, 135, 46);
-    mCheatButton->Resize(283, 175, 46, 46);
-    mFullscreenCheckbox->Resize(284, 206, 42, 46);
-    mAlmanacButton->Resize(107, 241, 209, 46);
+    mFullscreenCheckbox->Resize(284, 170, 42, 46);
+    mCheatButton->Resize(107, 198, 209, 46);
+    mAlmanacButton->Resize(107, mCheatButton->mY + 43, 209, 46);
     mRestartButton->Resize(mAlmanacButton->mX, mAlmanacButton->mY + 43, 209, 46);
     mBackToMainButton->Resize(mRestartButton->mX, mRestartButton->mY + 43, 209, 46);
-    mBackToGameButton->Resize(30, 381, mBackToGameButton->mWidth, mBackToGameButton->mHeight);
+    mBackToGameButton->Resize(30, mBackToMainButton->mY + 43, mBackToGameButton->mWidth, mBackToGameButton->mHeight);
 
     if (mFromGameSelector)
     {
         mMusicVolumeSlider->mY += 5;
         mSfxVolumeSlider->mY += 10;
-        mCheatButton->mY += 15;
-        mFullscreenCheckbox->mY += 20;
+        mFullscreenCheckbox->mY += 23;
+    }
+
+    if(mFromGameSelector || (mApp->mGameScene == GameScenes::SCENE_LEVEL_INTRO && !mApp->mBoard->mCutScene->IsSurvivalRepick())){
+        mCheatButton->mY += 43 + 43;
     }
 
     if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN || mApp->mGameMode == GameMode::GAMEMODE_TREE_OF_WISDOM)
@@ -187,8 +190,7 @@ void NewOptionsDialog::Draw(Sexy::Graphics* g)
 
     TodDrawString(g, __S("Music"), 186, 140 + aMusicOffset, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
     TodDrawString(g, __S("Sound FX"), 186, 167 + aSfxOffset, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
-    TodDrawString(g, __S("Secret code"), 274, 197 + a3DAccelOffset, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
-    TodDrawString(g, __S("Full Screen"), 274, 229 + aFullScreenOffset, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
+    TodDrawString(g, __S("Full Screen"), 274, 194 + aFullScreenOffset, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
 }
 
 //0x45CF50
@@ -339,12 +341,13 @@ void NewOptionsDialog::ButtonDepress(int theId)
         break;
     }
 
-    case NewOptionsDialog::NewOptionsDialog_HardwareAcceleration:
+    case NewOptionsDialog::NewOptionsDialog_CheatCode:
     {
         mApp->KillDialog(Dialogs::DIALOG_CHEAT);
         CheatDialog* aDialog = new CheatDialog(mApp);
         LawnApp::CenterDialog(aDialog, aDialog->mWidth, aDialog->mHeight);
         mApp->AddDialog(Dialogs::DIALOG_CHEAT, aDialog);
+        break;
     }
 
     case NewOptionsDialog::NewOptionsDialog_Update:

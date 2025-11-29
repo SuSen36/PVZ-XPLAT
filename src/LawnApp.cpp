@@ -1062,6 +1062,10 @@ void LawnApp::FinishCheatDialog(bool isYes)
 	{
 		mMusic->StopAllMusic();
 		mBoardResult = BoardResult::BOARDRESULT_CHEAT;
+		if (mGameSelector)
+		{
+			KillGameSelector();
+		}
 		PreNewGame(mGameMode, false);
 	}
 }

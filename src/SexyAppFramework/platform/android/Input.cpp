@@ -1,10 +1,15 @@
 #include <SDL.h>
+#include <cmath>
 #include "SexyAppFramework/SexyAppBase.h"
 #include "SexyAppFramework/graphics/GLInterface.h"
 #include "SexyAppFramework/graphics/GLImage.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
 
 using namespace Sexy;
+
+// 拖拽转滚轮的状态变量（文件作用域）
+static float gLastTouchY = -1.0f;
+static float gLastTouchX = -1.0f;
 
 void SexyAppBase::InitInput()
 {
@@ -56,6 +61,36 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 
                 int x = event.motion.x;
                 int y = event.motion.y;
+                
+                // 拖拽替代鼠标滚轮：跟踪触摸位置变化，转换为滚轮事件
+                static const float THRESHOLD = 5.0f; // 拖拽阈值，单位像素
+
+                // 如果已经有上次触摸位置，计算垂直偏移并转换为滚轮事件
+                if (gLastTouchY >= 0)
+                {
+                    float deltaY = y - gLastTouchY;
+                    
+                    // 如果垂直移动超过阈值，则触发滚轮事件
+                    if (std::abs(deltaY) > THRESHOLD)
+                    {
+                        int zDelta = (deltaY > 0) ? -1 : 1; // 向下拖拽为 -1，向上拖拽为 1
+                        mWidgetManager->MouseWheel(zDelta);
+                        gLastTouchY = y;
+                        gLastTouchX = x;
+                    }
+                    else
+                    {
+                        gLastTouchX = x;
+                        gLastTouchY = y;
+                    }
+                }
+                else
+                {
+                    // 首次触摸，记录初始位置
+                    gLastTouchX = x;
+                    gLastTouchY = y;
+                }
+                
                 mWidgetManager->RemapMouse(x, y);
 
                 mLastUserInputTick = mLastTimerTime;
@@ -71,6 +106,11 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 
                 int x = event.button.x;
                 int y = event.button.y;
+                
+                // 重置拖拽跟踪状态，准备开始新的拖拽手势
+                gLastTouchY = -1.0f;
+                gLastTouchX = -1.0f;
+                
                 mWidgetManager->RemapMouse(x, y);
 
                 mLastUserInputTick = mLastTimerTime;

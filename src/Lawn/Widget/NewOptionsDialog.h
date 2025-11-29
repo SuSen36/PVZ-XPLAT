@@ -19,14 +19,14 @@ class NewOptionsDialog : public Sexy::Dialog, public Sexy::SliderListener, publi
 protected:
 	enum
 	{
+		NewOptionsDialog_MusicVolume,
+		NewOptionsDialog_SoundVolume,
+		NewOptionsDialog_Fullscreen,
 		NewOptionsDialog_Almanac,
 		NewOptionsDialog_MainMenu,
 		NewOptionsDialog_Restart,
 		NewOptionsDialog_Update,
-		NewOptionsDialog_MusicVolume,
-		NewOptionsDialog_SoundVolume,
-		NewOptionsDialog_Fullscreen,
-		NewOptionsDialog_HardwareAcceleration,
+		NewOptionsDialog_CheatCode,
 	};
 
 public:
