@@ -1,4 +1,4 @@
-#include "Coin.h"
+																																																																																																																																												#include "Coin.h"
 #include "Board.h"
 #include "Plant.h"
 #include "Zombie.h"
@@ -1319,16 +1319,17 @@ int Challenge::MouseDown(int x, int y, int theClickCount, HitResult* theHitResul
 		MouseDownWhackAZombie(x, y);
 		return true;
 	}
-	else if (mApp->mGameMode == GAMEMODE_CHALLENGE_ZOMBIQUARIUM)
+
+	if (mApp->mGameMode == GAMEMODE_CHALLENGE_ZOMBIQUARIUM && theClickCount <= 0)
 	{
-		if (theClickCount <= 0)
-		{
-			mApp->PlaySample(Sexy::SOUND_TAPGLASS);
-		}
-		else if (theHitResult->mObjectType == OBJECT_TYPE_NONE)
-		{
-			ZombiquariumMouseDown(x, y);
-		}
+		mApp->PlaySample(Sexy::SOUND_TAPGLASS);
+		return true;
+	}
+
+	if (mApp->mGameMode == GAMEMODE_CHALLENGE_ZOMBIQUARIUM && 
+		theHitResult->mObjectType == OBJECT_TYPE_NONE && theClickCount > 0)
+	{
+		ZombiquariumMouseDown(x, y);
 		return true;
 	}
 
