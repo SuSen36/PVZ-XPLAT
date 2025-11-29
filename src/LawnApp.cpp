@@ -1057,8 +1057,11 @@ void LawnApp::FinishCheatDialog(bool isYes)
 	if (isYes && !aCheatDialog->ApplyCheat())
 		return;
 
+	// 如果是彩蛋代码，已经生效，不需要重新进入关卡，直接关闭对话框即可
+	bool isEasterEggCode = isYes && aCheatDialog->mIsEasterEggCode;
+	
 	KillDialog(Dialogs::DIALOG_CHEAT);
-	if (isYes)
+	if (isYes && !isEasterEggCode)
 	{
 		mMusic->StopAllMusic();
 		mBoardResult = BoardResult::BOARDRESULT_CHEAT;

@@ -12,6 +12,7 @@ CheatDialog::CheatDialog(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_C
 {
 	mApp = theApp;
 	mVerticalCenterText = false;
+	mIsEasterEggCode = false;
     mCheatEditWidget = CreateEditWidget(0, this, this);
     mCheatEditWidget->mMaxChars = 20;
     mCheatEditWidget->AddWidthCheckFont(FONT_BRIANNETOD12, 220);
@@ -91,8 +92,14 @@ bool CheatDialog::ApplyCheat()
 	int aChallengeIndex;
     std::string cheatInput = mCheatEditWidget->mString;
     std::transform(cheatInput.begin(), cheatInput.end(), cheatInput.begin(), ::tolower);
+	
+	// 重置标志
+	mIsEasterEggCode = false;
+	
+	// 检查是否是彩蛋代码（不需要重新进入关卡）
     if (mApp->mBoard && mApp->mBoard->DoTypingCheck(cheatInput))
     {
+        mIsEasterEggCode = true;  // 标记为彩蛋代码
         return true;
     }
 	if (sexysscanf(cheatInput.c_str(), __S("c%d"), &aChallengeIndex) == 1 ||

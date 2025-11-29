@@ -619,7 +619,7 @@ void EditWidget::MouseDown(int x, int y, int theBtnNum, int theClickCount)
 	mCursorPos = GetCharAt(x, y);
 	
 	if (theClickCount > 1)
-	{
+	{																																																															
 		mHadDoubleClick = true;
 		HiliteWord();
 	}else if (theClickCount == 1)
