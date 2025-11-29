@@ -1,5 +1,7 @@
 package com.popcap.pvz;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.AssetManager;
 import android.os.Bundle;
@@ -25,11 +27,18 @@ public class PVZActivity extends SDLActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE); // 强制为横屏
-        // 直接复制资产，不请求权限
         copyAssetsToExternalStorage();
     }
 
     private void copyAssetsToExternalStorage() {
+        // 检查是否已经复制过文件
+        SharedPreferences prefs = getSharedPreferences("PVZPrefs", Context.MODE_PRIVATE);
+        boolean assetsCopied = prefs.getBoolean("assets_copied", false);
+        
+        if (assetsCopied) {
+            return;
+        }
+
         AssetManager assetManager = getAssets();
         String[] files;
 
@@ -44,13 +53,17 @@ public class PVZActivity extends SDLActivity {
                 for (String filename : files) {
                     copyAssetFile(assetManager, filename, dataDirPath + "/" + filename);
                 }
-                Toast.makeText(this, "所有文件复制完成！共 " + fileCount + " 个文件夹。", Toast.LENGTH_SHORT).show();
+                
+                // 标记文件已复制
+                prefs.edit().putBoolean("assets_copied", true).apply();
+                
+                Toast.makeText(this, "所有资源文件复制完成！共 " + fileCount + " 个文件夹。", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "没有可供复制的文件。", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "没有可供复制的资源文件。", Toast.LENGTH_SHORT).show();
             }
         } catch (IOException e) {
             e.printStackTrace();
-            Toast.makeText(this, "获取 assets 文件时出错！", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "获取 assets 资源文件时出错！", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -102,13 +115,13 @@ public class PVZActivity extends SDLActivity {
 
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Toast.makeText(this, "复制文件 " + filename + " 时出错：" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "复制资源文件 " + filename + " 时出错：" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
         } catch (IOException e) {
             e.printStackTrace();
-            Toast.makeText(this, "访问文件 " + filename + " 时出错：" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "访问资源文件 " + filename + " 时出错：" + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 

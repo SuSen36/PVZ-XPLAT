@@ -16,7 +16,6 @@ android {
                 // abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
                 //abiFilters 'arm64-v8a', 'x86', 'x86_64'
                 abiFilters 'arm64-v8a'
-
             }
         }
     }
@@ -24,10 +23,33 @@ android {
         debug {
             debuggable true
             minifyEnabled false
+            // Debug 模式：禁用优化，启用调试信息
+            externalNativeBuild {
+                cmake {
+                    cppFlags "-O0",  // 禁用优化以便调试
+                              "-g",  // 生成调试信息
+                              "-DDEBUG",  // 定义 DEBUG 宏
+                              "-ffp-contract=off",  // 禁用浮点融合，确保跨架构一致性
+                              "-fno-strict-aliasing",  // 禁用严格别名，提高兼容性
+                              "-fexceptions",  // 启用异常处理
+                              "-frtti"  // 启用运行时类型信息
+                }
+            }
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // Release 模式：启用优化，确保性能
+            externalNativeBuild {
+                cmake {
+                    cppFlags "-O2",  // 平衡性能和编译时间
+                              "-DNDEBUG",  // 禁用断言
+                              "-ffp-contract=off",  // 禁用浮点融合，确保跨架构计算结果一致
+                              "-fno-strict-aliasing",  // 禁用严格别名，提高兼容性
+                              "-fexceptions",  // 启用异常处理
+                              "-frtti"  // 启用运行时类型信息
+                }
+            }
         }
     }
     applicationVariants.all { variant ->
@@ -39,11 +61,9 @@ android {
             jniLibs.srcDir 'libs'
         }
         externalNativeBuild {
-            {
-                cmake {
-                    path '../../CMakeLists.txt'
-                    version '3.22.1' // 使用的CMake版本
-                }
+            cmake {
+                path '../../CMakeLists.txt'
+                version '3.22.1' // 使用的CMake版本
             }
         }
     }
