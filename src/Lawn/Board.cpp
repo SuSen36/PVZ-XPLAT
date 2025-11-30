@@ -5296,6 +5296,10 @@ void Board::SpawnZombieWave()
 	{
 		mRiseFromGraveCounter = 210;
 	}
+	else if (StageHasGraveStones())
+	{
+		mRiseFromGraveCounter = 210;
+	}
 	if (IsFlagWave(mCurrentWave))
 	{
 		mFlagRaiseCounter = FLAG_RAISE_TIME;

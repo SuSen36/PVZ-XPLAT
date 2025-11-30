@@ -2937,9 +2937,9 @@ int Challenge::UpdateZombieSpawning()
 	if (mApp->IsWhackAZombieLevel())
 	{
 		WhackAZombieSpawning();
-		return 0;
+		return 1;
 	}
-	else return
+	return
 		mApp->IsFinalBossLevel() ||
 		mApp->mGameMode == GAMEMODE_CHALLENGE_ICE ||
 		mApp->mGameMode == GAMEMODE_CHALLENGE_ZEN_GARDEN ||
