@@ -96,7 +96,7 @@ void PlayerInfo::LoadDetails()
 	{
 		Buffer aBuffer;
 		std::string aFileName = GetAppDataFolder() + StrFormat("userdata/user%d.dat", mId);
-		if (!gSexyAppBase->ReadBufferFromFile(aFileName, &aBuffer, false))
+		if (!gSexyAppBase->ReadBufferFromFile(aFileName, &aBuffer))
 		{
 			return;
 		}

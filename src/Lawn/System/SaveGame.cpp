@@ -502,7 +502,7 @@ bool LawnLoadGame(Board* theBoard, const std::string& theFilePath)
 	SaveGameContext aContext;
 	aContext.mFailed = false;
 	aContext.mReading = true;
-	if (!gSexyAppBase->ReadBufferFromFile(theFilePath, &aContext.mBuffer, false))
+	if (!gSexyAppBase->ReadBufferFromFile(theFilePath, &aContext.mBuffer))
 	{
 		return false;
 	}

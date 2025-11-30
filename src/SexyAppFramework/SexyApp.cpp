@@ -38,8 +38,6 @@ SexyApp::SexyApp()
 	mDontUpdate = false;
 	mLastVerCheckQueryTime = 0;
 
-	mDemoPrefix = "popcap";
-	mDemoFileName = mDemoPrefix + ".dmo";	
 	mCompanyName = "PopCap";
 
 	mInternetManager = nullptr;//new InternetManager();
@@ -115,47 +113,44 @@ void SexyApp::ReadFromRegistry()
 {
 	SexyAppBase::ReadFromRegistry();
 
-	if (!mPlayingDemoBuffer)
+	mTimesPlayed = 0;
+	mTimesExecuted = 0;
+
+	char aFileName[256];
+	getcwd(aFileName, sizeof(aFileName));
+	strcat(aFileName, "/savedata/popcinfo.dat");
+
+	FILE* fp = fopen(aFileName, "rb");
+	if (fp != NULL)
 	{
-		mTimesPlayed = 0;
-		mTimesExecuted = 0;
-
-		char aFileName[256];
-		getcwd(aFileName, sizeof(aFileName));
-		strcat(aFileName, "/savedata/popcinfo.dat");
-
-		FILE* fp = fopen(aFileName, "rb");
-		if (fp != NULL)
+		for (;;)
 		{
-			for (;;)
+			ushort aLen;
+			if (fread(&aLen, 1, sizeof(short), fp) == 0)
+				break;
+
+			if (aLen < 256)
 			{
-				ushort aLen;
-				if (fread(&aLen, 1, sizeof(short), fp) == 0)
-					break;
+				char aProdName[256];
+				aProdName[aLen] = '\0';
+				fread(aProdName, aLen, sizeof(char), fp);
 
-				if (aLen < 256)
+				if (strcmp(aProdName, mProdName.c_str()) == 0)
 				{
-					char aProdName[256];
-					aProdName[aLen] = '\0';
-					fread(aProdName, aLen, sizeof(char), fp);
+					short aShort;
+					fread(&aShort, 1, sizeof(short), fp);
+					mTimesPlayed = aShort;
 
-					if (strcmp(aProdName, mProdName.c_str()) == 0)
-					{
-						short aShort;
-						fread(&aShort, 1, sizeof(short), fp);
-						mTimesPlayed = aShort;
+					fread(&aShort, 1, sizeof(short), fp);
+					mTimesExecuted = aShort;
 
-						fread(&aShort, 1, sizeof(short), fp);
-						mTimesExecuted = aShort;
-
-						break;
-					}
+					break;
 				}
-
-				fseek(fp, sizeof(int), SEEK_CUR);
 			}
-			fclose(fp);
+
+			fseek(fp, sizeof(int), SEEK_CUR);
 		}
+		fclose(fp);
 	}
 
 	RegistryReadString("ReferId", &mReferId);
@@ -175,28 +170,14 @@ void SexyApp::ReadFromRegistry()
 
 	if (RegistryReadInteger("TimesPlayed", &anInt))
 	{
-		if (!mPlayingDemoBuffer)
-		{
-			if (mTimesPlayed != anInt)
-				mTimesPlayed = 100;
-		}
-		else
-		{
-			mTimesPlayed = anInt;
-		}
+		if (mTimesPlayed != anInt)
+			mTimesPlayed = 100;
 	}
 
 	if (RegistryReadInteger("TimesExecuted", &anInt))
 	{
-		if (!mPlayingDemoBuffer)
-		{
-			if (mTimesExecuted != anInt)
-				mTimesExecuted = 100;
-		}
-		else
-		{
-			mTimesExecuted = anInt;
-		}
+		if (mTimesExecuted != anInt)
+			mTimesExecuted = 100;
 	}
 	
 	if (RegistryReadInteger("LastVerCheckQueryTime", &anInt))
@@ -227,54 +208,51 @@ void SexyApp::WriteToRegistry()
 {
 	SexyAppBase::WriteToRegistry();
 
-	if (!mPlayingDemoBuffer)
+	char aFileName[256];
+	getcwd(aFileName, sizeof(aFileName));
+	strcat(aFileName, "/savedata/popcinfo.dat");
+
+	FILE* fp = fopen(aFileName, "r+b");
+	if (fp != NULL)
 	{
-		char aFileName[256];
-		getcwd(aFileName, sizeof(aFileName));
-		strcat(aFileName, "/savedata/popcinfo.dat");
-
-		FILE* fp = fopen(aFileName, "r+b");
-		if (fp != NULL)
+		for (;;)
 		{
-			for (;;)
+			ushort aLen;
+			if (fread(&aLen, 1, sizeof(short), fp) == 0)
+				break;
+
+			if (aLen < 256)
 			{
-				ushort aLen;
-				if (fread(&aLen, 1, sizeof(short), fp) == 0)
-					break;
+				char aProdName[256];
+				aProdName[aLen] = '\0';
+				fread(aProdName, aLen, sizeof(char), fp);
 
-				if (aLen < 256)
+				if (strcmp(aProdName, mProdName.c_str()) == 0)
 				{
-					char aProdName[256];
-					aProdName[aLen] = '\0';
-					fread(aProdName, aLen, sizeof(char), fp);
-
-					if (strcmp(aProdName, mProdName.c_str()) == 0)
-					{
-						fseek(fp, -(2 + aLen), SEEK_CUR);
-						break;
-					}
+					fseek(fp, -(2 + aLen), SEEK_CUR);
+					break;
 				}
-
-				fseek(fp, sizeof(int), SEEK_CUR);
 			}
+
+			fseek(fp, sizeof(int), SEEK_CUR);
 		}
-		else
-			fp = fopen(aFileName, "wb");
-			
-		if (fp != NULL)
-		{
-			ushort aLen = mProdName.length();
-			fwrite(&aLen, 1, sizeof(short), fp);
-			fwrite(mProdName.c_str(), aLen, sizeof(char), fp);
+	}
+	else
+		fp = fopen(aFileName, "wb");
+		
+	if (fp != NULL)
+	{
+		ushort aLen = mProdName.length();
+		fwrite(&aLen, 1, sizeof(short), fp);
+		fwrite(mProdName.c_str(), aLen, sizeof(char), fp);
 
-			short aShort = mTimesPlayed;
-			fwrite(&aShort, 1, sizeof(short), fp);
+		short aShort = mTimesPlayed;
+		fwrite(&aShort, 1, sizeof(short), fp);
 
-			aShort = mTimesExecuted;
-			fwrite(&aShort, 1, sizeof(short), fp);
+		aShort = mTimesExecuted;
+		fwrite(&aShort, 1, sizeof(short), fp);
 
-			fclose(fp);
-		}
+		fclose(fp);
 	}
 
 	RegistryWriteInteger("LastVerCheckQueryTime", mLastVerCheckQueryTime);
@@ -495,25 +473,6 @@ void SexyApp::OpenUpdateURL()
 	Shutdown();
 }
 
-void SexyApp::HandleCmdLineParam(const std::string& theParamName, const std::string& theParamValue)
-{
-	if (theParamName == "-version")
-	{
-		// Just print version info and then quit
-		
-		std::string aVersionString = 
-			"Product: " + mProdName + "\r\n" +
-			"Version: " + mProductVersion + "\r\n" +
-			"Build Num: " + StrFormat("%d", mBuildNum) + "\r\n" +
-			"Build Date: " + mBuildDate;
-
-		//MessageBox(NULL, aVersionString.c_str(), "Version Info", MB_ICONINFORMATION | MB_OK);
-		printf("%s\n", aVersionString.c_str());
-		DoExit(0);
-	}
-	else
-		SexyAppBase::HandleCmdLineParam(theParamName, theParamValue);
-}
 
 std::string SexyApp::GetGameSEHInfo()
 {
@@ -555,8 +514,7 @@ void SexyApp::PreDisplayHook()
 void SexyApp::InitPropertiesHook()
 {
 	// Load properties if we need to
-	bool checkSig = !IsScreenSaver();
-	LoadProperties("properties/partner.xml", false, checkSig);
+	LoadProperties("properties/partner.xml", false, true);
 
 	// Check to see if this build is unlocked.
 	if (GetBoolean("NoReg", false))
@@ -609,10 +567,7 @@ void SexyApp::Init()
 	printf("BuildNum: %d\n", mBuildNum);
 	printf("BuildDate: %s\n", mBuildDate.c_str());
 
-	SexyAppBase::Init();
-
-	if (IsScreenSaver())	
-		mSkipAd = true;	
+	SexyAppBase::Init();	
 
 	mTimesExecuted++;
 }

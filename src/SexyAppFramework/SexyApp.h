@@ -70,7 +70,6 @@ public:
 	virtual bool			OpenHTMLTemplate(const std::string& theTemplateFile, const DefinesMap& theDefinesMap);
 	virtual void			OpenUpdateURL();
 
-	virtual void			HandleCmdLineParam(const std::string& theParamName, const std::string& theParamValue);
 	virtual std::string		GetGameSEHInfo();
 	virtual void			GetSEHWebParams(DefinesMap* theDefinesMap);
 

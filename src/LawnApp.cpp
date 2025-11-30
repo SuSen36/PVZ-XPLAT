@@ -1222,7 +1222,6 @@ void BetaSubmitFunc()
 // GOTY @Patoke: 0x454C60
 void LawnApp::Init()
 {
-	DoParseCmdLine();
 	if (!mTodCheatKeys)
 	{
 		mOnlyAllowOneCopyToRun = true;
@@ -1341,21 +1340,6 @@ bool LawnApp::DebugKeyDown(int theKey)
 	return SexyAppBase::DebugKeyDown(theKey);
 }
 
-//0x4522E0
-void LawnApp::HandleCmdLineParam(const std::string& theParamName, const std::string& theParamValue)
-{
-	if (theParamName == "-tod")
-	{
-#ifdef _DEBUG
-		mTodCheatKeys = true;
-		mDebugKeysEnabled = true;
-#endif
-	}
-	else
-	{
-		SexyApp::HandleCmdLineParam(theParamName, theParamValue);
-	}
-}
 
 //0x452310
 // GOTY @Patoke: 0x41E420
@@ -2271,7 +2255,7 @@ bool LawnApp::IsChallengeWithoutSeedBank()
 
 bool LawnApp::IsNight()
 {
-	if (IsIceDemo() || mPlayerInfo == nullptr)
+	if (mPlayerInfo == nullptr)
 		return false;
 
 	return (mPlayerInfo->mLevel >= 11 && mPlayerInfo->mLevel <= 20) || (mPlayerInfo->mLevel >= 31 && mPlayerInfo->mLevel <= 40) || mPlayerInfo->mLevel == 50;
@@ -2503,9 +2487,6 @@ SexyString LawnApp::GetCrazyDaveText(int theMessageIndex)
 //0x454070
 bool LawnApp::CanShowAlmanac()
 {
-	if (IsIceDemo())
-		return false;
-
 	if (mPlayerInfo == nullptr)
 		return false;
 
@@ -2515,9 +2496,6 @@ bool LawnApp::CanShowAlmanac()
 //0x454090
 bool LawnApp::CanShowStore()
 {
-	if (IsIceDemo())
-		return false;
-
 	if (mPlayerInfo == nullptr)
 		return false;
 

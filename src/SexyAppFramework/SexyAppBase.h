@@ -74,35 +74,6 @@ enum
 	NUM_CURSORS
 };
 
-enum
-{
-	DEMO_MOUSE_POSITION,	
-	DEMO_ACTIVATE_APP,
-	DEMO_SIZE,
-	DEMO_KEY_DOWN,
-	DEMO_KEY_UP,
-	DEMO_KEY_CHAR,
-	DEMO_CLOSE,
-	DEMO_MOUSE_ENTER,
-	DEMO_MOUSE_EXIT,
-	DEMO_LOADING_COMPLETE,
-	DEMO_REGISTRY_GETSUBKEYS,
-	DEMO_REGISTRY_READ,
-	DEMO_REGISTRY_WRITE,
-	DEMO_REGISTRY_ERASE,	
-	DEMO_FILE_EXISTS,
-	DEMO_FILE_READ,
-	DEMO_FILE_WRITE,
-	DEMO_HTTP_RESULT,
-	DEMO_SYNC,
-	DEMO_ASSERT_STRING_EQUAL,
-	DEMO_ASSERT_INT_EQUAL,
-	DEMO_MOUSE_WHEEL,
-	DEMO_HANDLE_COMPLETE,
-	DEMO_VIDEO_DATA,
-	DEMO_IDLE = 31
-};
-
 enum {
 	FPS_ShowFPS,
 	FPS_ShowCoords,
@@ -126,7 +97,7 @@ public:
 	void*					mContext;
 	void*					mSurface; // for EGL
 
-	uint32_t				mRandSeed;
+	uint32_t				mRandSeed{};
 		
 	std::string				mCompanyName;
 	std::string				mFullCompanyName;
@@ -143,21 +114,18 @@ public:
 	int						mFullscreenBits;
 	double					mMusicVolume;
 	double					mSfxVolume;
-	double					mDemoMusicVolume;
-	double					mDemoSfxVolume;
 	bool					mNoSoundNeeded;
 	bool					mWantFMod;
-	bool					mCmdLineParsed;
 	bool					mSkipSignatureChecks;
 	bool					mStandardWordWrap;
 	bool					mbAllowExtendedChars;
 
-	HANDLE					mMutex;
+	HANDLE					mMutex{};
 	bool					mOnlyAllowOneCopyToRun;
 	UINT					mNotifyGameMessage;
 	CritSect				mCritSect;	
-	bool					mBetaValidate;
-	uchar					mAdd8BitMaxTable[512];
+	bool					mBetaValidate{};
+	uchar					mAdd8BitMaxTable[512]{};
 	WidgetManager*			mWidgetManager;
 	DialogMap				mDialogMap;
 	DialogList				mDialogList;
@@ -175,7 +143,6 @@ public:
 	DWORD					mTimeLoaded;
 	//HWND					mHWnd;
 	//HWND					mInvisHWnd;
-	bool					mIsScreenSaver;
 	bool					mAllowMonitorPowersave;
 	//WindowsMessageList		mDeferredMessages;
 	bool					mNoDefer;	
@@ -191,19 +158,18 @@ public:
 	bool					mReadFromRegistry;
 	std::string				mRegisterLink;
 	std::string				mProductVersion;	
-	Image*					mCursorImages[NUM_CURSORS];
+	Image*					mCursorImages[NUM_CURSORS]{};
 	//HCURSOR					mOverrideCursor;
 	bool					mIsOpeningURL;
-	bool					mShutdownOnURLOpen;
+	bool					mShutdownOnURLOpen{};
 	std::string				mOpeningURL;
-	DWORD					mOpeningURLTime;
-	DWORD					mLastTimerTime;
-	DWORD					mLastBigDelayTime;	
-	double					mUnmutedMusicVolume;
-	double					mUnmutedSfxVolume;	
+	DWORD					mOpeningURLTime{};
+	DWORD					mLastTimerTime{};
+	DWORD					mLastBigDelayTime{};
+	double					mUnmutedMusicVolume{};
+	double					mUnmutedSfxVolume{};
 	int						mMuteCount;
 	int						mAutoMuteCount;
-	bool					mDemoMute;
 	bool					mMuteOnLostFocus;
 	MemoryImageSet			mMemoryImageSet;
 	SharedImageMap			mSharedImageMap;
@@ -218,8 +184,8 @@ public:
 	double					mPendingUpdatesAcc;
 	double					mUpdateFTimeAcc;
 	time_t					mLastTimeCheck;
-	time_t					mLastTime;
-	DWORD					mLastUserInputTick;
+	time_t					mLastTime{};
+	DWORD					mLastUserInputTick{};
 
 	int						mSleepCount;
 	int						mDrawCount;
@@ -228,9 +194,9 @@ public:
 	int						mUpdateAppDepth;
 	double					mUpdateMultiplier;		
 	bool					mPaused;
-	int						mFastForwardToUpdateNum;
-	bool					mFastForwardToMarker;
-	bool					mFastForwardStep;
+	int						mFastForwardToUpdateNum{};
+	bool					mFastForwardToMarker{};
+	bool					mFastForwardStep{};
 	DWORD					mLastDrawTick;
 	DWORD					mNextDrawTick;
 	int						mStepMode;  // 0 = off, 1 = step, 2 = waiting for step
@@ -274,29 +240,9 @@ public:
 	int						mNumLoadingThreadTasks;
 	int						mCompletedLoadingThreadTasks;
 
-	// For recording/playback of program control
-	bool					mRecordingDemoBuffer;
-	bool					mPlayingDemoBuffer;
 	bool					mManualShutdown;
-	std::string				mDemoPrefix;
-	std::string				mDemoFileName;
-	Buffer					mDemoBuffer;
-	int						mDemoLength;
-	int						mLastDemoMouseX;
-	int						mLastDemoMouseY;
-	int						mLastDemoUpdateCnt;
-	bool					mDemoNeedsCommand;
-	bool					mDemoIsShortCmd;
-	int						mDemoCmdNum;
-	int						mDemoCmdOrder;
-	int						mDemoCmdBitPos;
-	bool					mDemoLoadingComplete;
 	HandleToIntMap			mHandleToIntMap; // For waiting on handles
 	int						mCurHandleNum;
-
-	typedef std::pair<std::string, int> DemoMarker;
-	typedef std::list<DemoMarker> DemoMarkerList;
-	DemoMarkerList			mDemoMarkerList;
 
 	bool					mDebugKeysEnabled;
 	bool					mEnableMaximizeButton;
@@ -368,8 +314,6 @@ protected:
 	bool					RegistryReadKey(const std::string& theValueName, uint32_t* theType, uchar* theValue, uint32_t* theLength);
 	bool					RegistryWrite(const std::string& theValueName, uint32_t theType, const uchar* theValue, uint32_t theLength);
 
-	// Demo recording helpers	
-	void					ProcessDemo();
 
 public:
 	SexyAppBase();
@@ -393,7 +337,6 @@ public:
 	virtual int				MsgBox(const std::wstring &theText, const std::wstring &theTitle = L"Message", int theFlags = 0);
 	virtual void			Popup(const std::string& theString);
 	virtual void			Popup(const std::wstring& theString);
-	virtual void			LogScreenSaverError(const std::string &theError);
 	virtual void			SafeDeleteWidget(Widget* theWidget);	
 
 	virtual void			URLOpenFailed(const std::string& theURL);
@@ -406,9 +349,6 @@ public:
 	virtual void			GetSEHWebParams(DefinesMap* theDefinesMap);
 	virtual void			Shutdown();	
 
-	virtual void			DoParseCmdLine();
-	virtual void			ParseCmdLine(const std::string& theCmdLine);
-	virtual void			HandleCmdLineParam(const std::string& theParamName, const std::string& theParamValue);
 	virtual void			HandleNotifyGameMessage(int theType); // for HWND_BROADCAST of mNotifyGameMessage (0-1000 are reserved for SexyAppBase for theType)
 	virtual void			HandleGameAlreadyRunning(); 
 
@@ -495,7 +435,6 @@ public:
 	bool					Is3DAccelerated();
 	bool					Is3DAccelerationSupported();
 	bool					Is3DAccelerationRecommended();
-	void					DemoSyncRefreshRate();
 	void					Set3DAcclerated(bool is3D, bool reinit = true);
 	virtual void			Done3dTesting();
 	virtual std::string		NotifyCrashHook(); // return file name that you want to upload
@@ -529,21 +468,6 @@ public:
 	void					SetDouble(const std::string& theId, double theValue);
 	void					SetString(const std::string& theId, const std::wstring& theValue);
 	
-	// Demo access methods
-	bool					PrepareDemoCommand(bool required);
-	void					WriteDemoTimingBlock();
-	void					WriteDemoBuffer();
-	bool					ReadDemoBuffer(std::string &theError);//UNICODE
-	void					DemoSyncBuffer(Buffer* theBuffer);
-	void					DemoSyncString(std::string* theString);
-	void					DemoSyncInt(int* theInt);
-	void					DemoSyncBool(bool* theBool);
-	void					DemoAssertStringEqual(const std::string& theString);
-	void					DemoAssertIntEqual(int theInt);
-	void					DemoAddMarker(const std::string& theString);
-	void					DemoRegisterHandle(HANDLE theHandle);
-	void					DemoWaitForHandle(HANDLE theHandle);
-	bool					DemoCheckHandle(HANDLE theHandle);
 	
 
 	// Registry access methods
@@ -561,7 +485,7 @@ public:
 
 	// File access methods
 	bool					WriteBufferToFile(const std::string& theFileName, const Buffer* theBuffer);
-	bool					ReadBufferFromFile(const std::string& theFileName, Buffer* theBuffer, bool dontWriteToDemo = false);//UNICODE
+    bool                    ReadBufferFromFile(const std::string& theFileName, Buffer* theBuffer);
 	bool					WriteBytesToFile(const std::string& theFileName, const void *theData, unsigned long theDataLen);
 	bool					FileExists(const std::string& theFileName);
 	bool					EraseFile(const std::string& theFileName);
@@ -572,7 +496,6 @@ public:
 	virtual bool			UpdateApp();
 	int						InitGLInterface();
 	void					ClearUpdateBacklog(bool relaxForASecond = false);
-	bool					IsScreenSaver();
 	virtual bool			AppCanRestore();
 };
 
