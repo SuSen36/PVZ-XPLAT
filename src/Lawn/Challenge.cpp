@@ -988,7 +988,7 @@ SeedType Challenge::BeghouledPickSeed(int theGridX, int theGridY, BeghouledBoard
 		case 3:		aSeedType = SeedType::SEED_SNOWPEA;			break;
 		case 4:		aSeedType = SeedType::SEED_WALLNUT;			break;
 		case 5:		aSeedType = SeedType::SEED_PEASHOOTER;		break;
-		default:	TOD_ASSERT();								break;
+		default:	TOD_ASSERT(); break;
 		}
 
 		if (mBeghouledPurcasedUpgrade[(int)BeghouledUpgrade::BEGHOULED_UPGRADE_REPEATER] && aSeedType == SeedType::SEED_PEASHOOTER)

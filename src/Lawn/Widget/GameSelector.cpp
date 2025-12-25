@@ -37,7 +37,7 @@ GameSelectorOverlay::GameSelectorOverlay(GameSelector* theGameSelector)
 
 //0x448CB0
 // GOTY @Patoke: 0x44B8D0
-GameSelector::GameSelector(LawnApp* theApp)
+GameSelector::GameSelector(LawnApp* theApp, bool skipAnimation)
 {
 	TodHesitationTrace("pregameselector");
 	mLoadedResourceNames.push_back("DelayLoad_Zombatar");
@@ -294,15 +294,59 @@ GameSelector::GameSelector(LawnApp* theApp)
 	mShowStartButton = false;
 
 	Reanimation* aSelectorReanim = mApp->AddReanimation(0.5f, 0.5f, 0, ReanimationType::REANIM_SELECTOR_SCREEN);
-	aSelectorReanim->PlayReanim("anim_open", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 30.0f);
 	aSelectorReanim->AssignRenderGroupToPrefix("flower", RENDER_GROUP_HIDDEN);
 	aSelectorReanim->AssignRenderGroupToPrefix("leaf", RENDER_GROUP_HIDDEN);
 	aSelectorReanim->AssignRenderGroupToTrack("SelectorScreen_BG", 1);
 	mSelectorReanimID = mApp->ReanimationGetID(aSelectorReanim);
-	mSelectorState = SelectorAnimState::SELECTOR_OPEN;
-	int aFrameStart, aFrameCount;
-	aSelectorReanim->GetFramesForLayer("anim_sign", aFrameStart, aFrameCount);
-	aSelectorReanim->mFrameBasePose = aFrameStart + aFrameCount - 1;
+	
+	if (skipAnimation)
+	{
+		// 跳过开场动画，直接播放 "anim_sign" 并设置为 IDLE 状态
+		int aFrameStart, aFrameCount;
+		aSelectorReanim->GetFramesForLayer("anim_sign", aFrameStart, aFrameCount);
+		aSelectorReanim->mFrameBasePose = aFrameStart + aFrameCount - 1;
+		aSelectorReanim->PlayReanim("anim_sign", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 30.0f);
+		mSelectorState = SelectorAnimState::SELECTOR_IDLE;
+		
+		// 设置按钮状态（跳过动画时直接显示按钮）
+		aSelectorReanim->AssignRenderGroupToTrack("SelectorScreen_Adventure_button", RENDER_GROUP_HIDDEN);
+		aSelectorReanim->AssignRenderGroupToTrack("SelectorScreen_StartAdventure_button", RENDER_GROUP_HIDDEN);
+		aSelectorReanim->AssignRenderGroupToTrack("SelectorScreen_Survival_button", RENDER_GROUP_HIDDEN);
+		aSelectorReanim->AssignRenderGroupToTrack("SelectorScreen_Challenges_button", RENDER_GROUP_HIDDEN);
+		aSelectorReanim->AssignRenderGroupToTrack("SelectorScreen_ZenGarden_button", RENDER_GROUP_HIDDEN);
+		mAdventureButton->mBtnNoDraw = false;
+		mMinigameButton->mBtnNoDraw = false;
+		mPuzzleButton->mBtnNoDraw = false;
+		mSurvivalButton->mBtnNoDraw = false;
+		mZenGardenButton->mBtnNoDraw = false;
+		mHelpButton->mBtnNoDraw = false;
+		mOptionsButton->mBtnNoDraw = false;
+		mQuitButton->mBtnNoDraw = false;
+		mZombatarButton->mBtnNoDraw = false;
+		mAchievementsButton->mBtnNoDraw = false;
+		mAdventureButton->mMouseVisible = true;
+		mMinigameButton->mMouseVisible = true;
+		mPuzzleButton->mMouseVisible = true;
+		mSurvivalButton->mMouseVisible = true;
+		mZenGardenButton->mMouseVisible = true;
+		mHelpButton->mMouseVisible = true;
+		mOptionsButton->mMouseVisible = true;
+		mQuitButton->mMouseVisible = true;
+		mStoreButton->mMouseVisible = true;
+		mAlmanacButton->mMouseVisible = true;
+		mChangeUserButton->mMouseVisible = true;
+		mZombatarButton->mMouseVisible = true;
+		mAchievementsButton->mMouseVisible = true;
+	}
+	else
+	{
+		// 正常播放开场动画
+		aSelectorReanim->PlayReanim("anim_open", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 30.0f);
+		mSelectorState = SelectorAnimState::SELECTOR_OPEN;
+		int aFrameStart, aFrameCount;
+		aSelectorReanim->GetFramesForLayer("anim_sign", aFrameStart, aFrameCount);
+		aSelectorReanim->mFrameBasePose = aFrameStart + aFrameCount - 1;
+	}
 
 	for (int i = 0; i < 6; i++)
 	{

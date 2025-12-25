@@ -1054,7 +1054,7 @@ void Board::PickBackground()
 		break;
 
 	default:
-		TOD_ASSERT();
+		TOD_ASSERT(false && "Unknown game mode for background");
 		break;
 	}
 	LoadBackgroundImages();
@@ -1202,7 +1202,7 @@ void Board::PickBackground()
 			}
 			else
 			{
-				TOD_ASSERT();
+				TOD_ASSERT(false && "Unexpected level for graves setup");
 			}
 		}
 	}

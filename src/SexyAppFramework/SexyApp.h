@@ -6,15 +6,9 @@
 namespace Sexy
 {
 
-class InternetManager;
-class BetaSupport;
-
 class SexyApp : public SexyAppBase
 {
-public:	
-	InternetManager*		mInternetManager;
-	BetaSupport*			mBetaSupport;
-
+public:
 	std::string				mBetaSupportSiteOverride;
 	std::string				mBetaSupportProdNameOverride;
 	std::string				mReferId;

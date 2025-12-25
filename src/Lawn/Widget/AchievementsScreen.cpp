@@ -185,6 +185,7 @@ void AchievementsWidget::MouseUp(int x, int y, int theClickCount) {
 	(void)theClickCount;
 	Point aPos = Point(x, y);
 	if (aBackButtonRect.Contains(aPos)) {
+		mDidPressMoreButton = false;
 		mApp->mGameSelector->SlideTo(0, 0);
 		mApp->mGameSelector->mWidgetManager->SetFocus(mApp->mGameSelector);
 	}
@@ -198,6 +199,10 @@ void AchievementsWidget::MouseUp(int x, int y, int theClickCount) {
 
 // GOTY @Patoke: 0x4019A0
 void AchievementsWidget::MouseWheel(int theDelta) {
+	if (!mDidPressMoreButton && theDelta < 0) {
+		return;
+	}
+
 	mScrollValue = mDefaultScrollValue;
 
 	if (theDelta > 0)
@@ -230,9 +235,9 @@ void ReportAchievement::GiveAchievement(LawnApp* theApp, int theAchievement, boo
 
     std::string aAchievementName = achievementName + " Achievement!";
 
-    // ÏÔÊ¾³É¾ÍÏûÏ¢
+    // ï¿½ï¿½Ê¾ï¿½É¾ï¿½ï¿½ï¿½Ï¢
     theApp->mBoard->DisplayAdvice(aAchievementName, MESSAGE_STYLE_ACHIEVEMENT, AdviceType::ADVICE_NONE);
-    // ²¥·Å³É¾ÍÒôÐ§
+    // ï¿½ï¿½ï¿½Å³É¾ï¿½ï¿½ï¿½Ð§
     theApp->PlaySample(SOUND_ACHIEVEMENT);
 }
 

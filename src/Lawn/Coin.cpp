@@ -369,7 +369,7 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
         break;
 
     default:
-        TOD_ASSERT();
+        TOD_ASSERT(false && "Unknown coin motion");
         break;
     }
 

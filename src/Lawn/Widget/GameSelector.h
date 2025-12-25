@@ -92,7 +92,7 @@ public:
     AchievementsWidget*       mAchievementsWidget;        //+GOTY @Patoke: 0x16C
 
 public:
-    GameSelector(LawnApp* theApp);
+    GameSelector(LawnApp* theApp, bool skipAnimation = false);
     virtual ~GameSelector();
 
     void                        SyncProfile(bool theShowLoading);

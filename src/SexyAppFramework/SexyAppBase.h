@@ -219,8 +219,6 @@ public:
 	int						mFPSDirtyCount;
 	int						mFPSTime;
 	int						mFPSCount;
-	bool					mShowFPS;
-	int						mShowFPSMode;
 	int						mScreenBltTime;
 	bool					mAutoStartLoadingThread;
 	bool					mLoadingThreadStarted;
@@ -228,8 +226,6 @@ public:
 	bool					mLoaded;
 	bool					mYieldMainThread;
 	bool					mLoadingFailed;
-	bool					mCursorThreadRunning;
-	bool					mSysCursor;	
 	bool					mCustomCursorsEnabled;
 	bool					mCustomCursorDirty;	
 	bool					mLastShutdownWasGraceful;
@@ -298,16 +294,11 @@ protected:
 	static int			    LoadingThreadProcStub(void *theArg);
 
 	// Cursor thread methods
-	void					CursorThreadProc();
-	static void				CursorThreadProcStub(void *theArg);
-	void					StartCursorThread();
 	
 	void					WaitForLoadingThread();				
 	void					ProcessSafeDeleteList();	
 	void					RestoreScreenResolution();
 	void					DoExit(int theCode);
-
-	void					ShowMemoryUsage();			
 
 	// Registry helpers
 	bool					RegistryRead(const std::string& theValueName, uint32_t* theType, uchar* theValue, uint32_t* theLength);
@@ -433,10 +424,7 @@ public:
 	bool					StartTextInput(std::string& theInput); // set theInput and return true if using soft keyboard capability and user pressed OK (e.g. Switch libnx swkbd)
 	void					StopTextInput();
 	bool					Is3DAccelerated();
-	bool					Is3DAccelerationSupported();
-	bool					Is3DAccelerationRecommended();
 	void					Set3DAcclerated(bool is3D, bool reinit = true);
-	virtual void			Done3dTesting();
 	virtual std::string		NotifyCrashHook(); // return file name that you want to upload
 	
 //	virtual bool			CheckSignature(const Buffer& theBuffer, const std::string& theFileName);

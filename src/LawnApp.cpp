@@ -447,6 +447,11 @@ void LawnApp::NewGame()
 // GOTY @Patoke: 0x452B80
 void LawnApp::ShowGameSelector()
 {
+	ShowGameSelector(false);
+}
+
+void LawnApp::ShowGameSelector(bool skipAnimation)
+{
 	KillBoard();
 	//UpdateRegisterInfo();
 	if (mGameSelector)
@@ -456,7 +461,7 @@ void LawnApp::ShowGameSelector()
 	}
 
 	mGameScene = GameScenes::SCENE_MENU;
-	mGameSelector = new GameSelector(this);
+	mGameSelector = new GameSelector(this, skipAnimation);
 	mGameSelector->Resize(0, 0, mWidth, mHeight);
 	mWidgetManager->AddWidget(mGameSelector);
 	mWidgetManager->BringToBack(mGameSelector);
@@ -616,12 +621,17 @@ void LawnApp::EndLevel()
 //0x44FEB0
 void LawnApp::DoBackToMain()
 {
+	DoBackToMain(false);
+}
+
+void LawnApp::DoBackToMain(bool skipAnimation)
+{
 	mMusic->StopAllMusic();
 	mSoundSystem->CancelPausedFoley();
 	WriteCurrentUserConfig();
 	KillNewOptionsDialog();
 	KillBoard();
-	ShowGameSelector();
+	ShowGameSelector(skipAnimation);
 }
 
 //0x44FF00

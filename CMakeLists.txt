@@ -10,10 +10,9 @@ set(CMAKE_JOB_POOL_LINK link_job_pool)
 set_property(GLOBAL PROPERTY JOB_POOLS compile_job_pool=8 link_job_pool=2)
 
 # 根据构建类型设置默认优化级别
-if(NOT CMAKE_BUILD_TYPE)
-	set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
-endif()
-
+#if(NOT CMAKE_BUILD_TYPE)
+#	set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+#endif()
 
 file(GLOB SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
@@ -156,6 +155,8 @@ elseif (EMSCRIPTEN)
 else ()
 	add_executable(re-plants-vs-zombies ${SOURCES})
 endif()
+
+target_compile_definitions(re-plants-vs-zombies PRIVATE $<$<CONFIG:Debug>:_DEBUG>)
 
 
 target_include_directories(re-plants-vs-zombies PRIVATE

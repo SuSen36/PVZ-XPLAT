@@ -167,6 +167,7 @@ public:
 	void							NewGame();
 	void							PreNewGame(GameMode theGameMode, bool theLookForSavedGame);
 	void							ShowGameSelector();
+	void							ShowGameSelector(bool skipAnimation);
 	void							KillGameSelector();
 	void							ShowAwardScreen(AwardType theAwardType, bool theShowAchievements); // @Patoke: add argument
 	void							KillAwardScreen();
@@ -174,6 +175,7 @@ public:
 	void							KillSeedChooserScreen();
 	void							DoHighScoreDialog();
 	void							DoBackToMain();
+	void							DoBackToMain(bool skipAnimation);
 	void							DoConfirmBackToMain();
 	void							DoNewOptions(bool theFromGameSelector);
 	void							DoRegister();

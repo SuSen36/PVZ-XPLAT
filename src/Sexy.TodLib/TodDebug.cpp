@@ -70,9 +70,7 @@ void TodAssertFailed(const char* theCondition, const char* theFile, int theLine,
     }
     TodTrace("%s", aBuffer);
 
-    TodErrorMessageBox(aBuffer, "Assertion failed");
-
-    exit(0);
+    TodTraceAndLog(aBuffer, "Assertion failed");
 #endif
 }
 
@@ -212,30 +210,6 @@ void TodTraceWithoutSpamming(const char* theFormat, ...)
 #endif
 }
 
-#ifdef _WIN32
-void TodReportError(LPEXCEPTION_POINTERS exceptioninfo, const char* theMessage)
-{
-
-}
-
-long __stdcall TodUnhandledExceptionFilter(LPEXCEPTION_POINTERS exceptioninfo)
-{
-	if (gInAssert)
-	{
-		TodLog("Exception during exception processing");
-	}
-	else
-	{
-		gInAssert = true;
-		TodLog("\nUnhandled Exception");
-		TodReportError(exceptioninfo, "Unhandled Exception");
-		gInAssert = false;
-	}
-
-	return EXCEPTION_EXECUTE_HANDLER;
-}
-#endif
-
 void (*gBetaSubmitFunc)() = nullptr;
 
 void TodAssertInitForApp()
@@ -253,8 +227,4 @@ void TodAssertInitForApp()
 	char timeStr[64];
 	strftime(timeStr, sizeof(timeStr), "%Y-%m-%d %H:%M:%S", timeinfo);
 	TodLog("Started %s\n", timeStr);
-
-#ifdef _WIN32
-	SetUnhandledExceptionFilter(TodUnhandledExceptionFilter);
-#endif
 }

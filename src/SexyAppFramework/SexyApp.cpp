@@ -1,13 +1,8 @@
 #include "SexyApp.h"
 
-//#include "..\Crypt\RegKey.h"
-//#include "../SexyAppFramework/misc/SEHCatcher.h"
-//#include "InternetManager.h"
 #include <time.h>
-#include <unistd.h>
 #include <sys/stat.h>
 #include <fstream>
-//#include "BetaSupport.h"
 
 using namespace Sexy;
 
@@ -19,8 +14,6 @@ const char DYNAMIC_DATA_BLOCK[400] =
 	"00000000PACPOPPOPCAPPACPOPPOPCAPBUILDINFOMARKERPACPOPPOPCAPPACPOPPOPCAPXXXXXXXXX";
 									
 const char* BUILD_INFO_MARKER		= DYNAMIC_DATA_BLOCK + 80;
-const char* SIGNATURE_CODE_MARKER	= DYNAMIC_DATA_BLOCK + 80*2;
-const char* BETA_ID_MARKER			= DYNAMIC_DATA_BLOCK + 80*3;
 
 SexyApp::SexyApp()
 {
@@ -40,11 +33,7 @@ SexyApp::SexyApp()
 
 	mCompanyName = "PopCap";
 
-	mInternetManager = nullptr;//new InternetManager();
-	mBetaSupport = NULL;
 	mBetaValidate = false;	
-
-	SetString("UPDATE_CHECK_BODY", L"Contacting PopCap.com to determine if there are any updates available for this product ...");
 
 	char aStr[9] = {0};
 	strncpy(aStr, BUILD_INFO_MARKER, 8);
@@ -56,8 +45,6 @@ SexyApp::SexyApp()
 
 SexyApp::~SexyApp()
 {
-	//delete mBetaSupport;
-	//delete mInternetManager;
 }
 
 /*
@@ -398,77 +385,12 @@ bool SexyApp::OpenRegisterPage()
 	return OpenRegisterPage(aStatsMap);
 }
 
-/*
-bool SexyApp::CheckSignature(const Buffer& theBuffer, const std::string& theFileName)
-{
-#ifdef _DEBUG
-	// Don't check signatures on debug version because it's annoying and the build number
-	//  will probably be 0 anyway
-	return true;
-#endif
-
-	if (mSkipSignatureChecks)
-		return true;
-
-	char aSigStr[25];
-
-	FILE* aFP = fopen((theFileName + ".sig").c_str(), "rb");
-	if (aFP == NULL)
-		return false;
-
-	fread(aSigStr, 1, 24, aFP);
-	aSigStr[24] = 0;
-
-	fclose(aFP);
-
-	char* aFileData = new char[theBuffer.GetDataLen()+4];
-	int aFileDataPos = 0;
-	
-	char aStr[9] = {0};
-	strncpy(aStr, SIGNATURE_CODE_MARKER, 8);
-	int aSignatureCode = atoi(aStr);
-
-	aFileData[aFileDataPos++] = (aSignatureCode & 0xFF);
-	aFileData[aFileDataPos++] = ((aSignatureCode >> 8) & 0xFF);
-	aFileData[aFileDataPos++] = ((aSignatureCode >> 16) & 0xFF);
-	aFileData[aFileDataPos++] = ((aSignatureCode >> 24) & 0xFF);
-
-	theBuffer.SeekFront();
-	while (!theBuffer.AtEnd())
-	{
-		unsigned char c = theBuffer.ReadByte();
-		fread(&c, 1, 1, aFP);
-		if (!::isspace(c))
-			aFileData[aFileDataPos++] = c;
-	}	
-
-	// Public RSA stuff
-	BigInt n("D99BC76AB7B2578738E606F7");
-	BigInt e("11");
-			
-	BigInt aHash = HashData(aFileData, aFileDataPos, 94);
-	delete aFileData;
-	
-	BigInt aSignature(aSigStr);
-	BigInt aHashTest = aSignature.ModPow(e, n);
-
-	return aHashTest == aHash;
-}
-*/
-
 void SexyApp::PreTerminate()
 {
-	//if ((!mSkipAd) && 
-	//	((((!mIsRegistered) || (mInternetManager->HasNewAds())) && ((Rand()%2) == 0))))
-	//{
-	//	mInternetManager->TryShowAd();
-	//}
 }
 
 void SexyApp::OpenUpdateURL()
 {
-
-	//OpenURL(mInternetManager->GetUpdateURL(), true);	
 
 	Shutdown();
 }
@@ -503,12 +425,6 @@ void SexyApp::GetSEHWebParams(DefinesMap* theDefinesMap)
 
 void SexyApp::PreDisplayHook()
 {
-	//if (mBetaValidate && !mBetaSupport->Validate())
-	//{
-	//	Shutdown();
-	//	DoExit(0);
-	//	return;
-	//}
 }
 
 void SexyApp::InitPropertiesHook()
@@ -528,45 +444,11 @@ void SexyApp::InitPropertiesHook()
 
 	std::string aNewTitle = GetString("Title", "");
 	if (aNewTitle.length() > 0)
-		mTitle = aNewTitle + " " + mProductVersion;	
-		
-	//mInternetManager->Init();
-	mBetaSupport = nullptr;//new BetaSupport(this);
-
-
+		mTitle = aNewTitle + " " + mProductVersion;
 }
 
 void SexyApp::Init()
 {
-	/*
-	SEHCatcher::mCrashMessage = 
-		L"An unexpected error has occured!  Pressing 'Send Report' "
-		"will send us helpful debugging information that may help "
-		"us resolve this issue in the future.\r\n\r\n"
-		"You can also contact us directly at feedback@popcap.com.";
-
-	SEHCatcher::mSubmitMessage = 
-		L"Please help us out by providing as much information as "
-		"you can about this crash. Is this the first time it happened? "
-		"Have you used other PopCap Deluxe games successfully before? "
-		"Have you upgraded your drivers or any software recently that "
-		"may be interfering with this program?";
-
-	SEHCatcher::mSubmitErrorMessage = 
-		L"Failed to connect to PopCap servers.  Please check your Internet connection.\n"
-		"If you are on a dial-up connection, you may have to manually connect to your ISP.";
-
-	SEHCatcher::mSubmitHost = "www.popcap.com";
-
-	OutputDebugString(StrFormat("Product: %s\r\n", mProdName.c_str()).c_str());	
-	OutputDebugString(StrFormat("BuildNum: %d\r\n", mBuildNum).c_str());
-	OutputDebugString(StrFormat("BuildDate: %s\r\n", mBuildDate.c_str()).c_str());	
-	*/
-
-	printf("Product: %s\n", mProdName.c_str());
-	printf("BuildNum: %d\n", mBuildNum);
-	printf("BuildDate: %s\n", mBuildDate.c_str());
-
 	SexyAppBase::Init();	
 
 	mTimesExecuted++;
@@ -575,7 +457,5 @@ void SexyApp::Init()
 void SexyApp::UpdateFrames()
 {
 	SexyAppBase::UpdateFrames();
-
-	//mInternetManager->Update();
 }
 
