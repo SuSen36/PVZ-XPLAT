@@ -8,12 +8,10 @@
 #include "TodStringFile.h"
 #include "../GameConstants.h"
 #include "SexyAppFramework/graphics/Font.h"
-#include "../SexyAppFramework/misc/Debug.h"
 #include "SexyAppFramework/graphics/GLImage.h"
 #include "SexyAppFramework/graphics/Graphics.h"
 #include "SexyAppFramework/graphics/ImageFont.h"
-#include "../SexyAppFramework/misc/PerfTimer.h"
-#include "../SexyAppFramework/misc/SexyMatrix.h"
+#include "SexyAppFramework/misc/SexyMatrix.h"
 #include "SexyAppFramework/graphics/GLInterface.h"
 
 //0x510BC0
@@ -925,9 +923,6 @@ void FixPixelsOnAlphaEdgeForBlending(Image* theImage)
 	if (!aImage->mHasTrans)
 		return;
 
-	PerfTimer aTimer;
-	aTimer.Start();
-
 	uint32_t* aBitsPtr = aImage->mBits;
 	for (int y = 0; y < theImage->mHeight; y++)
 	{
@@ -943,11 +938,6 @@ void FixPixelsOnAlphaEdgeForBlending(Image* theImage)
 	}
 	aImage->mBitsChangedCount++;
 
-	int aDuration = std::max(aTimer.GetDuration(), 0.0);
-	if (aDuration > 20)
-	{
-		TodTraceAndLog("LOADING:Long sanding '%s' %d ms on %s", theImage->mFilePath.c_str(), aDuration, gGetCurrentLevelName().c_str());
-	}
 }
 
 void SexyMatrix3Transpose(const SexyMatrix3& m, SexyMatrix3 &r)
@@ -1078,9 +1068,6 @@ bool TodResourceManager::TodLoadResources(const std::string& theGroup)
 	if (IsGroupLoaded(theGroup))
 		return true;
 
-	PerfTimer aTimer;
-	aTimer.Start();
-
 	StartLoadResources(theGroup);
 	while (!gSexyAppBase->mShutdown && TodLoadNextResource());
 	if (gSexyAppBase->mShutdown)
@@ -1099,12 +1086,6 @@ bool TodResourceManager::TodLoadResources(const std::string& theGroup)
 	}
 
 	mLoadedGroups.insert(theGroup);
-
-	int aDuration = std::max(aTimer.GetDuration(), 0.0);
-	if (aDuration > 20)
-	{
-		TodTraceAndLog("LOADED: '%s' %d ms on %s", theGroup.c_str(), aDuration, gGetCurrentLevelName().c_str());
-	}
 
 	return true;
 }

@@ -1,8 +1,9 @@
 #include "SexyApp.h"
 
-#include <time.h>
+#include <ctime>
 #include <sys/stat.h>
 #include <fstream>
+#include <unistd.h>
 
 using namespace Sexy;
 

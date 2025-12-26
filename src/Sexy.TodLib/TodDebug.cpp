@@ -1,7 +1,6 @@
 #include <time.h>
 #include "TodDebug.h"
 #include "TodCommon.h"
-#include "../SexyAppFramework/misc/Debug.h"
 #include "../SexyAppFramework/SexyAppBase.h"
 #include "SDL.h"
 

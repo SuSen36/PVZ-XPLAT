@@ -59,7 +59,7 @@
 					*d++ += aFactor * ((pixel >> 16) & 0xFF);
 					*d++ += aFactor * ((pixel >> 24) & 0xFF);
 
-					DBG_ASSERTE(d <= aNewHorzPixelsEnd);
+					TOD_ASSERT(d <= aNewHorzPixelsEnd);
 
 					d += aTempDestWidth*4 - 4;
 					s1 += aSrcRowWidth;
@@ -86,7 +86,7 @@
 					*d++ += aFactor2 * ((pixel >> 16) & 0xFF);
 					*d++ += aFactor2 * ((pixel >> 24) & 0xFF);
 
-					DBG_ASSERTE(d <= aNewHorzPixelsEnd);
+					TOD_ASSERT(d <= aNewHorzPixelsEnd);
 
 					d += aTempDestWidth*4 - 8;
 					s1 += aSrcRowWidth;
@@ -124,7 +124,7 @@
 				*d++ = (aFactor1 * ((pixel1 >> 16) & 0xFF)) + (aFactor2 * ((pixel2 >> 16) & 0xFF));
 				*d++ = (aFactor1 * ((pixel1 >> 24) & 0xFF)) + (aFactor2 * ((pixel2 >> 24) & 0xFF));
 
-				DBG_ASSERTE(d <= aNewHorzPixelsEnd);
+				TOD_ASSERT(d <= aNewHorzPixelsEnd);
 
 				d += aTempDestWidth*4 - 4;
 				s += aSrcRowWidth - 1;
@@ -169,7 +169,7 @@
 					*d++ += aFactor * *s++;						
 				}
 
-				DBG_ASSERTE(d <= aNewPixelsEnd);
+				TOD_ASSERT(d <= aNewPixelsEnd);
 			}
 			else
 			{
@@ -194,8 +194,8 @@
 					*d2++ += aFactor2 * *s++;
 				}
 
-				DBG_ASSERTE(d1 <= aNewPixelsEnd);
-				DBG_ASSERTE(d2 <= aNewPixelsEnd);
+				TOD_ASSERT(d1 <= aNewPixelsEnd);
+				TOD_ASSERT(d2 <= aNewPixelsEnd);
 			}
 		}
 	}
@@ -261,7 +261,7 @@
 				//a = 255 * a / (a + aDestAlpha);					
 				int oma = 256 - a;
 				
-				DBG_ASSERTE(aDestPixels < aDestEnd);
+				TOD_ASSERT(aDestPixels < aDestEnd);
 
 				*(aDestPixels++) = (aNewDestAlpha << 24) |
 					(((((dest & 0x0000FF) * oma) >> 8) & 0x0000FF) + (((b * a) >> 8))) |

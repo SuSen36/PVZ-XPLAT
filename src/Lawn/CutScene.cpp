@@ -16,14 +16,13 @@
 #include "System/PlayerInfo.h"
 #include "Widget/StoreScreen.h"
 #include "Widget/ChallengeScreen.h"
-#include "../Sexy.TodLib/TodFoley.h"
+#include "Sexy.TodLib/TodFoley.h"
 #include "Widget/SeedChooserScreen.h"
-#include "../Sexy.TodLib/TodCommon.h"
-#include "../Sexy.TodLib/Attachment.h"
-#include "../Sexy.TodLib/Reanimator.h"
-#include "../Sexy.TodLib/TodParticle.h"
-#include "../Sexy.TodLib/TodStringFile.h"
-#include "SexyAppFramework/misc/PerfTimer.h"
+#include "Sexy.TodLib/TodCommon.h"
+#include "Sexy.TodLib/Attachment.h"
+#include "Sexy.TodLib/Reanimator.h"
+#include "Sexy.TodLib/TodParticle.h"
+#include "Sexy.TodLib/TodStringFile.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
 
 static const int	TimePanRightStart				= 1500;
@@ -335,9 +334,6 @@ void CutScene::PreloadResources()
 
 	mLoadedResourceNames.clear();
 
-	PerfTimer aTimer;
-	aTimer.Start();
-
 	for (int aWave = 0; aWave < mBoard->mNumWaves; aWave++)
 	{
 		for (int aZombieIndex = 0; aZombieIndex < MAX_ZOMBIES_IN_WAVE; aZombieIndex++)
@@ -453,7 +449,6 @@ void CutScene::PreloadResources()
 		Plant::PreloadPlantResources(SeedType::SEED_SUNFLOWER);
 		Plant::PreloadPlantResources(SeedType::SEED_PEASHOOTER);
 		Plant::PreloadPlantResources(SeedType::SEED_SUNSHROOM);
-		Plant::PreloadPlantResources(SeedType::SEED_SUNSHROOM);  // 这里不知为何原版把阳光菇预加载了两次
 		Plant::PreloadPlantResources(SeedType::SEED_FLOWERPOT);
 		Plant::PreloadPlantResources(SeedType::SEED_PLANTERN);
 		Plant::PreloadPlantResources(SeedType::SEED_FUMESHROOM);
@@ -487,7 +482,8 @@ void CutScene::PreloadResources()
 
 	PlaceStreetZombies();
 
-	mBoard->mPreloadTime = std::max(aTimer.GetDuration(), 0.0);
+
+	mBoard->mPreloadTime = 0;
 	TodTrace("preloading: %d ms", mBoard->mPreloadTime);
 	TodHesitationTrace("CutScene::PreloadResources");
 }

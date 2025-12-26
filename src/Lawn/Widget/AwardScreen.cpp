@@ -11,9 +11,9 @@
 #include "../../Resources.h"
 #include "../../GameConstants.h"
 #include "../System/PlayerInfo.h"
-#include "../../Sexy.TodLib/TodFoley.h"
-#include "../../Sexy.TodLib/TodCommon.h"
-#include "../../Sexy.TodLib/TodStringFile.h"
+#include "Sexy.TodLib/TodFoley.h"
+#include "Sexy.TodLib/TodCommon.h"
+#include "Sexy.TodLib/TodStringFile.h"
 #include "AchievementsScreen.h"
 
 //0x405780

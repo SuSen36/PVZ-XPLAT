@@ -254,11 +254,6 @@ public:
 	DWORD					mVSyncBrokenTestUpdates;
 	bool					mWaitForVSync;
 	bool					mSoftVSyncWait;
-	bool					mUserChanged3DSetting;
-	bool					mAutoEnable3D;
-	bool					mTest3D;
-	DWORD					mMinVidMemory3D;
-	DWORD					mRecommendedVidMemory3D;
 
 	bool					mWidescreenAware;
 	Rect					mScreenBounds;
@@ -399,7 +394,7 @@ public:
 	void					Remove3DData(MemoryImage* theMemoryImage);
 	virtual void			SwitchScreenMode();
 	virtual void			SwitchScreenMode(bool wantWindowed);
-	virtual void			SwitchScreenMode(bool wantWindowed, bool is3d, bool force = false);
+	virtual void			SwitchScreenMode(bool wantWindowed,bool force = false);
 	virtual void			SetAlphaDisabled(bool isDisabled);
 	
 	virtual Dialog*			DoDialog(int theDialogId, bool isModal, const SexyString& theDialogHeader, const SexyString& theDialogLines, const SexyString& theDialogFooter, int theButtonMode);
@@ -424,10 +419,8 @@ public:
 	bool					StartTextInput(std::string& theInput); // set theInput and return true if using soft keyboard capability and user pressed OK (e.g. Switch libnx swkbd)
 	void					StopTextInput();
 	bool					Is3DAccelerated();
-	void					Set3DAcclerated(bool is3D, bool reinit = true);
 	virtual std::string		NotifyCrashHook(); // return file name that you want to upload
 	
-//	virtual bool			CheckSignature(const Buffer& theBuffer, const std::string& theFileName);
 	virtual bool			DrawDirtyStuff();
 	virtual void			Redraw(Rect* theClipRect);
 

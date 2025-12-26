@@ -4,9 +4,9 @@
 #include "../Resources.h"
 #include "MessageWidget.h"
 #include "SexyAppFramework/graphics/Font.h"
-#include "../Sexy.TodLib/TodCommon.h"
-#include "../Sexy.TodLib/Reanimator.h"
-#include "../Sexy.TodLib/TodStringFile.h"
+#include "Sexy.TodLib/TodCommon.h"
+#include "Sexy.TodLib/Reanimator.h"
+#include "Sexy.TodLib/TodStringFile.h"
 
 //(0x4081F1)
 MessageWidget::MessageWidget(LawnApp* theApp)

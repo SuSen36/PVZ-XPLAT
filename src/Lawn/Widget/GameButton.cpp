@@ -1,11 +1,11 @@
 #include "GameButton.h"
 #include "../../LawnApp.h"
 #include "../../Resources.h"
-#include "../../Sexy.TodLib/TodCommon.h"
+#include "Sexy.TodLib/TodCommon.h"
 #include "SexyAppFramework/graphics/Font.h"
 //#include "SexyAppFramework/graphics/SysFont.h"
 #include "SexyAppFramework/graphics/Graphics.h"
-#include "../../Sexy.TodLib/TodStringFile.h"
+#include "Sexy.TodLib/TodStringFile.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
 
 static Color gGameButtonColors[6] = { Color(0, 0, 0), Color(0, 0, 0), Color(0, 0, 0), Color(255, 255, 255), Color(132, 132, 132), Color(212, 212, 212) };

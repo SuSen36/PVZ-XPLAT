@@ -8,10 +8,9 @@
 #include "../../Resources.h"
 #include "NewOptionsDialog.h"
 #include "../../ConstEnums.h"
-#include "../../Sexy.TodLib/TodFoley.h"
+#include "Sexy.TodLib/TodFoley.h"
 #include "SexyAppFramework/widget/Slider.h"
-#include "SexyAppFramework/widget/Checkbox.h"
-#include "../../Sexy.TodLib/TodStringFile.h"
+#include "Sexy.TodLib/TodStringFile.h"
 #include "CheatDialog.h"
 
 using namespace Sexy;
@@ -55,7 +54,6 @@ NewOptionsDialog::NewOptionsDialog(LawnApp* theApp, bool theFromGameSelector) :
     mSfxVolumeSlider = new Slider(IMAGE_OPTIONS_SLIDERSLOT, IMAGE_OPTIONS_SLIDERKNOB2, NewOptionsDialog::NewOptionsDialog_SoundVolume, this);
     mSfxVolumeSlider->SetValue(theApp->GetSfxVolume() / 0.65);
 
-    mFullscreenCheckbox = MakeNewCheckbox(NewOptionsDialog::NewOptionsDialog_Fullscreen, this, !theApp->mIsWindowed);
     mCheatButton = MakeButton(NewOptionsDialog::NewOptionsDialog_CheatCode, this, __S("Cheat Code"));
 
     if (mFromGameSelector)
@@ -97,7 +95,6 @@ NewOptionsDialog::~NewOptionsDialog()
 {
     delete mMusicVolumeSlider;
     delete mSfxVolumeSlider;
-    delete mFullscreenCheckbox;
     delete mCheatButton;
     delete mAlmanacButton;
     delete mRestartButton;
@@ -122,7 +119,6 @@ void NewOptionsDialog::AddedToManager(Sexy::WidgetManager* theWidgetManager)
     AddWidget(mMusicVolumeSlider);
     AddWidget(mSfxVolumeSlider);
     AddWidget(mCheatButton);
-    AddWidget(mFullscreenCheckbox);
     AddWidget(mBackToGameButton);
 }
 
@@ -133,7 +129,6 @@ void NewOptionsDialog::RemovedFromManager(Sexy::WidgetManager* theWidgetManager)
     RemoveWidget(mAlmanacButton);
     RemoveWidget(mMusicVolumeSlider);
     RemoveWidget(mSfxVolumeSlider);
-    RemoveWidget(mFullscreenCheckbox);
     RemoveWidget(mCheatButton);
     RemoveWidget(mBackToMainButton);
     RemoveWidget(mBackToGameButton);
@@ -144,9 +139,8 @@ void NewOptionsDialog::RemovedFromManager(Sexy::WidgetManager* theWidgetManager)
 void NewOptionsDialog::Resize(int theX, int theY, int theWidth, int theHeight)
 {
     Dialog::Resize(theX, theY, theWidth, theHeight);
-    mMusicVolumeSlider->Resize(199, 116, 135, 40);
-    mSfxVolumeSlider->Resize(199, 143, 135, 46);
-    mFullscreenCheckbox->Resize(284, 170, 42, 46);
+    mMusicVolumeSlider->Resize(199, 124, 135, 40);
+    mSfxVolumeSlider->Resize(199, 151, 135, 46);
     mCheatButton->Resize(107, 198, 209, 46);
     mAlmanacButton->Resize(107, mCheatButton->mY + 43, 209, 46);
     mRestartButton->Resize(mAlmanacButton->mX, mAlmanacButton->mY + 43, 209, 46);
@@ -157,7 +151,6 @@ void NewOptionsDialog::Resize(int theX, int theY, int theWidth, int theHeight)
     {
         mMusicVolumeSlider->mY += 5;
         mSfxVolumeSlider->mY += 10;
-        mFullscreenCheckbox->mY += 23;
     }
 
     if(mFromGameSelector || (mApp->mGameScene == GameScenes::SCENE_LEVEL_INTRO && !mApp->mBoard->mCutScene->IsSurvivalRepick())){
@@ -177,20 +170,15 @@ void NewOptionsDialog::Draw(Sexy::Graphics* g)
 
     int aMusicOffset = 0;
     int aSfxOffset = 0;
-    int a3DAccelOffset = 0;
-    int aFullScreenOffset = 0;
     if (mFromGameSelector)
     {
         aMusicOffset = 5;
         aSfxOffset = 10;
-        a3DAccelOffset = 15;
-        aFullScreenOffset = 20;
     }
     Sexy::Color aTextColor(107, 109, 145);
 
-    TodDrawString(g, __S("Music"), 186, 140 + aMusicOffset, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
-    TodDrawString(g, __S("Sound FX"), 186, 167 + aSfxOffset, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
-    TodDrawString(g, __S("Full Screen"), 274, 194 + aFullScreenOffset, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
+    TodDrawString(g, __S("Music"), 186, 148 + aMusicOffset, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
+    TodDrawString(g, __S("Sound FX"), 186, 175 + aSfxOffset, FONT_DWARVENTODCRAFT18, aTextColor, DrawStringJustification::DS_ALIGN_RIGHT);
 }
 
 //0x45CF50
@@ -209,31 +197,6 @@ void NewOptionsDialog::SliderVal(int theId, double theVal)
         if (!mSfxVolumeSlider->mDragging)
         {
             mApp->PlaySample(SOUND_BUTTONCLICK);
-        }
-        break;
-    }
-}
-
-//0x45CFF0
-void NewOptionsDialog::CheckboxChecked(int theId, bool checked)
-{
-    switch (theId)
-    {
-    case NewOptionsDialog::NewOptionsDialog_Fullscreen:
-        if (!checked && mApp->mForceFullscreen)
-        {
-            mApp->DoDialog(
-                Dialogs::DIALOG_COLORDEPTH_EXP, 
-                true, 
-                __S("No Windowed Mode"), 
-                __S( "Windowed mode is only available if your desktop was running in either\n"
-                    "16 bit or 32 bit color mode when you started the game.\n\n"
-                    "If you'd like to run in Windowed mode then you need to quit the game and switch your desktop to 16 or 32 bit color mode."), 
-                __S("OK"), 
-                Dialog::BUTTONS_FOOTER
-            );
-            //TODO：修复安卓奔溃的问题
-            mFullscreenCheckbox->SetChecked(true, false);
         }
         break;
     }

@@ -2,7 +2,7 @@
 #define __REANIMATORCACHE_H__
 
 #include "../../ConstEnums.h"
-#include "../../Sexy.TodLib/TodList.h"
+#include "Sexy.TodLib/TodList.h"
 namespace Sexy
 {
     class Graphics;

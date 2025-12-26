@@ -7,7 +7,7 @@
 #include "../Resources.h"
 #include "MessageWidget.h"
 #include "SexyAppFramework/graphics/Font.h"
-#include "../Sexy.TodLib/FilterEffect.h"
+#include "Sexy.TodLib/FilterEffect.h"
 #include "SexyAppFramework/misc/SexyMatrix.h"
 
 SeedPacket::SeedPacket()

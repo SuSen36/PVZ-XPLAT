@@ -6,10 +6,10 @@
 #include "../LawnApp.h"
 #include "../Resources.h"
 #include "../GameConstants.h"
-#include "../Sexy.TodLib/TodFoley.h"
-#include "../Sexy.TodLib/TodDebug.h"
-#include "../Sexy.TodLib/Reanimator.h"
-#include "../Sexy.TodLib/Attachment.h"
+#include "Sexy.TodLib/TodFoley.h"
+#include "Sexy.TodLib/TodDebug.h"
+#include "Sexy.TodLib/Reanimator.h"
+#include "Sexy.TodLib/Attachment.h"
 #include "Widget/AchievementsScreen.h"
 
 ProjectileDefinition gProjectileDefinition[] = {  //0x69F1C0

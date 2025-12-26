@@ -1,5 +1,4 @@
 #include "XMLParser.h"
-#include "Debug.h"
 #include "SexyAppFramework/paklib/PakInterface.h"
 
 using namespace Sexy;
@@ -105,7 +104,7 @@ bool XMLParser::GetUTF8Char(wchar_t* theChar, bool* error)
 			aTempChar &= ~aMaskData[aLen];
 			int aTotalLen = aLen+1;
 
-			DBG_ASSERTE(aTotalLen >= 2 && aTotalLen <= 6);
+			TOD_ASSERT(aTotalLen >= 2 && aTotalLen <= 6);
 
 			int anExtraChar = 0;
 			while (aLen > 0)

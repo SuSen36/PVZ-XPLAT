@@ -1,5 +1,4 @@
 #include "Buffer.h"
-#include "Debug.h"
 
 #define POLYNOMIAL 0x04c11db7L
 
@@ -509,7 +508,6 @@ std::wstring Buffer::ReadUTF8String() const
 
 		aString += aChar;
 	}
-	DBG_ASSERT(i == aLen); // if this fires, the UTF-8 data was malformed.
 
 	return aString;
 }

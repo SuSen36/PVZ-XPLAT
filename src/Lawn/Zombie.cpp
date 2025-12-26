@@ -10,12 +10,12 @@
 #include "../Resources.h"
 #include "System/Music.h"
 #include "Widget/AlmanacDialog.h"
-#include "../Sexy.TodLib/TodFoley.h"
-#include "../Sexy.TodLib/TodDebug.h"
-#include "../Sexy.TodLib/TodCommon.h"
-#include "../Sexy.TodLib/Reanimator.h"
-#include "../Sexy.TodLib/Attachment.h"
-#include "../Sexy.TodLib/TodParticle.h"
+#include "Sexy.TodLib/TodFoley.h"
+#include "Sexy.TodLib/TodDebug.h"
+#include "Sexy.TodLib/TodCommon.h"
+#include "Sexy.TodLib/Reanimator.h"
+#include "Sexy.TodLib/Attachment.h"
+#include "Sexy.TodLib/TodParticle.h"
 
 #include <climits>
 

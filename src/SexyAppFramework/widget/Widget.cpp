@@ -4,7 +4,6 @@
 #include "../graphics/Font.h"
 #include "../graphics/Image.h"
 #include "../SexyAppBase.h"
-#include "../misc/Debug.h"
 #include "../misc/ResourceManager.h"
 
 using namespace Sexy;

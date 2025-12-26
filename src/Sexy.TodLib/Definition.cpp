@@ -9,7 +9,6 @@
 #include "Definition.h"
 #include "zlib.h"
 #include "SexyAppFramework/paklib/PakInterface.h"
-#include "../SexyAppFramework/misc/PerfTimer.h"
 #include "../SexyAppFramework/misc/XMLParser.h"
 #include "../Resources.h"
 
@@ -557,7 +556,7 @@ void* DefinitionUncompressCompiledBuffer(void* theCompressedBuffer, size_t theCo
     Bytef* aUncompressedBuffer = (Bytef*)DefinitionAlloc(aHeader->mUncompressedSize);
     Bytef* aSrc = (Bytef*)((intptr_t)theCompressedBuffer + sizeof(CompressedDefinitionHeader));  // 实际解压数据从第 3 个四字节开始
     // BuGFIXX!!
-    ulong aUncompressedSizeResult = aHeader->mUncompressedSize;  // 用作出参的未压缩数据实际长度
+    uLongf aUncompressedSizeResult = aHeader->mUncompressedSize;  // 用作出参的未压缩数据实际长度
     int aResult = uncompress(aUncompressedBuffer, &aUncompressedSizeResult, aSrc, theCompressedBufferSize - sizeof(CompressedDefinitionHeader));
     (void)aResult; // Compiler can't work out that this is used in the Debug build
     TOD_ASSERT(aResult == Z_OK);
@@ -569,8 +568,6 @@ void* DefinitionUncompressCompiledBuffer(void* theCompressedBuffer, size_t theCo
 //0x444560 : (void* def, *defMap, eax = string& compiledFilePath)  //esp -= 8
 bool DefinitionReadCompiledFile(const SexyString& theCompiledFilePath, DefMap* theDefMap, void* theDefinition)
 {
-    PerfTimer aTimer;
-    aTimer.Start();
     FILE* pFile = fopen(theCompiledFilePath.c_str(), "rb");
     if (!pFile) return false;
 
@@ -1291,10 +1288,7 @@ bool DefinitionCompileAndLoad(const SexyString& theXMLFilePath, DefMap* theDefMa
     }
     else if(!IsFileInPakFile(aCompiledFilePath))
     {
-        PerfTimer aTimer;
-        aTimer.Start();
         bool aResult = DefinitionCompileFile(theXMLFilePath, aCompiledFilePath, theDefMap, theDefinition);
-        TodTrace(__S("compile %d ms:'%s'"), (int)aTimer.GetDuration(), aCompiledFilePath.c_str());
         TodHesitationTrace(__S("compiled %s"), aCompiledFilePath.c_str());
         return aResult;
     }

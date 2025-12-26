@@ -14,10 +14,9 @@
 #include "SeedChooserScreen.h"
 #include "../../GameConstants.h"
 #include "../System/PlayerInfo.h"
-#include "SexyAppFramework/misc/Debug.h"
 #include "SexyAppFramework/widget/Dialog.h"
 #include "SexyAppFramework/misc/MTRand.h"
-#include "../../Sexy.TodLib/TodStringFile.h"
+#include "Sexy.TodLib/TodStringFile.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
 
 //0x483380
@@ -135,7 +134,7 @@ SeedChooserScreen::SeedChooserScreen()
 		mStoreButton->mDisabled = true;
 	}
 
-	DBG_ASSERT(mApp->GetSeedsAvailable() < NUM_SEED_TYPES);
+	TOD_ASSERT(mApp->GetSeedsAvailable() < NUM_SEED_TYPES);
 	memset(mChosenSeeds, 0, sizeof(mChosenSeeds));
 	for (SeedType aSeedType = SEED_PEASHOOTER; aSeedType < NUM_SEEDS_IN_CHOOSER; aSeedType = (SeedType)(aSeedType + 1))
 	{
@@ -187,7 +186,7 @@ int SeedChooserScreen::PickFromWeightedArrayUsingSpecialRandSeed(TodWeightedArra
 	int aTotalWeight = 0;
 	for (int i = 0; i < theCount; i++)
 		aTotalWeight += theArray[i].mWeight;
-	DBG_ASSERT(aTotalWeight > 0);
+	TOD_ASSERT(aTotalWeight > 0);
 
 	int aRndResult = theLevelRNG.Next((unsigned long)aTotalWeight);
 	int aWeight = 0;
@@ -196,7 +195,7 @@ int SeedChooserScreen::PickFromWeightedArrayUsingSpecialRandSeed(TodWeightedArra
 		aWeight += theArray[j].mWeight;
 		if (aWeight > aRndResult) return theArray[j].mItem;
 	}
-	DBG_ASSERT(false);
+	TOD_ASSERT(false);
 	unreachable();
 }
 
@@ -1108,7 +1107,7 @@ bool SeedChooserScreen::PickedPlantType(SeedType theSeedType)
 //0x486D20
 void SeedChooserScreen::CloseSeedChooser()
 {
-	DBG_ASSERT(mBoard->mSeedBank->mNumPackets == mBoard->GetNumSeedsInBank());
+	TOD_ASSERT(mBoard->mSeedBank->mNumPackets == mBoard->GetNumSeedsInBank());
 	for (int anIndex = 0; anIndex < mBoard->mSeedBank->mNumPackets; anIndex++)
 	{
 		SeedType aSeedType = FindSeedInBank(anIndex);

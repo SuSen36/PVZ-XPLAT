@@ -3,10 +3,6 @@
 #include "PakInterface.h"
 #include "SexyAppFramework/fcaseopen/fcaseopen.h"
 
-typedef unsigned char uchar;
-typedef unsigned short ushort;
-typedef unsigned long ulong;
-
 enum
 {
 	FILEFLAGS_END = 0x80

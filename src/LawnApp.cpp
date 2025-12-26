@@ -1,4 +1,3 @@
-//#include <corecrt.h>
 #include <ctime>
 #include "LawnApp.h"
 #include "Lawn/Board.h"
@@ -130,7 +129,6 @@ LawnApp::LawnApp()
 	mFirstTimeGameSelector = true;
 	mGameMode = GameMode::GAMEMODE_ADVENTURE;
 	mEasyPlantingCheat = false;
-	mAutoEnable3D = true;
 	Tod_SWTri_AddAllDrawTriFuncs();
 	mLoadingZombiesThreadCompleted = true;
 	mGamesPlayed = 0;
@@ -667,9 +665,6 @@ void LawnApp::DoNewOptions(bool theFromGameSelector)
 // GOTY @Patoke: 0x453410
 AlmanacDialog* LawnApp::DoAlmanacDialog(SeedType theSeedType, ZombieType theZombieType)
 {
-	PerfTimer mTimer;
-	mTimer.Start();
-
 	//FinishModelessDialogs();
 
 	AlmanacDialog* aDialog = new AlmanacDialog(this);
@@ -684,9 +679,6 @@ AlmanacDialog* LawnApp::DoAlmanacDialog(SeedType theSeedType, ZombieType theZomb
 	{
 		aDialog->ShowZombie(theZombieType);
 	}
-
-	int aDuration = mTimer.GetDuration();
-	TodTrace("almanac load time: %d ms", aDuration);
 
 	return aDialog;
 }
@@ -1127,10 +1119,6 @@ bool LawnApp::KillNewOptionsDialog()
 	if (aNewOptionsDialog == nullptr)
 		return false;
 
-	bool wantWindowed = !aNewOptionsDialog->mFullscreenCheckbox->IsChecked();
-	bool want3D = true;
-	SwitchScreenMode(wantWindowed, want3D, false);
-
 	KillDialog(Dialogs::DIALOG_NEWOPTIONS);
 	ClearUpdateBacklog();
 	return true;
@@ -1276,9 +1264,6 @@ void LawnApp::Init()
 		return;
 	}
 
-	PerfTimer mTimer;
-	mTimer.Start();
-
 	mProfileMgr->Load();
 
 	std::string aCurUser;
@@ -1300,33 +1285,15 @@ void LawnApp::Init()
 	mWidgetManager->AddWidget(mTitleScreen);
 	mWidgetManager->SetFocus(mTitleScreen);
 
-#ifdef _DEBUG
-	int aDuration = mTimer.GetDuration();
-	TodTrace("loading: 'profiles' %d ms", aDuration);
-#endif
-	mTimer.Start();
-
 	mMusic = new Music();
 	mSoundSystem = new TodFoley();
 	mEffectSystem = new EffectSystem();
 	mEffectSystem->EffectSystemInitialize();
 
-
-#ifdef _DEBUG
-	aDuration = mTimer.GetDuration();
-	TodTrace("loading: 'system' %d ms", aDuration);
-#endif
-	mTimer.Start();
-
 	ReanimatorLoadDefinitions(gLawnReanimationArray, ReanimationType::NUM_REANIMS);
 	ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_LOADBAR_SPROUT, true);
 	ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_LOADBAR_ZOMBIEHEAD, true);
 
-#ifdef _DEBUG
-	aDuration = mTimer.GetDuration();
-	TodTrace("loading: 'loaderbar' %d ms", aDuration);
-#endif
-	mTimer.Start();
 }
 
 //0x4522A0
@@ -1665,9 +1632,6 @@ void LawnApp::ToggleFastMo()
 //0x452740
 void LawnApp::LoadGroup(const char* theGroupName, int theGroupAveMsToLoad)
 {
-	PerfTimer aTimer;
-	aTimer.Start();
-
 	mResourceManager->StartLoadResources(theGroupName);
 	while (!mShutdown && !mCloseRequest && !mLoadingFailed && TodLoadNextResource())
 	{
@@ -1683,9 +1647,6 @@ void LawnApp::LoadGroup(const char* theGroupName, int theGroupAveMsToLoad)
 		mLoadingFailed = true;
 	}
 
-	//int aTotalGroupWeight = mResourceManager->GetNumResources(theGroupName) * theGroupAveMsToLoad;
-	//int aGroupTime = max(aTimer.GetDuration(), 0.0);
-	//TraceLoadGroup(theGroupName, aGroupTime, aTotalGroupWeight, theGroupAveMsToLoad);
 }
 
 //0x4528E0
@@ -1711,9 +1672,6 @@ void LawnApp::LoadingThreadProc()
 	mNumLoadingThreadTasks += GetNumPreloadingTasks();
 	mNumLoadingThreadTasks += mMusic->GetNumLoadingTasks();
 
-	PerfTimer aTimer;
-	aTimer.Start();
-
 	TodHesitationTrace("start loading");
 	TodHesitationBracket aHesitationResources("Resources");
 	TodHesitationTrace("loading thread start");
@@ -1724,12 +1682,8 @@ void LawnApp::LoadingThreadProc()
 		return;
 
 	aHesitationResources.EndBracket();
-	TodTrace("loading '%s' %d ms", "resources", (int)aTimer.GetDuration());
 
 	mMusic->MusicInit();
-	// aDuration goes unused
-	//int aDuration = max(aTimer.GetDuration(), 0.0);
-	aTimer.Start();
 
 	mPoolEffect = new PoolEffect();
 	mPoolEffect->PoolEffectInitialize();
@@ -1738,24 +1692,13 @@ void LawnApp::LoadingThreadProc()
 	mReanimatorCache->ReanimatorCacheInitialize();
 	TodFoleyInitialize(gLawnFoleyParamArray, LENGTH(gLawnFoleyParamArray));
 
-	TodTrace("loading '%s' %d ms", "stuff", (int)aTimer.GetDuration());
-	aTimer.Start();
-
 	TrailLoadDefinitions(gLawnTrailArray, LENGTH(gLawnTrailArray));
-	TodTrace("loading '%s' %d ms", "trail", (int)aTimer.GetDuration());
-	aTimer.Start();
 	TodHesitationTrace("trail");
 	
 	TodParticleLoadDefinitions(gLawnParticleArray, LENGTH(gLawnParticleArray));
-	//aDuration = max(aTimer.GetDuration(), 0.0);
-	aTimer.Start();
-
 	PreloadForUser();
 	if (mLoadingFailed || mShutdown || mCloseRequest)
 		return;
-
-	//aDuration = max(aTimer.GetDuration(), 0.0);
-	aTimer.Start();
 
 	GetNumPreloadingTasks();
 	LoadGroup("LoadingSounds", 54);
@@ -3361,15 +3304,9 @@ void LawnApp::PlaySample(int theSoundNum)
 }
 
 //0x4560E0
-void LawnApp::SwitchScreenMode(bool wantWindowed, bool is3d, bool force)
+void LawnApp::SwitchScreenMode(bool wantWindowed,  bool force)
 {
-	SexyAppBase::SwitchScreenMode(wantWindowed, is3d, force);
-
-	NewOptionsDialog* aNewOptionsDialog = (NewOptionsDialog*)GetDialog(Dialogs::DIALOG_NEWOPTIONS);
-	if (aNewOptionsDialog)
-	{
-		aNewOptionsDialog->mFullscreenCheckbox->SetChecked(!mIsWindowed);
-	}
+	SexyAppBase::SwitchScreenMode(wantWindowed, force);
 }
 
 /* #################################################################################################### */

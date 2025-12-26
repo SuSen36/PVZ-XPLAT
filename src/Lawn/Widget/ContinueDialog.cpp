@@ -4,8 +4,8 @@
 #include "../../LawnApp.h"
 #include "ContinueDialog.h"
 #include "../../Resources.h"
-#include "../../Sexy.TodLib/TodFoley.h"
-#include "../../Sexy.TodLib/TodStringFile.h"
+#include "Sexy.TodLib/TodFoley.h"
+#include "Sexy.TodLib/TodStringFile.h"
 
 //0x4330D0
 // GOTY @Patoke: 0x435E40
@@ -36,7 +36,7 @@ ContinueDialog::ContinueDialog(LawnApp* theApp) : LawnDialog(
     CalcSize(10, 60);
 }
 
-//0x4333D0¡¢0x4333F0
+//0x4333D0ï¿½ï¿½0x4333F0
 ContinueDialog::~ContinueDialog()
 {
     delete mContinueButton;

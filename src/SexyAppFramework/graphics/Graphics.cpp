@@ -4,8 +4,8 @@
 #include "GLImage.h"
 #include "MemoryImage.h"
 #include "../misc/Rect.h"
-#include "../misc/Debug.h"
 #include "../misc/SexyMatrix.h"
+#include "Sexy.TodLib/TodDebug.h"
 #include <math.h>
 
 using namespace Sexy;
@@ -83,7 +83,7 @@ void Graphics::PushState()
 
 void Graphics::PopState()
 {
-	DBG_ASSERTE(mStateStack.size() > 0);
+	TOD_ASSERT(mStateStack.size() > 0);
 	if (mStateStack.size() > 0)
 	{
 		CopyStateFrom(&mStateStack.back());
@@ -666,8 +666,8 @@ void Graphics::DrawImage(Sexy::Image* theImage, int theX, int theY)
 
 void Graphics::DrawImage(Image* theImage, int theX, int theY, const Rect& theSrcRect)
 {
-	DBG_ASSERTE(theSrcRect.mX + theSrcRect.mWidth <= theImage->GetWidth());	
-	DBG_ASSERTE(theSrcRect.mY + theSrcRect.mHeight <= theImage->GetHeight());	
+	TOD_ASSERT(theSrcRect.mX + theSrcRect.mWidth <= theImage->GetWidth());
+	TOD_ASSERT(theSrcRect.mY + theSrcRect.mHeight <= theImage->GetHeight());
 
 	if ((theSrcRect.mX + theSrcRect.mWidth > theImage->GetWidth()) ||
 		(theSrcRect.mY + theSrcRect.mHeight > theImage->GetHeight()))
@@ -706,8 +706,8 @@ void Graphics::DrawImageMirror(Image* theImage, int theX, int theY, const Rect& 
 	theX += mTransX;
 	theY += mTransY;
 
-	DBG_ASSERTE(theSrcRect.mX + theSrcRect.mWidth <= theImage->GetWidth());	
-	DBG_ASSERTE(theSrcRect.mY + theSrcRect.mHeight <= theImage->GetHeight());	
+	TOD_ASSERT(theSrcRect.mX + theSrcRect.mWidth <= theImage->GetWidth());
+	TOD_ASSERT(theSrcRect.mY + theSrcRect.mHeight <= theImage->GetHeight());
 
 	if ((theSrcRect.mX + theSrcRect.mWidth > theImage->GetWidth()) ||
 		(theSrcRect.mY + theSrcRect.mHeight > theImage->GetHeight()))
@@ -765,8 +765,8 @@ void Graphics::DrawImageF(Image* theImage, float theX, float theY)
 
 void Graphics::DrawImageF(Image* theImage, float theX, float theY, const Rect& theSrcRect)
 {
-	DBG_ASSERTE(theSrcRect.mX + theSrcRect.mWidth <= theImage->GetWidth());	
-	DBG_ASSERTE(theSrcRect.mY + theSrcRect.mHeight <= theImage->GetHeight());
+	TOD_ASSERT(theSrcRect.mX + theSrcRect.mWidth <= theImage->GetWidth());
+	TOD_ASSERT(theSrcRect.mY + theSrcRect.mHeight <= theImage->GetHeight());
 
 	theX += mTransX;
 	theY += mTransY;

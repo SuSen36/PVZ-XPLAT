@@ -4,7 +4,7 @@
 #include "../LawnApp.h"
 #include "CursorObject.h"
 #include "../Resources.h"
-#include "../Sexy.TodLib/Reanimator.h"
+#include "Sexy.TodLib/Reanimator.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
 #include "SDL.h"
 

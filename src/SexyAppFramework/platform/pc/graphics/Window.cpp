@@ -12,21 +12,29 @@ void SexyAppBase::MakeWindow()
 {
 	if (mWindow)
 	{
-		SDL_SetWindowFullscreen((SDL_Window*)mWindow, (!mIsWindowed ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
+		// Avoid fullscreen desktop scaling; toggle true fullscreen only when requested
+		SDL_SetWindowFullscreen((SDL_Window*)mWindow, (!mIsWindowed ? SDL_WINDOW_FULLSCREEN : 0));
 	}
 	else
 	{
 		SDL_Init(SDL_INIT_VIDEO);
 
+		// 线性缩放，避免拉伸锯齿
+		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
+
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+
+		Uint32 windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
+		if (!mIsWindowed)
+			windowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP; // 桌面全屏，按比例拉伸
 
 		mWindow = (void*)SDL_CreateWindow(
 			SexyStringToStringFast(mTitle).c_str(),
 			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 			mWidth, mHeight,
-			SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | (!mIsWindowed ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0)
+			windowFlags
 		);
 		// Load icon image
 		SDL_Surface* iconSurface = SDL_LoadBMP("icon.bmp");

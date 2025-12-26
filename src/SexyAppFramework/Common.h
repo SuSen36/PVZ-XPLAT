@@ -21,12 +21,15 @@
 #include <cstdlib>
 #include <cstdint>
 #include <ctime>
+#include <SDL_stdinc.h>
+#include <SDL_endian.h>
+#include "Sexy.TodLib/TodDebug.h"
 
 #ifdef ANDROID
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #else
-typedef void AAssetManager; // ËùÓÐÆ½Ì¨ÉÏ¶¼Ê¹ÓÃ void* Ìæ´ú HWND
+typedef void AAssetManager; // ï¿½ï¿½ï¿½ï¿½Æ½Ì¨ï¿½Ï¶ï¿½Ê¹ï¿½ï¿½ void* ï¿½ï¿½ï¿½ HWND
 typedef void AAsset;
 #endif
 
@@ -63,7 +66,7 @@ typedef WCHAR TCHAR;
 typedef WCHAR* LPWSTR;
 typedef TCHAR* LPTSTR;
 
-typedef void* HWND; // ËùÓÐÆ½Ì¨ÉÏ¶¼Ê¹ÓÃ void* Ìæ´ú HWND
+typedef void* HWND; // ï¿½ï¿½ï¿½ï¿½Æ½Ì¨ï¿½Ï¶ï¿½Ê¹ï¿½ï¿½ void* ï¿½ï¿½ï¿½ HWND
 
 typedef struct tagRECT {
     LONG left;
@@ -115,18 +118,31 @@ typedef std::string			SexyString;
 #define StringToSexyStringFast(x)	(x)
 #define WStringToSexyStringFast(x)	WStringToString(x)
 
-#define LONG_BIGE_TO_NATIVE(l) (((l >> 24) & 0xFF) | ((l >> 8) & 0xFF00) | ((l << 8) & 0xFF0000) | ((l << 24) & 0xFF000000))
-#define WORD_BIGE_TO_NATIVE(w) (((w >> 8) & 0xFF) | ((w << 8) & 0xFF00))
-#define LONG_LITTLEE_TO_NATIVE(l) (l)
-#define WORD_LITTLEE_TO_NATIVE(w) (w)
+#ifndef SDL_SwapLE16
+#define SDL_SwapLE16(X) ((Uint16)(X))
+#endif
+#ifndef SDL_SwapLE32
+#define SDL_SwapLE32(X) ((Uint32)(X))
+#endif
+#ifndef SDL_SwapBE16
+#define SDL_SwapBE16(X) SDL_Swap16(X)
+#endif
+#ifndef SDL_SwapBE32
+#define SDL_SwapBE32(X) SDL_Swap32(X)
+#endif
+
+#define LONG_BIGE_TO_NATIVE(l) SDL_SwapBE32(l)
+#define WORD_BIGE_TO_NATIVE(w) SDL_SwapBE16(w)
+#define LONG_LITTLEE_TO_NATIVE(l) SDL_SwapLE32(l)
+#define WORD_LITTLEE_TO_NATIVE(w) SDL_SwapLE16(w)
 
 #define LENGTH(anyarray) (sizeof(anyarray) / sizeof(anyarray[0]))
 
-typedef unsigned char uchar;
-typedef unsigned short ushort;
-typedef unsigned int uint;
-typedef unsigned long ulong;
-typedef int64_t int64;
+typedef Uint8   uchar;
+typedef Uint16  ushort;
+typedef Uint32  uint;
+typedef Uint64  ulong;
+typedef Sint64  int64;
 
 typedef std::map<std::string, std::string>		DefinesMap;
 typedef std::map<std::wstring, std::wstring>	WStringWStringMap;
@@ -220,7 +236,7 @@ inline void			inlineUpper(std::string &theData)
 	}
 }
 
-inline void			inlineUpper(std::wstring &theData)
+inline void	zinlineUpper(std::wstring &theData)
 {
     //std::transform(theData.begin(), theData.end(), theData.begin(), toupper);
 

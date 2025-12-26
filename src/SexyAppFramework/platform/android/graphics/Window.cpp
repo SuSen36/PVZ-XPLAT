@@ -1,7 +1,6 @@
 #include <SDL.h>
-#include <SDL_opengl.h>
 #include "SexyAppFramework/SexyAppBase.h"
-#include "../graphics/GLInterface.h"
+#include "SexyAppFramework/graphics/GLInterface.h"
 #include "SexyAppFramework/graphics/GLImage.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
 
@@ -20,7 +19,7 @@ void SexyAppBase::MakeWindow()
         {
             return;
         }
-        SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft");
+        SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
         SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "1");
         // 设置 OpenGL ES 1.0 属性
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);

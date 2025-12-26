@@ -10,10 +10,10 @@
 #include "MessageWidget.h"
 #include "../GameConstants.h"
 #include "System/PlayerInfo.h"
-#include "../Sexy.TodLib/TodFoley.h"
-#include "../Sexy.TodLib/TodDebug.h"
-#include "../Sexy.TodLib/Reanimator.h"
-#include "../Sexy.TodLib/Attachment.h"
+#include "Sexy.TodLib/TodFoley.h"
+#include "Sexy.TodLib/TodDebug.h"
+#include "Sexy.TodLib/Reanimator.h"
+#include "Sexy.TodLib/Attachment.h"
 #include "Widget/AchievementsScreen.h"
 
 Coin::Coin()

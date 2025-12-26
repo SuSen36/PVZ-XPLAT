@@ -2,8 +2,8 @@
 #include "PlayerInfo.h"
 #include "../LawnCommon.h"
 #include "../Widget/ChallengeScreen.h"
-#include "../../Sexy.TodLib/TodDebug.h"
-#include "../../Sexy.TodLib/TodCommon.h"
+#include "Sexy.TodLib/TodDebug.h"
+#include "Sexy.TodLib/TodCommon.h"
 #include "SexyAppFramework/misc/Buffer.h"
 #include "../../SexyAppFramework/SexyAppBase.h"
 

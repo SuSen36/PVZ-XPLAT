@@ -8,16 +8,16 @@
 #include "System/PoolEffect.h"
 #include "Widget/StoreScreen.h"
 #include "Widget/AwardScreen.h"
-#include "../Sexy.TodLib/Trail.h"
+#include "Sexy.TodLib/Trail.h"
 #include "Widget/ChallengeScreen.h"
-#include "../Sexy.TodLib/TodDebug.h"
-#include "../Sexy.TodLib/TodFoley.h"
+#include "Sexy.TodLib/TodDebug.h"
+#include "Sexy.TodLib/TodFoley.h"
 #include "Widget/SeedChooserScreen.h"
-#include "../Sexy.TodLib/Attachment.h"
-#include "../Sexy.TodLib/Reanimator.h"
+#include "Sexy.TodLib/Attachment.h"
+#include "Sexy.TodLib/Reanimator.h"
 #include "SexyAppFramework/widget/Dialog.h"
 #include "SexyAppFramework/misc/MTRand.h"
-#include "../Sexy.TodLib/TodParticle.h"
+#include "Sexy.TodLib/TodParticle.h"
 #include "Coin.h"
 #include "Board.h"
 #include "Plant.h"
@@ -35,18 +35,15 @@
 #include "MessageWidget.h"
 #include "../GameConstants.h"
 #include "Widget/GameButton.h"
-#include "SexyAppFramework/misc/Debug.h"
 #include "SexyAppFramework/graphics/Graphics.h"
-#include "../Sexy.TodLib/EffectSystem.h"
-#include "../Sexy.TodLib/TodStringFile.h"
+#include "Sexy.TodLib/EffectSystem.h"
+#include "Sexy.TodLib/TodStringFile.h"
 #include "SexyAppFramework/graphics/ImageFont.h"
 #include "SexyAppFramework/sound/SoundManager.h"
 #include "SexyAppFramework/widget/ButtonWidget.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
 #include "SexyAppFramework/sound/SoundInstance.h"
 
-//#define SEXY_PERF_ENABLED
-#include "SexyAppFramework/misc/PerfTimer.h"
 #include "Widget/AchievementsScreen.h"
 
 //#define SEXY_MEMTRACE
@@ -8867,7 +8864,7 @@ void Board::KeyChar(SexyChar theChar)
 	}
 	if (theChar == __S('%'))
 	{
-		mApp->SwitchScreenMode(mApp->mIsWindowed, !mApp->Is3DAccelerated(), false);
+		mApp->SwitchScreenMode(mApp->mIsWindowed,  false);
 	}
 	if (theChar == __S('M'))
 	{

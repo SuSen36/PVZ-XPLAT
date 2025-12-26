@@ -3,7 +3,7 @@
 
 #include "../../ConstEnums.h"
 #include "../System/PlayerInfo.h"
-#include "../../Sexy.TodLib/DataArray.h"
+#include "Sexy.TodLib/DataArray.h"
 #include "SexyAppFramework/widget/Dialog.h"
 //using namespace std;
 using namespace Sexy;

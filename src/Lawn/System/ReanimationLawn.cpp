@@ -2,9 +2,9 @@
 #include "../Zombie.h"
 #include "../../LawnApp.h"
 #include "ReanimationLawn.h"
-#include "../../Sexy.TodLib/TodDebug.h"
+#include "Sexy.TodLib/TodDebug.h"
 #include "SexyAppFramework/graphics/Color.h"
-#include "../../Sexy.TodLib/Reanimator.h"
+#include "Sexy.TodLib/Reanimator.h"
 #include "SexyAppFramework/graphics/MemoryImage.h"
 
 //0x46EF00

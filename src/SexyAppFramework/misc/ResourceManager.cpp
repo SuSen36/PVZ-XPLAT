@@ -8,8 +8,6 @@
 //#include "../graphics/SysFont.h"
 #include "SexyAppFramework/imagelib/ImageLib.h"
 
-//#define SEXY_PERF_ENABLED
-#include "PerfTimer.h"
 
 using namespace Sexy;
 
@@ -676,9 +674,7 @@ bool ResourceManager::LoadAlphaGridImage(ImageRes *theRes, GLImage *theImage)
 ///////////////////////////////////////////////////////////////////////////////
 bool ResourceManager::LoadAlphaImage(ImageRes *theRes, GLImage *theImage)
 {
-	SEXY_PERF_BEGIN("ResourceManager::GetImage");
 	ImageLib::Image* anAlphaImage = ImageLib::GetImage(theRes->mAlphaImage,true);
-	SEXY_PERF_END("ResourceManager::GetImage");
 
 	if (anAlphaImage==NULL)
 		return Fail(StrFormat("Failed to load image: %s",theRes->mAlphaImage.c_str()));
@@ -709,10 +705,7 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes)
 {
 	//bool lookForAlpha = theRes->mAlphaImage.empty() && theRes->mAlphaGridImage.empty() && theRes->mAutoFindAlpha; // unused
 	
-	SEXY_PERF_BEGIN("ResourceManager:GetImage");
-
 	//ImageLib::Image *anImage = ImageLib::GetImage(theRes->mPath, lookForAlpha);
-	//SEXY_PERF_END("ResourceManager:GetImage");
 
 	bool isNew;
 	ImageLib::gAlphaComposeColor = theRes->mAlphaColor;
@@ -745,8 +738,6 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes)
 
 	if (theRes->mDDSurface)
 	{
-		SEXY_PERF_BEGIN("ResourceManager:DDSurface");
-
 		aGLImage->CommitBits();
 				
 		if (!aGLImage->mHasAlpha)
@@ -754,21 +745,7 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes)
 			//aGLImage->mWantDDSurface = true;
 			aGLImage->mPurgeBits = true;			
 		}
-
-		SEXY_PERF_END("ResourceManager:DDSurface");
 	}	
-
-	/*
-	if (theRes->mPalletize)
-	{
-		SEXY_PERF_BEGIN("ResourceManager:Palletize");
-		if (aGLImage->mSurface==NULL)
-			aGLImage->Palletize();
-		else
-			aGLImage->mWantPal = true;
-		SEXY_PERF_END("ResourceManager:Palletize");
-	}
-	*/
 
 	//if (theRes->mA4R4G4B4)
 	//	aGLImage->mD3DFlags |= D3DImageFlag_UseA4R4G4B4;
@@ -826,14 +803,12 @@ bool ResourceManager::DoLoadSound(SoundRes* theRes)
 {
 	SoundRes *aRes = theRes;
 
-	SEXY_PERF_BEGIN("ResourceManager:LoadSound");
 	int aSoundId = mApp->mSoundManager->GetFreeSoundId();
 	if (aSoundId<0)
 		return Fail("Out of free sound ids");
 
 	if(!mApp->mSoundManager->LoadSound(aSoundId, aRes->mPath))
 		return Fail(StrFormat("Failed to load sound: %s",aRes->mPath.c_str()));
-	SEXY_PERF_END("ResourceManager:LoadSound");
 
 	if (aRes->mVolume >= 0)
 		mApp->mSoundManager->SetBaseVolume(aSoundId, aRes->mVolume);
@@ -854,17 +829,10 @@ bool ResourceManager::DoLoadFont(FontRes* theRes)
 {
 	Font *aFont = NULL;
 
-	SEXY_PERF_BEGIN("ResourceManager:DoLoadFont");
-
 	if (theRes->mSysFont)
 	{
 		/*
 		bool bold = theRes->mBold, simulateBold = false;
-		if (Sexy::CheckFor98Mill())
-		{
-			simulateBold = bold;
-			bold = false;
-		}
 		aFont = new SysFont(theRes->mPath,theRes->mSize,bold,theRes->mItalic,theRes->mUnderline);
 		SysFont* aSysFont = (SysFont*)aFont;
 		aSysFont->mDrawShadow = theRes->mShadow;
@@ -919,8 +887,6 @@ bool ResourceManager::DoLoadFont(FontRes* theRes)
 	}
 
 	theRes->mFont = aFont;
-
-	SEXY_PERF_END("ResourceManager:DoLoadFont");
 
 	ResourceLoadedHook(theRes);
 	return true;

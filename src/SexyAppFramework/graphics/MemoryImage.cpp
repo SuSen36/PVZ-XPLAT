@@ -6,9 +6,7 @@
 #include "../SexyAppBase.h"
 #include "Graphics.h"
 #include "NativeDisplay.h"
-#include "../misc/Debug.h"
 #include "Quantize.h"
-#include "../misc/PerfTimer.h"
 #include "SWTri.h"
 
 #include <math.h>
@@ -181,7 +179,7 @@ void MemoryImage::BitsChanged()
 	// Verify secret value at end to protect against overwrite
 	if (mBits != NULL)
 	{
-		DBG_ASSERTE(mBits[mWidth*mHeight] == MEMORYCHECK_ID);
+		TOD_ASSERT(mBits[mWidth*mHeight] == MEMORYCHECK_ID);
 	}
 }
 
@@ -1475,10 +1473,10 @@ void MemoryImage::Blt(Image* theImage, int theX, int theY, const Rect& theSrcRec
 {
 	theImage->mDrawn = true;
 
-	DBG_ASSERTE((theColor.mRed >= 0) && (theColor.mRed <= 255));
-	DBG_ASSERTE((theColor.mGreen >= 0) && (theColor.mGreen <= 255));
-	DBG_ASSERTE((theColor.mBlue >= 0) && (theColor.mBlue <= 255));
-	DBG_ASSERTE((theColor.mAlpha >= 0) && (theColor.mAlpha <= 255));
+	TOD_ASSERT((theColor.mRed >= 0) && (theColor.mRed <= 255));
+	TOD_ASSERT((theColor.mGreen >= 0) && (theColor.mGreen <= 255));
+	TOD_ASSERT((theColor.mBlue >= 0) && (theColor.mBlue <= 255));
+	TOD_ASSERT((theColor.mAlpha >= 0) && (theColor.mAlpha <= 255));
 
 	switch (theDrawMode)
 	{
@@ -1904,12 +1902,12 @@ bool MemoryImage::Palletize()
 {
 	CommitBits();
 	
-	if (mColorTable != NULL)
+	if (mColorTable != nullptr)
 		return true;
 
 	GetBits();
 
-	if (mBits == NULL)
+	if (mBits == nullptr)
 		return false;
 
 	mColorIndices = new uchar[mWidth*mHeight];
@@ -1918,10 +1916,10 @@ bool MemoryImage::Palletize()
 	if (!Quantize8Bit(mBits, mWidth, mHeight, mColorIndices, mColorTable))
 	{
 		delete [] mColorIndices;
-		mColorIndices = NULL;
+		mColorIndices = nullptr;
 
 		delete [] mColorTable;
-		mColorTable = NULL;
+		mColorTable = nullptr;
 
 		mWantPal = false;
 
@@ -1929,10 +1927,10 @@ bool MemoryImage::Palletize()
 	}
 	
 	delete [] mBits;
-	mBits = NULL;
+	mBits = nullptr;
 
 	delete [] mNativeAlphaData;
-	mNativeAlphaData = NULL;
+	mNativeAlphaData = nullptr;
 
 	mWantPal = true;
 

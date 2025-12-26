@@ -8,12 +8,12 @@
 #include "../../Resources.h"
 #include "../../ConstEnums.h"
 #include "../MessageWidget.h"
-#include "../../Sexy.TodLib/Trail.h"
+#include "Sexy.TodLib/Trail.h"
 #include "zlib.h"
-#include "../../Sexy.TodLib/Attachment.h"
-#include "../../Sexy.TodLib/Reanimator.h"
-#include "../../Sexy.TodLib/TodParticle.h"
-#include "../../Sexy.TodLib/EffectSystem.h"
+#include "Sexy.TodLib/Attachment.h"
+#include "Sexy.TodLib/Reanimator.h"
+#include "Sexy.TodLib/TodParticle.h"
+#include "Sexy.TodLib/EffectSystem.h"
 
 static const char* FILE_COMPILE_TIME_STRING = "Feb 16 200923:03:38";
 static const unsigned int SAVE_FILE_MAGIC_NUMBER = 0xFEEDDEAD;

@@ -5,10 +5,10 @@
 #include "../LawnCommon.h"
 #include "../../Resources.h"
 #include "ChallengeScreen.h"
-#include "../../Sexy.TodLib/TodDebug.h"
-#include "../../Sexy.TodLib/Reanimator.h"
-#include "../../Sexy.TodLib/EffectSystem.h"
-#include "../../Sexy.TodLib/TodStringFile.h"
+#include "Sexy.TodLib/TodDebug.h"
+#include "Sexy.TodLib/Reanimator.h"
+#include "Sexy.TodLib/EffectSystem.h"
+#include "Sexy.TodLib/TodStringFile.h"
 #include "SexyAppFramework/graphics/ImageFont.h"
 
 

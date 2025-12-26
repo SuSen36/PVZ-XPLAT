@@ -5,8 +5,6 @@
 #include "../misc/KeyCodes.h"
 #include "../graphics/GLImage.h"
 #include "../SexyAppBase.h"
-#include "../misc/PerfTimer.h"
-#include "../misc/Debug.h"
 
 using namespace Sexy;
 //using namespace std;
@@ -266,7 +264,7 @@ void WidgetManager::AddBaseModal(Widget* theWidget)
 
 void WidgetManager::RemoveBaseModal(Widget* theWidget)
 {
-	DBG_ASSERT(mPreModalInfoList.size() > 0);
+	TOD_ASSERT(mPreModalInfoList.size() > 0);
 	
 	bool first = true;
 	
@@ -397,7 +395,6 @@ void WidgetManager::DrawWidgetsTo(Graphics* g)
 
 bool WidgetManager::DrawScreen()
 {
-	SEXY_AUTO_PERF("WidgetManager::DrawScreen");
 	//DWORD start = timeGetTime();
 
 	ModalFlags aModalFlags;
@@ -478,8 +475,6 @@ bool WidgetManager::DrawScreen()
 
 bool WidgetManager::UpdateFrame()
 {
-	SEXY_AUTO_PERF("WidgetManager::UpdateFrame");
-
 	ModalFlags aModalFlags;
 	InitModalFlags(&aModalFlags);
 
@@ -493,8 +488,6 @@ bool WidgetManager::UpdateFrame()
 
 bool WidgetManager::UpdateFrameF(float theFrac)
 {
-	SEXY_AUTO_PERF("WidgetManager::UpdateFrame");
-
 	ModalFlags aModalFlags;
 	InitModalFlags(&aModalFlags);
 

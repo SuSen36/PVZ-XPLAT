@@ -3,8 +3,6 @@
 
 #include "../Common.h"
 
-#include "PerfTimer.h"
-
 struct PFILE;
 
 namespace Sexy

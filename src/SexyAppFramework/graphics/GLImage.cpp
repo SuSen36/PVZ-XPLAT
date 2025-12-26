@@ -1,8 +1,7 @@
 #include "GLImage.h"
-#include "../misc/CritSect.h"
-#include "../misc/Debug.h"
+#include "SexyAppFramework/misc/CritSect.h"
 #include "SexyAppFramework/graphics/GLInterface.h"
-#include "../SexyAppBase.h"
+#include "SexyAppFramework/SexyAppBase.h"
 #include "Image.h"
 
 using namespace Sexy;
@@ -109,10 +108,10 @@ void GLImage::Blt(Image* theImage, int theX, int theY, const Rect& theSrcRect, c
 	//if (gDebug)
 	//	mApp->CopyToClipboard("+DDImage::Blt");
 
-	DBG_ASSERTE((theColor.mRed >= 0) && (theColor.mRed <= 255));
-	DBG_ASSERTE((theColor.mGreen >= 0) && (theColor.mGreen <= 255));
-	DBG_ASSERTE((theColor.mBlue >= 0) && (theColor.mBlue <= 255));
-	DBG_ASSERTE((theColor.mAlpha >= 0) && (theColor.mAlpha <= 255));
+	TOD_ASSERT((theColor.mRed >= 0) && (theColor.mRed <= 255));
+	TOD_ASSERT((theColor.mGreen >= 0) && (theColor.mGreen <= 255));
+	TOD_ASSERT((theColor.mBlue >= 0) && (theColor.mBlue <= 255));
+	TOD_ASSERT((theColor.mAlpha >= 0) && (theColor.mAlpha <= 255));
 
 	CommitBits();
 
@@ -173,10 +172,10 @@ void GLImage::BltTrianglesTex(Image *theTexture, const TriVertex theVertices[][3
 
 void GLImage::BltMirror(Image* theImage, int theX, int theY, const Rect& theSrcRect, const Color& theColor, int theDrawMode)
 {
-	DBG_ASSERTE((theColor.mRed >= 0) && (theColor.mRed <= 255));
-	DBG_ASSERTE((theColor.mGreen >= 0) && (theColor.mGreen <= 255));
-	DBG_ASSERTE((theColor.mBlue >= 0) && (theColor.mBlue <= 255));
-	DBG_ASSERTE((theColor.mAlpha >= 0) && (theColor.mAlpha <= 255));
+	TOD_ASSERT((theColor.mRed >= 0) && (theColor.mRed <= 255));
+	TOD_ASSERT((theColor.mGreen >= 0) && (theColor.mGreen <= 255));
+	TOD_ASSERT((theColor.mBlue >= 0) && (theColor.mBlue <= 255));
+	TOD_ASSERT((theColor.mAlpha >= 0) && (theColor.mAlpha <= 255));
 
 	CommitBits();
 

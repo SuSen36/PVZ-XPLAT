@@ -1,6 +1,5 @@
 #include "Common.h"
-#include "../SexyAppFramework/misc/MTRand.h"
-#include "../SexyAppFramework/misc/Debug.h"
+#include "SexyAppFramework/misc/MTRand.h"
 #include <locale>
 #include <codecvt>
 #include <sys/types.h>
@@ -9,10 +8,6 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <cstdarg>
-
-
-
-#include "../SexyAppFramework/misc/PerfTimer.h"
 
 #ifdef _WIN32
 #define mkdir(dir, mode) mkdir(dir)
@@ -64,59 +59,6 @@ void Sexy::SRand(ulong theSeed)
 	gMTRand.SRand(theSeed);
 }
 
-/*
-bool Sexy::CheckFor98Mill()
-{
-	static bool needOsCheck = true;
-	static bool is98Mill = false;
-
-	if (needOsCheck)
-	{
-		// bool invalid = false; // unused
-		OSVERSIONINFOEXA osvi;
-		ZeroMemory(&osvi, sizeof(OSVERSIONINFOEXA));
-
-		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXA);
-		if( GetVersionExA((LPOSVERSIONINFOA)&osvi) == 0)
-		{
-			osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFOA);
-			if ( GetVersionExA((LPOSVERSIONINFOA)&osvi) == 0)
-				return false;
-		}
-
-		needOsCheck = false;
-		is98Mill = osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS; // let's check Win95, 98, *AND* ME.
-	}
-
-	return is98Mill;
-}
-
-bool Sexy::CheckForVista()
-{
-	static bool needOsCheck = true;
-	static bool isVista = false;
-
-	if (needOsCheck)
-	{
-		// bool invalid = false; // unused
-		OSVERSIONINFOEXA osvi;
-		ZeroMemory(&osvi, sizeof(OSVERSIONINFOEXA));
-
-		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXA);
-		if( GetVersionExA((LPOSVERSIONINFOA)&osvi) == 0)
-		{
-			osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFOA);
-			if ( GetVersionExA((LPOSVERSIONINFOA)&osvi) == 0)
-				return false;
-		}
-
-		needOsCheck = false;
-		isVista = osvi.dwMajorVersion >= 6;
-	}
-
-	return isVista;
-}
-*/
 
 std::string Sexy::GetAppDataFolder()
 {
@@ -243,7 +185,7 @@ std::string Sexy::WStringToString(const std::wstring &theString)
 	}
 	else
 	{
-		DBG_ASSERTE(aRequiredLength != (size_t)-1);
+		TOD_ASSERT(aRequiredLength != (size_t)-1);
 		if (aRequiredLength == (size_t)-1) return "";
 
 		char* aBuffer = new char[aRequiredLength+1];

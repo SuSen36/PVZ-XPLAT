@@ -2,7 +2,6 @@
 #include "TodCommon.h"
 #include "Reanimator.h"
 #include "ReanimAtlas.h"
-#include "../SexyAppFramework/misc/PerfTimer.h"
 #include "SexyAppFramework/graphics/MemoryImage.h"
 
 //0x470250
@@ -214,9 +213,6 @@ int ReanimAtlas::FindImage(Image* theImage)
 //0x470680
 void ReanimAtlas::ReanimAtlasCreate(ReanimatorDefinition* theReanimDef)
 {
-	PerfTimer aTimer;
-	aTimer.Start();
-
 	for (int aTrackIndex = 0; aTrackIndex < theReanimDef->mTracks.count; aTrackIndex++)
 	{
 		ReanimatorTrack* aTrack = &theReanimDef->mTracks.tracks[aTrackIndex];

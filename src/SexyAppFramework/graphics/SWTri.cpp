@@ -1,7 +1,6 @@
 #pragma warning(disable:4244 4305 4309)
 
 #include "SWTri.h"
-#include "../misc/Debug.h"
 
 using namespace Sexy;
 
@@ -648,7 +647,7 @@ void	SWHelper::SWDrawTriangle(bool textured, bool talpha, bool mod_argb, bool gl
 	DrawTriFunc aFunc = gDrawTriFunc[aType];
 	if (aFunc==NULL)
 	{
-		DBG_ASSERT("You need to call SWTri_AddDrawTriFunc or SWTri_AddAllDrawTriFuncs"==NULL);
+		TOD_ASSERT("You need to call SWTri_AddDrawTriFunc or SWTri_AddAllDrawTriFuncs"==NULL);
 	}
 	else
 		aFunc(pVerts, pFrameBuffer, bytepitch, textureInfo, globalDiffuse);

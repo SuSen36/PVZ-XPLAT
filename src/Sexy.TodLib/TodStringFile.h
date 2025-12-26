@@ -2,7 +2,7 @@
 #define __TODSTRINGFILE_H__
 
 #include "SexyAppFramework/graphics/Graphics.h"
-#include "../ConstEnums.h"
+#include "ConstEnums.h"
 using namespace Sexy;
 
 //enum DrawStringJustification;

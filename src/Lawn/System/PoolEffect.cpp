@@ -2,7 +2,7 @@
 #include "../../LawnApp.h"
 #include "../../Resources.h"
 #include "../../GameConstants.h"
-#include "../../Sexy.TodLib/TodDebug.h"
+#include "Sexy.TodLib/TodDebug.h"
 #include "SexyAppFramework/graphics/GLImage.h"
 #include "SexyAppFramework/graphics/Graphics.h"
 #include "SexyAppFramework/graphics/GLInterface.h"

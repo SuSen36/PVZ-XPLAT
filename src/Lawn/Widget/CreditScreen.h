@@ -1,9 +1,9 @@
 #ifndef __CREDITSCREEN_H__
 #define __CREDITSCREEN_H__
 
+#include <cstdint>
 #include "../../ConstEnums.h"
 #include "SexyAppFramework/widget/Widget.h"
-#include "SexyAppFramework/misc/PerfTimer.h"
 #include "SexyAppFramework/widget/ButtonListener.h"
 
 using namespace Sexy;
@@ -51,12 +51,6 @@ public:
 	CreditBrainType			mBrainType;					//+0xC
 };
 
-class TodsHackyUnprotectedPerfTimer : public PerfTimer
-{
-public:
-	void					SetStartTime(int theTimeMillisecondsAgo);
-};
-
 class GameButton;
 class LawnApp;
 class LawnStoneButton;
@@ -88,7 +82,7 @@ public:
 	float					mBrainPosY;					//+0xBC
 	int						mUpdateCount;				//+0xC0
 	int						mDrawCount;					//+0xC4
-	PerfTimer				mTimerSinceStart;			//+0xC8
+	uint32_t				mTimerSinceStart;			//+0xC8
 	bool					mDontSync;					//+0xE0
 	bool					mCreditsPaused;				//+0xE1
 	double					mOriginalMusicVolume;		//+0xE8

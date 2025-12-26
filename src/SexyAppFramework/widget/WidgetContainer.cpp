@@ -2,7 +2,6 @@
 #include "../Common.h"
 #include "WidgetManager.h"
 #include "Widget.h"
-#include "../misc/Debug.h"
 #include <algorithm>
 
 using namespace Sexy;
@@ -29,8 +28,8 @@ WidgetContainer::WidgetContainer()
 WidgetContainer::~WidgetContainer()
 {
 	// call RemoveWidget before you delete it!	
-	DBG_ASSERT(mParent == NULL);
-	DBG_ASSERT(mWidgets.empty());
+	TOD_ASSERT(mParent == NULL);
+	TOD_ASSERT(mWidgets.empty());
 }
 
 void WidgetContainer::RemoveAllWidgets(bool doDelete, bool recursive)

@@ -13,7 +13,7 @@ void SexyAppBase::MakeWindow()
 {
 	if (mWindow)
 	{
-		SDL_SetWindowFullscreen((SDL_Window*)mWindow, (!mIsWindowed ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
+		SDL_SetWindowFullscreen((SDL_Window*)mWindow, (!mIsWindowed ? SDL_WINDOW_FULLSCREEN : 0));
 	}
 	else
 	{
@@ -27,7 +27,8 @@ void SexyAppBase::MakeWindow()
 			SexyStringToStringFast(mTitle).c_str(),
 			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 			mWidth, mHeight,
-			SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | (0)
+			SDL_WINDOW_OPENGL |
+			(mIsWindowed ? SDL_WINDOW_RESIZABLE : SDL_WINDOW_FULLSCREEN);
 		);
 		// Load icon image
 		SDL_Surface* iconSurface = SDL_LoadBMP("icon.bmp");

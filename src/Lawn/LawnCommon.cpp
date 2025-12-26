@@ -5,7 +5,7 @@
 #include "LawnCommon.h"
 #include "../Resources.h"
 #include "../GameConstants.h"
-#include "../Sexy.TodLib/TodCommon.h"
+#include "Sexy.TodLib/TodCommon.h"
 #include "SexyAppFramework/graphics/Font.h"
 #include "SexyAppFramework/widget/Dialog.h"
 #include "SexyAppFramework/misc/SexyMatrix.h"

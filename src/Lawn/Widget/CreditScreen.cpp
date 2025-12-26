@@ -5,13 +5,14 @@
 #include "../System/Music.h"
 #include "../../GameConstants.h"
 #include "../System/PoolEffect.h"
-#include "../../Sexy.TodLib/TodFoley.h"
-#include "../../Sexy.TodLib/Attachment.h"
-#include "../../Sexy.TodLib/Reanimator.h"
-#include "../../Sexy.TodLib/TodParticle.h"
+#include "Sexy.TodLib/TodFoley.h"
+#include "Sexy.TodLib/Attachment.h"
+#include "Sexy.TodLib/Reanimator.h"
+#include "Sexy.TodLib/TodParticle.h"
 #include "SexyAppFramework/widget/Dialog.h"
-#include "../../Sexy.TodLib/EffectSystem.h"
-#include "../../Sexy.TodLib/TodStringFile.h"
+#include "Sexy.TodLib/EffectSystem.h"
+#include "Sexy.TodLib/TodStringFile.h"
+#include "SDL_timer.h"
 
 static CreditsTiming gCreditsTiming[] = {  //0x6A1AD8
     {  128.5f,      CreditWordType::WORD_AW ,         0,     CreditBrainType::BRAIN_OFF       },
@@ -1070,7 +1071,7 @@ void CreditScreen::Update()
         PlayReanim(1);
         mApp->mMusic->MakeSureMusicIsPlaying(MusicTune::MUSIC_TUNE_CREDITS_ZOMBIES_ON_YOUR_LAWN);
         mApp->ClearUpdateBacklog(false);
-        mTimerSinceStart.Start();
+        mTimerSinceStart = SDL_GetTicks();
     }
     else if (mDontSync || mCreditsPhase == CreditsPhase::CREDITS_END)
     {
@@ -1079,7 +1080,7 @@ void CreditScreen::Update()
     else if (mUpdateCount > 1)
     {
         Reanimation* aCreditsReanim = mApp->ReanimationGet(mCreditsReanimID);
-        int aDurationSinceStart = mTimerSinceStart.GetDuration();
+        int aDurationSinceStart = static_cast<int>(SDL_GetTicks() - mTimerSinceStart);
         int aDurationReanimation = (aCreditsReanim->mDefinition->mTracks.tracks->mTransforms.count * aCreditsReanim->mAnimTime / aCreditsReanim->mAnimRate) * 1000.0f;
         if (mCreditsPhase == CreditsPhase::CREDITS_MAIN2)
         {
@@ -1444,16 +1445,6 @@ void CreditScreen::TurnOffTongues(Reanimation* theReanim, int aParentTrack)
 }
 
 //0x437FC0
-/*
-void TodsHackyUnprotectedPerfTimer::SetStartTime(int theTimeMillisecondsAgo)
-{
-    SDL_GetPerformanceCounter(&mStart);
-    LARGE_INTEGER aFreq;
-    QueryPerformanceFrequency(&aFreq);
-    mStart.QuadPart += theTimeMillisecondsAgo * aFreq.QuadPart / -1000;
-}
-*/
-
 //0x438010
 void CreditScreen::JumpToFrame(CreditsPhase thePhase, float theFrame)
 {
@@ -1570,7 +1561,6 @@ void CreditScreen::JumpToFrame(CreditsPhase thePhase, float theFrame)
     }
 
     mCreditsPhase = thePhase;
-    //((TodsHackyUnprotectedPerfTimer*)&mTimerSinceStart)->SetStartTime(aJumpMilliseconds);
 }
 
 void CreditScreen::KeyChar(SexyChar theChar)
@@ -1661,7 +1651,7 @@ void CreditScreen::PauseCredits()
     mApp->mSoundSystem->StopFoley(FoleyType::FOLEY_SCREAM);
     mApp->PlaySample(SOUND_PAUSE);
     mCreditsPaused = true;
-    int aDurationOnPause = mTimerSinceStart.GetDuration();
+    int aDurationOnPause = static_cast<int>(SDL_GetTicks() - mTimerSinceStart);
     mApp->mMusic->GameMusicPause(true);
 
     if (mApp->LawnMessageBox(
@@ -1678,7 +1668,7 @@ void CreditScreen::PauseCredits()
 
     mCreditsPaused = false;
     mApp->mMusic->GameMusicPause(false);
-    //((TodsHackyUnprotectedPerfTimer*)&mTimerSinceStart)->SetStartTime(aDurationOnPause);
+    mTimerSinceStart = SDL_GetTicks() - aDurationOnPause;
 }
 
 //0x438530

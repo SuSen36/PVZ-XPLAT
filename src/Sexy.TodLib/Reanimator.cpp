@@ -8,7 +8,6 @@
 #include "EffectSystem.h"
 #include "../GameConstants.h"
 #include "SexyAppFramework/graphics/Font.h"
-#include "../SexyAppFramework/misc/PerfTimer.h"
 #include "SexyAppFramework/graphics/MemoryImage.h"
 
 unsigned int gReanimatorDefCount;                     //[0x6A9EE4]
@@ -345,17 +344,12 @@ void ReanimationCreateAtlas(ReanimatorDefinition* theDefinition, ReanimationType
 	if (theDefinition->mReanimAtlas != nullptr || TestBit(aParam.mReanimParamFlags, ReanimFlags::REANIM_NO_ATLAS))
 		return;  // 当动画已存在 Atlas 或无需 Atlas 时，直接退出
 
-	PerfTimer aTimer;
-	aTimer.Start();
 	TodHesitationTrace("preatlas");
 	ReanimAtlas* aAtlas = new ReanimAtlas();
 	theDefinition->mReanimAtlas = aAtlas;  // 赋值动画 Atlas 指针
 	aAtlas->ReanimAtlasCreate(theDefinition);
 
 	TodHesitationTrace("atlas '%s'", aParam.mReanimFileName);
-	int aDuration = std::max(aTimer.GetDuration(), 0.0);
-	if (aDuration > 20 && theReanimationType != ReanimationType::REANIM_NONE)  //（仅内测版）创建时间过长的报告
-		TodTraceAndLog("LOADING:Long atlas '%s' %d ms on %s", aParam.mReanimFileName, aDuration, gGetCurrentLevelName().c_str());
 }
 
 void ReanimationPreload(ReanimationType theReanimationType)
@@ -1138,8 +1132,6 @@ void ReanimatorEnsureDefinitionLoaded(ReanimationType theReanimType, bool theIsP
 			TodTraceAndLog("Non-cheater failed to preload '%s' on %s", aReanimParams->mReanimFileName, gGetCurrentLevelName().c_str());
 	}  // < 以上部分仅内测版执行 >
 
-	PerfTimer aTimer;
-	aTimer.Start();
 	TodHesitationBracket aHesitation("Load Reanim '%s'", aReanimParams->mReanimFileName);
 	if (!ReanimationLoadDefinition(aReanimParams->mReanimFileName, aReanimDef))
 	{
@@ -1147,9 +1139,6 @@ void ReanimatorEnsureDefinitionLoaded(ReanimationType theReanimType, bool theIsP
 		sprintf(aBuf, "Failed to load reanim '%s'", aReanimParams->mReanimFileName);
 		TodErrorMessageBox(aBuf, "Error");
 	}
-	int aDuration = aTimer.GetDuration();
-	if (aDuration > 100)  //（仅内测版）创建时间过长的报告
-		TodTraceAndLog("LOADING:Long reanim '%s' %d ms on %s", aReanimParams->mReanimFileName, aDuration, gGetCurrentLevelName().c_str());
 }
 
 //0x473750

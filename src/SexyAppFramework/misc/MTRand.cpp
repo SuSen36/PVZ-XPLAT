@@ -36,7 +36,7 @@ email: m-mat @ math.sci.hiroshima-u.ac.jp (remove space)
 */
 
 #include "MTRand.h"
-#include "Debug.h"
+#include "Sexy.TodLib/TodDebug.h"
 #include <stdio.h>
 
 using namespace Sexy;
@@ -80,7 +80,7 @@ void MTRand::SetRandAllowed(bool allowed)
 		if (gRandAllowed>0)
 			gRandAllowed--;
 		else
-			DBG_ASSERT(false); // mismatched calls
+			TOD_ASSERT(false); // mismatched calls
 	}
 	else
 		gRandAllowed++;
@@ -121,7 +121,7 @@ void MTRand::SRand(unsigned long seed)
 
 unsigned long MTRand::Next()
 {
-	DBG_ASSERT(gRandAllowed==0);
+	TOD_ASSERT(gRandAllowed==0);
 	return NextNoAssert();
 }
 
@@ -170,7 +170,7 @@ unsigned long MTRand::NextNoAssert(unsigned long range)
 
 unsigned long MTRand::Next(unsigned long range)
 {
-	DBG_ASSERT(gRandAllowed==0);
+	TOD_ASSERT(gRandAllowed==0);
 	return NextNoAssert( range );
 }
 
@@ -181,7 +181,7 @@ float MTRand::NextNoAssert(float range)
 
 float MTRand::Next(float range)
 {
-	DBG_ASSERT(gRandAllowed==0);
+	TOD_ASSERT(gRandAllowed==0);
 	return NextNoAssert(range);
 }
 

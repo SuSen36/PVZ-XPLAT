@@ -11,13 +11,13 @@
 #include "Widget/LawnDialog.h"
 #include "Widget/StoreScreen.h"
 #include "System/ReanimationLawn.h"
-#include "../Sexy.TodLib/TodFoley.h"
-#include "../Sexy.TodLib/Reanimator.h"
-#include "../Sexy.TodLib/Attachment.h"
-#include "../Sexy.TodLib/TodParticle.h"
-#include "../Sexy.TodLib/EffectSystem.h"
+#include "Sexy.TodLib/TodFoley.h"
+#include "Sexy.TodLib/Reanimator.h"
+#include "Sexy.TodLib/Attachment.h"
+#include "Sexy.TodLib/TodParticle.h"
+#include "Sexy.TodLib/EffectSystem.h"
 #include "SexyAppFramework/graphics/Graphics.h"
-#include "../Sexy.TodLib/TodStringFile.h"
+#include "Sexy.TodLib/TodStringFile.h"
 
 static SpecialGridPlacement gGreenhouseGridPlacement[] =  //0x69DE50
 {

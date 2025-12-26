@@ -8,6 +8,7 @@
 #include <cmath>
 #include <codecvt>
 #include <locale>
+#include <unistd.h>
 
 #include <SDL.h>
 
@@ -15,7 +16,6 @@
 #include "SexyAppBase.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
 #include "SexyAppFramework/widget/Widget.h"
-#include "../SexyAppFramework/misc/Debug.h"
 #include "../Sexy.TodLib/TodDebug.h"
 #include "SexyAppFramework/graphics/GLImage.h"
 #include "SexyAppFramework/graphics/MemoryImage.h"
@@ -27,21 +27,18 @@
 #include "sound/BassSoundInstance.h"
 #include "../SexyAppFramework/misc/Rect.h"
 #include "../SexyAppFramework/misc/PropertiesParser.h"
-#include "../SexyAppFramework/misc/PerfTimer.h"
 #include "../SexyAppFramework/misc/MTRand.h"
 #include "../SexyAppFramework/misc/ModVal.h"
 //#include "SexyAppFramework/graphics/SysFont.h"
 #include "../SexyAppFramework/misc/ResourceManager.h"
 #include "sound/BassMusicInterface.h"
 #include "../SexyAppFramework/misc/AutoCrit.h"
-#include "../SexyAppFramework/misc/Debug.h"
 #include "SexyAppFramework/paklib/PakInterface.h"
 #include "sound/DummyMusicInterface.h"
 #include "SexyAppFramework/fcaseopen/fcaseopen.h"
 
 #include <unordered_set>
 
-#include "../SexyAppFramework/misc/memmgr.h"
 #include "../SexyAppFramework/misc/RegEmu.h"
 
 #include <filesystem>
@@ -99,13 +96,8 @@ SexyAppBase::SexyAppBase()
 	mTitle = __S("SexyApp");
 	mShutdown = false;
 	mExitToTop = false;
-#ifdef ANDROID
-	mWidth = 480;
-	mHeight = 640;
-#else
     mWidth = 640;
     mHeight = 480;
-#endif
 	mFullscreenBits = 16;
 	mIsWindowed = true;
 	mIsPhysWindowed = true;
@@ -200,11 +192,6 @@ SexyAppBase::SexyAppBase()
 	mVSyncBrokenTestUpdates = 0;
 	mWaitForVSync = false;
 	mSoftVSyncWait = true;
-	mUserChanged3DSetting = false;
-	mAutoEnable3D = false;
-	mTest3D = false;
-	mMinVidMemory3D = 6;
-	mRecommendedVidMemory3D = 14;
 	mRelaxUpdateBacklogCount = 0;
 	mWidescreenAware = false;
 	mEnableWindowAspect = false;
@@ -269,7 +256,7 @@ SexyAppBase::~SexyAppBase()
 	while (aSharedImageItr != mSharedImageMap.end())
 	{
 		SharedImage* aSharedImage = &aSharedImageItr->second;
-		//DBG_ASSERTE(aSharedImage->mRefCount == 0);
+		//TOD_ASSERT(aSharedImage->mRefCount == 0);
 		delete aSharedImage->mImage;
 		mSharedImageMap.erase(aSharedImageItr++);
 	}
@@ -312,41 +299,6 @@ SexyAppBase::~SexyAppBase()
 	*/
 }
 
-/*
-static BOOL CALLBACK ChangeDisplayWindowEnumProc(HWND hwnd, LPARAM lParam)
-{
-	typedef std::map<HWND,RECT> WindowMap;
-	static WindowMap aMap;
-
-	if (lParam==0 && aMap.find(hwnd)==aMap.end()) // record
-	{
-		RECT aRect;
-		if (!IsIconic(hwnd) && IsWindowVisible(hwnd))
-		{
-			if (GetWindowRect(hwnd,&aRect))
-			{
-//				char aBuf[4096];
-//				GetWindowText(hwnd,aBuf,4000);
-//				DWORD aProcessId = 0;
-//				GetWindowThreadProcessId(hwnd,&aProcessId);
-//				SEXY_TRACE(StrFormat("%s %d - %d %d %d %d",aBuf,aProcessId,aRect.left,aRect.top,aRect.right,aRect.bottom).c_str());
-				aMap[hwnd] = aRect;
-			}
-		}
-	}
-	else
-	{
-		WindowMap::iterator anItr = aMap.find(hwnd);
-		if (anItr != aMap.end())
-		{
-			RECT &r = anItr->second;
-			MoveWindow(hwnd,r.left,r.top,abs(r.right-r.left),abs(r.bottom-r.top),TRUE);
-		}
-	}
-	return TRUE;
-}
-*/
-
 void SexyAppBase::ClearUpdateBacklog(bool relaxForASecond)
 {
 	mLastTimeCheck = SDL_GetTicks();
@@ -360,11 +312,6 @@ bool SexyAppBase::AppCanRestore()
 {
 	return !mIsDisabled;
 }
-
-
-
-
-
 
 Dialog* SexyAppBase::NewDialog(int theDialogId, bool isModal, const SexyString& theDialogHeader, const SexyString& theDialogLines, const SexyString& theDialogFooter, int theButtonMode)
 {
@@ -548,52 +495,6 @@ bool SexyAppBase::OpenURL(const std::string& theURL, bool shutdownOnOpen)
 std::string SexyAppBase::GetProductVersion(const std::string& thePath)
 {
 	return "0";
-	/*
-	// Dynamically Load Version.dll
-	typedef DWORD (APIENTRY *GetFileVersionInfoSizeFunc)(LPSTR lptstrFilename, LPDWORD lpdwHandle);
-	typedef BOOL (APIENTRY *GetFileVersionInfoFunc)(LPSTR lptstrFilename, DWORD dwHandle, DWORD dwLen, LPVOID lpData);
-	typedef BOOL (APIENTRY *VerQueryValueFunc)(const LPVOID pBlock, LPSTR lpSubBlock, LPVOID * lplpBuffer, PUINT puLen);
-
-	static GetFileVersionInfoSizeFunc aGetFileVersionInfoSizeFunc = NULL;
-	static GetFileVersionInfoFunc aGetFileVersionInfoFunc = NULL;
-	static VerQueryValueFunc aVerQueryValueFunc = NULL;
-
-	if (aGetFileVersionInfoSizeFunc==NULL)
-	{
-		aGetFileVersionInfoSizeFunc = (GetFileVersionInfoSizeFunc)GetProcAddress(gVersionDLL,"GetFileVersionInfoSizeA");
-		aGetFileVersionInfoFunc = (GetFileVersionInfoFunc)GetProcAddress(gVersionDLL,"GetFileVersionInfoA");
-		aVerQueryValueFunc = (VerQueryValueFunc)GetProcAddress(gVersionDLL,"VerQueryValueA");
-	}
-
-	// Get Product Version
-	std::string aProductVersion;
-
-	uint aSize = aGetFileVersionInfoSizeFunc((char*) thePath.c_str(), 0);
-	if (aSize > 0)
-	{
-		uchar* aVersionBuffer = new uchar[aSize];
-		aGetFileVersionInfoFunc((char*) thePath.c_str(), 0, aSize, aVersionBuffer);
-		char* aBuffer;
-		if (aVerQueryValueFunc(aVersionBuffer,
-				  (char*)"\\StringFileInfo\\040904B0\\ProductVersion",
-				  (void**) &aBuffer,
-				  &aSize))
-		{
-			aProductVersion = aBuffer;
-		}
-		else if (aVerQueryValueFunc(aVersionBuffer,
-				  (char*)"\\StringFileInfo\\040904E4\\ProductVersion",
-				  (void**) &aBuffer,
-				  &aSize))
-		{
-			aProductVersion = aBuffer;
-		}
-
-		delete[] aVersionBuffer;
-	}
-
-	return aProductVersion;
-	*/
 }
 
 void SexyAppBase::WaitForLoadingThread()
@@ -770,8 +671,8 @@ bool SexyAppBase::RegistryGetSubKeys(const std::string& theKeyName, StringVector
 		PrepareDemoCommand(true);
 		mDemoNeedsCommand = true;
 
-		DBG_ASSERTE(!mDemoIsShortCmd);
-		DBG_ASSERTE(mDemoCmdNum == DEMO_REGISTRY_GETSUBKEYS);
+		TOD_ASSERT(!mDemoIsShortCmd);
+		TOD_ASSERT(mDemoCmdNum == DEMO_REGISTRY_GETSUBKEYS);
 
 		bool success = mDemoBuffer.ReadNumBits(1, false) != 0;
 		if (!success)
@@ -1154,8 +1055,6 @@ void SexyAppBase::DoUpdateFramesF(float theFrac)
 
 bool SexyAppBase::DoUpdateFrames()
 {
-	SEXY_AUTO_PERF("SexyAppBase::DoUpdateFrames");
-
 	if ((mLoadingThreadCompleted) && (!mLoaded))
 	{
 		//::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_NORMAL);
@@ -1172,8 +1071,6 @@ bool gIsFailing = false;
 
 void SexyAppBase::Redraw(Rect* theClipRect)
 {
-	SEXY_AUTO_PERF("SexyAppBase::Redraw");
-
 	// Do mIsDrawing check because we could enter here at a bad time if any windows messages
 	//  are processed during WidgetManager->Draw
 	if ((mIsDrawing) || (mShutdown))
@@ -1275,12 +1172,11 @@ void SexyAppBase::Redraw(Rect* theClipRect)
 
 bool SexyAppBase::DrawDirtyStuff()
 {
-	SEXY_AUTO_PERF("SexyAppBase::DrawDirtyStuff");
 	MTAutoDisallowRand aDisallowRand;
 
 	if (gIsFailing) // just try to reinit
 	{
-		Redraw(NULL);
+		Redraw(nullptr);
 		mHasPendingDraw = false;
 		mLastDrawWasEmpty = true;
 		return false;
@@ -1458,8 +1354,6 @@ void SexyAppBase::SafeDeleteWidget(Widget* theWidget)
 	mSafeDeleteList.push_back(aWidgetSafeDeleteInfo);
 }
 
-static DWORD gPowerSaveTick = 0;
-
 void SexyAppBase::HandleNotifyGameMessage(int theType)
 {
 }
@@ -1523,30 +1417,31 @@ std::string	SexyAppBase::NotifyCrashHook()
 
 void SexyAppBase::DeleteNativeImageData()
 {
-	MemoryImageSet::iterator anItr = mMemoryImageSet.begin();
-	while (anItr != mMemoryImageSet.end())
+	AutoCrit anAutoCrit(mGLInterface ? mGLInterface->mCritSect : mCritSect);
+
+	for (MemoryImage* aMemoryImage : mMemoryImageSet)
 	{
-		MemoryImage* aMemoryImage = *anItr;
-		aMemoryImage->DeleteNativeData();
-		++anItr;
+		if (aMemoryImage)
+			aMemoryImage->DeleteNativeData();
 	}
 }
 
 void SexyAppBase::DeleteExtraImageData()
 {
-	AutoCrit anAutoCrit(mGLInterface->mCritSect);
-	MemoryImageSet::iterator anItr = mMemoryImageSet.begin();
-	while (anItr != mMemoryImageSet.end())
+	AutoCrit anAutoCrit(mGLInterface ? mGLInterface->mCritSect : mCritSect);
+
+	for (MemoryImage* aMemoryImage : mMemoryImageSet)
 	{
-		MemoryImage* aMemoryImage = *anItr;
-		aMemoryImage->DeleteExtraBuffers();
-		++anItr;
+		if (aMemoryImage)
+			aMemoryImage->DeleteExtraBuffers();
 	}
 }
 
 void SexyAppBase::ReInitImages()
 {
-	MemoryImageSet::iterator anItr = mMemoryImageSet.begin();
+    AutoCrit anAutoCrit(mGLInterface ? mGLInterface->mCritSect : mCritSect);
+    
+    MemoryImageSet::iterator anItr = mMemoryImageSet.begin();
 	while (anItr != mMemoryImageSet.end())
 	{
 		MemoryImage* aMemoryImage = *anItr;
@@ -1554,7 +1449,6 @@ void SexyAppBase::ReInitImages()
 		++anItr;
 	}
 }
-
 
 void SexyAppBase::LoadingThreadProc()
 {
@@ -1591,20 +1485,15 @@ void SexyAppBase::StartLoadingThread()
     }
 }
 
-void SexyAppBase::SwitchScreenMode(bool wantWindowed, bool is3d, bool force)
+void SexyAppBase::SwitchScreenMode(bool wantWindowed, bool force)
 {
 	if (mForceFullscreen)
 		wantWindowed = false;
 
 	if (mIsWindowed == wantWindowed && !force)
 	{
-		Set3DAcclerated(is3d);
 		return;
 	}
-
-	// Set 3d acceleration preference
-	Set3DAcclerated(is3d,false);
-
 	// Always make the app windowed when playing demos, in order to
 	//  make it easier to track down bugs.  We place this after the
 	//  sanity check just so things get re-initialized and stuff
@@ -1638,12 +1527,12 @@ void SexyAppBase::SwitchScreenMode(bool wantWindowed, bool is3d, bool force)
 
 void SexyAppBase::SwitchScreenMode(bool wantWindowed)
 {
-	SwitchScreenMode(wantWindowed, Is3DAccelerated());
+	SwitchScreenMode(wantWindowed, true);
 }
 
 void SexyAppBase::SwitchScreenMode()
 {
-	SwitchScreenMode(mIsWindowed, Is3DAccelerated(), true);
+	SwitchScreenMode(mIsWindowed, true);
 }
 
 void SexyAppBase::SetAlphaDisabled(bool isDisabled)
@@ -1672,7 +1561,7 @@ void SexyAppBase::EnforceCursor()
 	}
 
 	// Check if we should use custom cursor image (game-drawn cursor)
-	if ((mCursorImages[mCursorNum] != NULL) &&
+	if ((mCursorImages[mCursorNum] != nullptr) &&
 		((mCustomCursorsEnabled) || (mCursorNum == CURSOR_CUSTOM)))
 	{
 		// Using custom cursor, hide system cursor so game can draw its own
@@ -1890,7 +1779,7 @@ bool SexyAppBase::Process(bool allowSleep)
 			{
 				++mNonDrawCount;
 				bool hasRealUpdate = DoUpdateFrames();
-				DBG_ASSERTE(hasRealUpdate);
+				TOD_ASSERT(hasRealUpdate);
 
 				if (!hasRealUpdate)
 					break;
@@ -2204,7 +2093,7 @@ void SexyAppBase::ShowResourceError(bool doExit)
 bool SexyAppBase::GetBoolean(const std::string& theId)
 {
 	StringBoolMap::iterator anItr = mBoolProperties.find(theId);
-	DBG_ASSERTE(anItr != mBoolProperties.end());
+	TOD_ASSERT(anItr != mBoolProperties.end());
 
 	if (anItr != mBoolProperties.end())
 		return anItr->second;
@@ -2225,7 +2114,7 @@ bool SexyAppBase::GetBoolean(const std::string& theId, bool theDefault)
 int SexyAppBase::GetInteger(const std::string& theId)
 {
 	StringIntMap::iterator anItr = mIntProperties.find(theId);
-	DBG_ASSERTE(anItr != mIntProperties.end());
+	TOD_ASSERT(anItr != mIntProperties.end());
 
 	if (anItr != mIntProperties.end())
 		return anItr->second;
@@ -2246,7 +2135,7 @@ int SexyAppBase::GetInteger(const std::string& theId, int theDefault)
 double SexyAppBase::GetDouble(const std::string& theId)
 {
 	StringDoubleMap::iterator anItr = mDoubleProperties.find(theId);
-	DBG_ASSERTE(anItr != mDoubleProperties.end());
+	TOD_ASSERT(anItr != mDoubleProperties.end());
 
 	if (anItr != mDoubleProperties.end())
 		return anItr->second;
@@ -2267,7 +2156,7 @@ double SexyAppBase::GetDouble(const std::string& theId, double theDefault)
 SexyString SexyAppBase::GetString(const std::string& theId)
 {
 	StringWStringMap::iterator anItr = mStringProperties.find(theId);
-	DBG_ASSERTE(anItr != mStringProperties.end());
+	TOD_ASSERT(anItr != mStringProperties.end());
 
 	if (anItr != mStringProperties.end())
 		return WStringToSexyString(anItr->second);
@@ -2288,7 +2177,7 @@ SexyString SexyAppBase::GetString(const std::string& theId, const SexyString& th
 StringVector SexyAppBase::GetStringVector(const std::string& theId)
 {
 	StringStringVectorMap::iterator anItr = mStringVectorProperties.find(theId);
-	DBG_ASSERTE(anItr != mStringVectorProperties.end());
+	TOD_ASSERT(anItr != mStringVectorProperties.end());
 
 	if (anItr != mStringVectorProperties.end())
 		return anItr->second;
@@ -2499,11 +2388,28 @@ void SexyAppBase::HandleGameAlreadyRunning()
 
 void SexyAppBase::CopyToClipboard(const std::string& theString)
 {
+	// SDL handles the platform-specific clipboard implementation
+	if (SDL_SetClipboardText(theString.c_str()) != 0)
+	{
+		// Best-effort: if setting fails, just return
+		return;
+	}
 }
 
 std::string	SexyAppBase::GetClipboard()
 {
-	return "";
+	if (!SDL_HasClipboardText())
+		return "";
+
+	char* aClipboardText = SDL_GetClipboardText();
+
+	if (aClipboardText == nullptr)
+		return "";
+
+	std::string aResult(aClipboardText);
+	SDL_free(aClipboardText);
+
+	return aResult;
 }
 
 void SexyAppBase::SetCursor(int theCursorNum)
@@ -3071,13 +2977,13 @@ void SexyAppBase::SetMasterVolume(double theMasterVolume)
 
 void SexyAppBase::AddMemoryImage(MemoryImage* theMemoryImage)
 {
-	AutoCrit anAutoCrit(mGLInterface->mCritSect);
+	AutoCrit anAutoCrit(mGLInterface ? mGLInterface->mCritSect : mCritSect);
 	mMemoryImageSet.insert(theMemoryImage);
 }
 
 void SexyAppBase::RemoveMemoryImage(MemoryImage* theMemoryImage)
 {
-	AutoCrit anAutoCrit(mGLInterface->mCritSect);
+	AutoCrit anAutoCrit(mGLInterface ? mGLInterface->mCritSect : mCritSect);
 	MemoryImageSet::iterator anItr = mMemoryImageSet.find(theMemoryImage);
 	if (anItr != mMemoryImageSet.end())
 		mMemoryImageSet.erase(anItr);
@@ -3095,10 +3001,6 @@ void SexyAppBase::Remove3DData(MemoryImage* theMemoryImage)
 bool SexyAppBase::Is3DAccelerated()
 {
 	return true;
-}
-
-void SexyAppBase::Set3DAcclerated(bool is3D, bool reinit)
-{
 }
 
 SharedImageRef SexyAppBase::SetSharedImage(const std::string& theFileName, const std::string& theVariant, GLImage* theImage, bool* isNew)

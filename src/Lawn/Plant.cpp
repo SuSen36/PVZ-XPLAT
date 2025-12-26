@@ -9,7 +9,7 @@
 #include "Challenge.h"
 #include "Projectile.h"
 #include "SeedPacket.h"
-#include "../LawnApp.h"
+#include "LawnApp.h"
 #include "CursorObject.h"
 #include "../GameConstants.h"
 #include "System/PlayerInfo.h"

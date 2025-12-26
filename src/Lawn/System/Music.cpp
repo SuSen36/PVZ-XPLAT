@@ -3,8 +3,8 @@
 #include "PlayerInfo.h"
 #include "../../LawnApp.h"
 #include "SexyAppFramework/paklib/PakInterface.h"
-#include "../../Sexy.TodLib/TodDebug.h"
-#include "../../Sexy.TodLib/TodCommon.h"
+#include "Sexy.TodLib/TodDebug.h"
+#include "Sexy.TodLib/TodCommon.h"
 #include "SexyAppFramework/sound/BassMusicInterface.h"
 
 using namespace Sexy;

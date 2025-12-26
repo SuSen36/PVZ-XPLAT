@@ -5,7 +5,7 @@
 #include "../../Resources.h"
 #include "../System/ProfileMgr.h"
 #include "../System/PlayerInfo.h"
-#include "../../Sexy.TodLib/TodStringFile.h"
+#include "Sexy.TodLib/TodStringFile.h"
 #include "SexyAppFramework/widget/ListWidget.h"
 #include "SexyAppFramework/paklib/PakInterface.h"
 #include "Sexy.TodLib/TodDebug.h"

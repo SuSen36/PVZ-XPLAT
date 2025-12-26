@@ -4,7 +4,7 @@
 #include "../../Resources.h"
 #include "../System/ProfileMgr.h"
 #include "../System/PlayerInfo.h"
-#include "../../Sexy.TodLib/TodStringFile.h"
+#include "Sexy.TodLib/TodStringFile.h"
 #include "SexyAppFramework/widget/ListWidget.h"
 
 static int gUserListWidgetColors[][3] = {  //0x69F274
