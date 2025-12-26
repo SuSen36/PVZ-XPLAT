@@ -2138,6 +2138,7 @@ void Challenge::ZombieAtePlant(/*Zombie* theZombie,*/ Plant* thePlant)
 	if (mBoard->mSeedBank->mNumPackets == 4)
 	{
 		mBoard->mSeedBank->mSeedPackets[4].SetPacketType(SEED_BEGHOULED_BUTTON_CRATER);
+		mBoard->mSeedBank->mNumPackets = 5;
 		mBoard->DisplayAdvice(__S("[ADVICE_BEGHOULED_USE_CRATER_1]"), MESSAGE_STYLE_HINT_FAST, ADVICE_BEGHOULED_USE_CRATER_1);
 	}
 
@@ -2365,6 +2366,10 @@ void Challenge::DrawBeghouled(Graphics* g)
 			
 	if (mApp->mGameMode == GAMEMODE_CHALLENGE_BEGHOULED_TWIST)
 	{
+		// 胜利/失败动画阶段不显示转转看提示轮盘
+		if (mBoard->HasLevelAwardDropped() || mApp->mGameScene != GameScenes::SCENE_PLAYING)
+			return;
+
 		HitResult aHitResult;
 		mBoard->MouseHitTest(mApp->mWidgetManager->mLastMouseX, mApp->mWidgetManager->mLastMouseY, &aHitResult);
 		if (mChallengeGridX != -1 && mChallengeGridY != -1 && aHitResult.mObjectType != OBJECT_TYPE_COIN)
@@ -2373,7 +2378,7 @@ void Challenge::DrawBeghouled(Graphics* g)
 			float aPixelY = mBoard->GridToPixelY(mChallengeGridX, mChallengeGridY) + 100;
 
 			SexyTransform2D aTransform;
-			TodScaleRotateTransformMatrix(aTransform, aPixelX, aPixelY, -mBoard->mMainCounter * 2 * PI * 0.01f, 1, 1);
+			TodScaleRotateTransformMatrix(aTransform, aPixelX, aPixelY, -mBoard->mMainCounter * 2 * PI * 0.0015f, 1, 1);
 
 			Image* aImageOverlay = Sexy::IMAGE_BEGHOULED_TWIST_OVERLAY;
 			Rect aSrcRect = Rect(0, 0, aImageOverlay->mWidth, aImageOverlay->mHeight);
@@ -3587,6 +3592,7 @@ void Challenge::BeghouledPacketClicked(SeedPacket* theSeedPacket)
 				mBoard->AddPlant(aPlant->mPlantCol, aPlant->mRow, SEED_REPEATER, SEED_NONE);
 			}
 		}
+		theSeedPacket->Deactivate();
 	}
 	else if (theSeedPacket->mPacketType == SEED_FUMESHROOM && !mBoard->mChallenge->mBeghouledPurcasedUpgrade[(int)BeghouledUpgrade::BEGHOULED_UPGRADE_FUMESHROOM])
 	{
@@ -3601,6 +3607,7 @@ void Challenge::BeghouledPacketClicked(SeedPacket* theSeedPacket)
 				mBoard->AddPlant(aPlant->mPlantCol, aPlant->mRow, SEED_FUMESHROOM, SEED_NONE);
 			}
 		}
+		theSeedPacket->Deactivate();
 	}
 	else if (theSeedPacket->mPacketType == SEED_TALLNUT && !mBoard->mChallenge->mBeghouledPurcasedUpgrade[(int)BeghouledUpgrade::BEGHOULED_UPGRADE_TALLNUT])
 	{
@@ -3615,6 +3622,7 @@ void Challenge::BeghouledPacketClicked(SeedPacket* theSeedPacket)
 				mBoard->AddPlant(aPlant->mPlantCol, aPlant->mRow, SEED_TALLNUT, SEED_NONE);
 			}
 		}
+		theSeedPacket->Deactivate();
 	}
 	else if (theSeedPacket->mPacketType == SEED_BEGHOULED_BUTTON_SHUFFLE)
 	{
@@ -4830,7 +4838,18 @@ void Challenge::IZombieUpdate()
 		}
 	}
 
-	if (mBoard->mZombies.mSize == 0 && aSunMoney < 50 && !mBoard->HasLevelAwardDropped() && !anActive)
+	bool validLose = true;
+	Coin* aCoin = nullptr;
+	while (mBoard->IterateCoins(aCoin))
+	{
+		if (aCoin->IsSun())
+		{
+			validLose = false;
+			break;
+		}
+	}
+
+	if (mBoard->mZombies.mSize == 0 && aSunMoney < 50 && !mBoard->HasLevelAwardDropped() && !anActive&& validLose)
 	{
 		Coin* aCoin = nullptr;
 		while (mBoard->IterateCoins(aCoin))
