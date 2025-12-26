@@ -4346,6 +4346,58 @@ void Board::MouseDownWithTool(int x, int y, int theClickCount, CursorType theCur
 	{
 		mApp->PlayFoley(FoleyType::FOLEY_USE_SHOVEL);
 		mPlantsShoveled++;
+
+		// 在坚不可摧预备阶段铲除植物时，返还该植物造价的阳光
+		bool aIsLastStandPrep = mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_LAST_STAND &&
+			mChallenge->mChallengeState != ChallengeState::STATECHALLENGE_LAST_STAND_ONSLAUGHT;
+		if (aIsLastStandPrep)
+		{
+			int aRefund = Plant::GetCost(aPlant->mSeedType, aPlant->mImitaterType);
+			if (Plant::IsUpgrade(aPlant->mSeedType))
+			{
+				int aBaseCost = 0;
+				switch (aPlant->mSeedType)
+				{
+				case SeedType::SEED_GATLINGPEA:		aBaseCost = Plant::GetCost(SeedType::SEED_REPEATER, SeedType::SEED_NONE); break;
+				case SeedType::SEED_WINTERMELON:	aBaseCost = Plant::GetCost(SeedType::SEED_MELONPULT, SeedType::SEED_NONE); break;
+				case SeedType::SEED_TWINSUNFLOWER:	aBaseCost = Plant::GetCost(SeedType::SEED_SUNFLOWER, SeedType::SEED_NONE); break;
+				case SeedType::SEED_SPIKEROCK:		aBaseCost = Plant::GetCost(SeedType::SEED_SPIKEWEED, SeedType::SEED_NONE); break;
+				case SeedType::SEED_COBCANNON:		aBaseCost = Plant::GetCost(SeedType::SEED_KERNELPULT, SeedType::SEED_NONE) * 2; break;
+				case SeedType::SEED_GOLD_MAGNET:	aBaseCost = Plant::GetCost(SeedType::SEED_MAGNETSHROOM, SeedType::SEED_NONE); break;
+				case SeedType::SEED_GLOOMSHROOM:	aBaseCost = Plant::GetCost(SeedType::SEED_FUMESHROOM, SeedType::SEED_NONE); break;
+				case SeedType::SEED_CATTAIL:		aBaseCost = Plant::GetCost(SeedType::SEED_LILYPAD, SeedType::SEED_NONE); break;
+				default: break;
+				}
+				aRefund += aBaseCost;
+			}
+			int aPosX = aPlant->mX;
+			int aPosY = aPlant->mY;
+
+			while (aRefund > 0)
+			{
+				CoinType aCoinType;
+				int aValue;
+				if (aRefund >= 50)
+				{
+					aCoinType = CoinType::COIN_LARGESUN;
+					aValue = 50;
+				}
+				else if (aRefund >= 25)
+				{
+					aCoinType = CoinType::COIN_SUN;
+					aValue = 25;
+				}
+				else
+				{
+					aCoinType = CoinType::COIN_SMALLSUN;
+					aValue = 15;
+				}
+
+				AddCoin(aPosX, aPosY, aCoinType, CoinMotion::COIN_MOTION_FROM_PLANT);
+				aRefund -= aValue;
+			}
+		}
+
 		aPlant->Die();
 
 		if (aPlant->mSeedType == SeedType::SEED_CATTAIL && GetTopPlantAt(aPlant->mPlantCol, aPlant->mRow, PlantPriority::TOPPLANT_ONLY_PUMPKIN))

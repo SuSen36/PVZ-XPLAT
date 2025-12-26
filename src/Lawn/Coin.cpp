@@ -380,7 +380,7 @@ void Coin::CoinInitialize(int theX, int theY, CoinType theCoinType, CoinMotion t
     }
     else if (mType == CoinType::COIN_LARGESUN)
     {
-        aScale = 2.0f;
+		aScale = 1.45f;
     }
     else
     {
@@ -1294,7 +1294,7 @@ void Coin::Collect()
 
 float Coin::GetSunScale()
 {
-    return mType == CoinType::COIN_SMALLSUN ? 0.5f : mType == CoinType::COIN_LARGESUN ? 2.0f : 1.0f;
+    return mType == CoinType::COIN_SMALLSUN ? 0.5f : mType == CoinType::COIN_LARGESUN ? 1.25f : 1.0f;
 }
 
 //0x4329A0
@@ -1435,10 +1435,14 @@ bool Coin::MouseHitTest(int theX, int theY, HitResult* theHitResult)
         aExtraClickHeight = 30;
         aExtraClickSize = 15;
     }
-    if (mType == CoinType::COIN_SUN)
-    {
-        aExtraClickSize = 15;
-    }
+	if (mType == CoinType::COIN_SUN)
+	{
+		aExtraClickSize = 15;
+	}
+	else if (mType == CoinType::COIN_LARGESUN)
+	{
+		aExtraClickSize = 20;
+	}
 
     bool aCanHitCoin = true;
     if (mDead || mIsBeingCollected)
