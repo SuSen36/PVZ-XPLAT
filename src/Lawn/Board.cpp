@@ -4064,6 +4064,12 @@ void Board::MouseDownWithPlant(int x, int y, int theClickCount)
 			RefreshSeedPacketFromCursor();
 			mApp->PlayFoley(FoleyType::FOLEY_DROP);
 		}
+		else if (mApp->mTabletPC)
+		{
+			// 其他种植失败场景：放回卡牌并播放放下音效（含触屏拖拽）
+			RefreshSeedPacketFromCursor();
+			mApp->PlayFoley(FoleyType::FOLEY_DROP);
+		}
 		// 不可种植的情况至此结束，直接跳转至返回
 		return;
 	}
@@ -8084,8 +8090,6 @@ bool Board::DoTypingCheck(const std::string& theString)
 //0x41B820
 void Board::KeyDown(KeyCode theKey)
 {
-
-    //TODO:制作window的植物栏快捷键
 	if (mApp->mGameScene == GameScenes::SCENE_LEVEL_INTRO && 
 		mApp->mGameMode != GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN && 
 		mApp->mGameMode != GameMode::GAMEMODE_TREE_OF_WISDOM)
@@ -8117,6 +8121,40 @@ void Board::KeyDown(KeyCode theKey)
 		else if (CanInteractWithBoardButtons() && mApp->mGameScene != GameScenes::SCENE_ZOMBIES_WON)
 		{
 			mApp->DoNewOptions(false);
+		}
+	}
+	else if (mApp->mGameScene == GameScenes::SCENE_PLAYING && mSeedBank != nullptr && !mPaused)
+	{
+		int aSlotIndex = -1;
+		if (theKey >= __S('1') && theKey <= __S('9'))
+		{
+			aSlotIndex = theKey - __S('1');
+		}
+		else if (theKey == __S('0'))
+		{
+			aSlotIndex = 9; // 第 10 个卡槽
+		}
+
+		if (aSlotIndex >= 0 && aSlotIndex < mSeedBank->mNumPackets)
+		{
+			// 同一数字再次按下：放回当前卡牌
+			if (mCursorObject->mCursorType == CursorType::CURSOR_TYPE_PLANT_FROM_BANK &&
+				mCursorObject->mSeedBankIndex == aSlotIndex)
+			{
+				RefreshSeedPacketFromCursor();
+                mApp->PlayFoley(FoleyType::FOLEY_DROP);
+				return;
+			}
+
+			// 若手持其他物品，先放回
+			if (mCursorObject->mCursorType != CursorType::CURSOR_TYPE_NORMAL)
+			{
+				RefreshSeedPacketFromCursor();
+                mApp->PlayFoley(FoleyType::FOLEY_DROP);
+			}
+
+			// 模拟点击对应卡槽，复用现有 MouseDown 逻辑
+			mSeedBank->mSeedPackets[aSlotIndex].MouseDown(0, 0, 1);
 		}
 	}
 }
