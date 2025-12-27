@@ -1,7 +1,7 @@
 #ifndef __BOARD_H__
 #define __BOARD_H__
 
-#include "../ConstEnums.h"
+#include "ConstEnums.h"
 #include "Sexy.TodLib/DataArray.h"
 #include "SexyAppFramework/widget/Widget.h"
 #include "SexyAppFramework/widget/ButtonListener.h"

@@ -124,7 +124,7 @@ void CursorObject::Draw(Graphics* g)
         g->DrawImage(IMAGE_TREEFOOD, -15, 0);
         break;
 
-    case CursorType::CURSOR_TYPE_WHEEELBARROW:
+    case CursorType::CURSOR_TYPE_WHEELBARROW:
     {
         PottedPlant* aPottedPlant = mApp->mZenGarden->GetPottedPlantInWheelbarrow();
         if (aPottedPlant)
@@ -256,7 +256,7 @@ void CursorPreview::Update()
         {
             aShow = true;
         }
-        else if (mBoard->mCursorObject->mCursorType == CursorType::CURSOR_TYPE_WHEEELBARROW)
+        else if (mBoard->mCursorObject->mCursorType == CursorType::CURSOR_TYPE_WHEELBARROW)
         {
             if (mApp->mZenGarden->GetPottedPlantInWheelbarrow() && mBoard->CanPlantAt(mGridX, mGridY, aSeedType) == PlantingReason::PLANTING_OK)
             {
@@ -287,7 +287,7 @@ void CursorPreview::Draw(Graphics* g)
     g->SetColor(Color(255, 255, 255, 100));
 
     PottedPlant* aPottedPlant = nullptr;
-    if (mBoard->mCursorObject->mCursorType == CursorType::CURSOR_TYPE_WHEEELBARROW || mBoard->mCursorObject->mCursorType == CursorType::CURSOR_TYPE_PLANT_FROM_WHEEL_BARROW)
+    if (mBoard->mCursorObject->mCursorType == CursorType::CURSOR_TYPE_WHEELBARROW || mBoard->mCursorObject->mCursorType == CursorType::CURSOR_TYPE_PLANT_FROM_WHEEL_BARROW)
     {
         aPottedPlant = mApp->mZenGarden->GetPottedPlantInWheelbarrow();
     }

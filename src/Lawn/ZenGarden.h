@@ -1,7 +1,7 @@
 #ifndef __ZENGARDEN_H__
 #define __ZENGARDEN_H__
 
-#include "../ConstEnums.h"
+#include "ConstEnums.h"
 #include <vector>
 #include <string>
 #include <stdint.h>

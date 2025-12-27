@@ -766,16 +766,16 @@ void GameSelector::DrawOverlay(Graphics* g)
 	for (int i = 0; i < 3; i++)
 		mApp->ReanimationGet(mFlowerReanimID[i])->Draw(g);
 
-	if (mApp->mBetaValidate)
-	{
-		g->SetFont(Sexy::FONT_BRIANNETOD16);
-		g->SetColor(Color(200, 200, 200));
-
-		if (gIsPartnerBuild)
-			g->DrawString(__S("PRESS/PARTNER PREVIEW BUILD: DO NOT DISTRIBUTE"), 27, 594);
-		else
-			g->DrawString(__S("BETA BUILD: DO NOT DISTRIBUTE"), 27, 594);
-	}
+	//if (mApp->mBetaValidate)
+	//{
+	//	g->SetFont(Sexy::FONT_BRIANNETOD16);
+	//	g->SetColor(Color(200, 200, 200));
+    //
+	//	if (gIsPartnerBuild)
+	//		g->DrawString(__S("PRESS/PARTNER PREVIEW BUILD: DO NOT DISTRIBUTE"), 27, 594);
+	//	else
+	//		g->DrawString(__S("BETA BUILD: DO NOT DISTRIBUTE"), 27, 594);
+	//}
 
 	// @Minerscale: Trophy needs to draw in the DrawOverlay
 	Reanimation* aSelectorReanim = mApp->ReanimationGet(mSelectorReanimID);

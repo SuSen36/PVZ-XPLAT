@@ -2,14 +2,14 @@
 #define __SEXYAPPBASE_H__
 
 #include "Common.h"
-#include "../SexyAppFramework/misc/Rect.h"
+#include "SexyAppFramework/misc/Rect.h"
 #include "SexyAppFramework/graphics/Color.h"
 #include "SexyAppFramework/widget/ButtonListener.h"
 #include "SexyAppFramework/widget/DialogListener.h"
-#include "../SexyAppFramework/misc/Buffer.h"
-#include "../SexyAppFramework/misc/CritSect.h"
+#include "SexyAppFramework/misc/Buffer.h"
+#include "SexyAppFramework/misc/CritSect.h"
 #include "SexyAppFramework/graphics/SharedImage.h"
-#include "../SexyAppFramework/misc/Ratio.h"
+#include "SexyAppFramework/misc/Ratio.h"
 
 namespace ImageLib
 {
@@ -129,7 +129,6 @@ public:
 	DialogMap				mDialogMap;
 	DialogList				mDialogList;
 	void*					mPrimaryThreadId;
-	bool					mSEHOccured;
 	bool					mShutdown;
 	bool					mExitToTop;
 	bool					mIsWindowed;
@@ -329,9 +328,6 @@ public:
 	virtual bool			OpenURL(const std::string& theURL, bool shutdownOnOpen = false);	
 	virtual std::string		GetProductVersion(const std::string& thePath);	
 
-	virtual void			SEHOccured();
-	virtual std::string		GetGameSEHInfo();
-	virtual void			GetSEHWebParams(DefinesMap* theDefinesMap);
 	virtual void			Shutdown();	
 
 	virtual void			HandleNotifyGameMessage(int theType); // for HWND_BROADCAST of mNotifyGameMessage (0-1000 are reserved for SexyAppBase for theType)

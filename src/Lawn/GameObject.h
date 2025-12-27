@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../ConstEnums.h"
-#include "../SexyAppFramework/graphics/Graphics.h"
+#include "ConstEnums.h"
+#include "SexyAppFramework/graphics/Graphics.h"
 
 using namespace Sexy;
 

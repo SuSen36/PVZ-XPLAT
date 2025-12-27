@@ -2,7 +2,7 @@
 #define __EFFECTSYSTEM_H__
 
 #include "DataArray.h"
-#include "../ConstEnums.h"
+#include "ConstEnums.h"
 #include "SexyAppFramework/graphics/SWTri.h"
 #include "SexyAppFramework/graphics/Graphics.h"
 using namespace Sexy;

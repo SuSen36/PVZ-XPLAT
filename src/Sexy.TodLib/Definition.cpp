@@ -9,7 +9,7 @@
 #include "Definition.h"
 #include "zlib.h"
 #include "SexyAppFramework/paklib/PakInterface.h"
-#include "../SexyAppFramework/misc/XMLParser.h"
+#include "SexyAppFramework/misc/XMLParser.h"
 #include "Resources.h"
 
 DefSymbol gTrailFlagDefSymbols[] = {  //0x69E150

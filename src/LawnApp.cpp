@@ -2961,7 +2961,7 @@ void LawnApp::DrawCrazyDave(Graphics* g)
 	if (aCrazyDaveReanim == nullptr)
 		return;
 
-	if (mCrazyDaveMessageText.size())
+	if (!mCrazyDaveMessageText.empty())
 	{
 		Image* aBubbleImage = IMAGE_STORE_SPEECHBUBBLE2;
 		int aPosX = 285;

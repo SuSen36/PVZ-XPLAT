@@ -3,8 +3,8 @@
 #include <cmath>
 #include <cfloat>
 #include "../Lawn/LawnCommon.h"
-#include "../SexyAppFramework/Common.h"
-#include "../SexyAppFramework/misc/ResourceManager.h"
+#include "SexyAppFramework/Common.h"
+#include "SexyAppFramework/misc/ResourceManager.h"
 
 struct TodAllocator;
 namespace Sexy

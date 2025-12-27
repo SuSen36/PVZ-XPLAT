@@ -1256,8 +1256,6 @@ Image* ImageLib::GetImage(const std::string& theFilename, bool lookForAlphaImage
 			anAlphaImage = GetImage(theFilename + "_", false);
 	}
 
-
-
 	// Compose alpha channel with image
 	if (anAlphaImage != NULL)
 	{

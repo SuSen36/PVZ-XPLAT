@@ -85,7 +85,7 @@ typedef struct _GUID {
 #endif // _WIN32
 
 
-#include "../SexyAppFramework/misc/ModVal.h"
+#include "SexyAppFramework/misc/ModVal.h"
 
 // fallback if NOMINMAX fails (somehow?)
 #undef min

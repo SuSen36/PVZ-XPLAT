@@ -1058,7 +1058,7 @@ void ZenGarden::DoFeedingTool(int x, int y, GridItemState theToolType)
 //0x51F580
 void ZenGarden::MouseDownWithTool(int x, int y, CursorType theCursorType)
 {
-    if (theCursorType == CursorType::CURSOR_TYPE_WHEEELBARROW && GetPottedPlantInWheelbarrow())
+    if (theCursorType == CursorType::CURSOR_TYPE_WHEELBARROW && GetPottedPlantInWheelbarrow())
     {
         MouseDownWithFullWheelBarrow(x, y);
         mBoard->ClearCursor();
@@ -1087,7 +1087,7 @@ void ZenGarden::MouseDownWithTool(int x, int y, CursorType theCursorType)
     {
         MouseDownWithMoneySign(aPlant);
     }
-    else if (theCursorType == CursorType::CURSOR_TYPE_WHEEELBARROW)
+    else if (theCursorType == CursorType::CURSOR_TYPE_WHEELBARROW)
     {
         MouseDownWithEmptyWheelBarrow(aPlant);
         mBoard->ClearCursor();
@@ -1983,15 +1983,21 @@ SpecialGridPlacement* ZenGarden::GetSpecialGridPlacements(int& theCount)
         theCount = LENGTH(gGreenhouseGridPlacement);
         return gGreenhouseGridPlacement;
     }
-    TOD_ASSERT();
+    
+    theCount = 0;
     return nullptr;
 }
 
 //0x521350
 int ZenGarden::PixelToGridX(int theX, int theY)
 {
-    int aCount;
+    int aCount = 0;
     SpecialGridPlacement* aSpecialGrids = GetSpecialGridPlacements(aCount);
+    if (aSpecialGrids == nullptr || aCount <= 0)
+    {
+        return -1;
+    }
+
     for (int i = 0; i < aCount; i++)
     {
         SpecialGridPlacement& aGrid = aSpecialGrids[i];
@@ -2006,8 +2012,13 @@ int ZenGarden::PixelToGridX(int theX, int theY)
 //0x5213D0
 int ZenGarden::PixelToGridY(int theX, int theY)
 {
-    int aCount;
+    int aCount = 0;
     SpecialGridPlacement* aSpecialGrids = GetSpecialGridPlacements(aCount);
+    if (aSpecialGrids == nullptr || aCount <= 0)
+    {
+        return -1;
+    }
+
     for (int i = 0; i < aCount; i++)
     {
         SpecialGridPlacement& aGrid = aSpecialGrids[i];
@@ -2060,7 +2071,7 @@ void ZenGarden::DrawBackdrop(Graphics* g)
     }
 
     if (mBoard->mCursorObject->mCursorType == CursorType::CURSOR_TYPE_PLANT_FROM_WHEEL_BARROW || 
-        mBoard->mCursorObject->mCursorType == CursorType::CURSOR_TYPE_WHEEELBARROW || 
+        mBoard->mCursorObject->mCursorType == CursorType::CURSOR_TYPE_WHEELBARROW || 
         mBoard->mCursorObject->mCursorType == CursorType::CURSOR_TYPE_PLANT_FROM_GLOVE)
     {
         int aCount;

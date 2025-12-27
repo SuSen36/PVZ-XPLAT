@@ -25,21 +25,21 @@
 #include "SexyAppFramework/imagelib/ImageLib.h"
 #include "sound/BassSoundManager.h"
 #include "sound/BassSoundInstance.h"
-#include "../SexyAppFramework/misc/Rect.h"
-#include "../SexyAppFramework/misc/PropertiesParser.h"
-#include "../SexyAppFramework/misc/MTRand.h"
-#include "../SexyAppFramework/misc/ModVal.h"
+#include "SexyAppFramework/misc/Rect.h"
+#include "SexyAppFramework/misc/PropertiesParser.h"
+#include "SexyAppFramework/misc/MTRand.h"
+#include "SexyAppFramework/misc/ModVal.h"
 //#include "SexyAppFramework/graphics/SysFont.h"
-#include "../SexyAppFramework/misc/ResourceManager.h"
+#include "SexyAppFramework/misc/ResourceManager.h"
 #include "sound/BassMusicInterface.h"
-#include "../SexyAppFramework/misc/AutoCrit.h"
+#include "SexyAppFramework/misc/AutoCrit.h"
 #include "SexyAppFramework/paklib/PakInterface.h"
 #include "sound/DummyMusicInterface.h"
 #include "SexyAppFramework/fcaseopen/fcaseopen.h"
 
 #include <unordered_set>
 
-#include "../SexyAppFramework/misc/RegEmu.h"
+#include "SexyAppFramework/misc/RegEmu.h"
 
 #include <filesystem>
 
@@ -91,7 +91,6 @@ SexyAppBase::SexyAppBase()
 	mNoDefer = false;
 	mFullScreenPageFlip = true; // should we page flip in fullscreen?
 	mTimeLoaded = SDL_GetTicks();
-	mSEHOccured = false;
 	mProdName = "Product";
 	mTitle = __S("SexyApp");
 	mShutdown = false;
@@ -941,39 +940,6 @@ bool SexyAppBase::EraseFile(const std::string& theFileName)
 	return remove(theFileName.c_str()) == 0;
 }
 
-void SexyAppBase::SEHOccured()
-{
-	SetMusicVolume(0);
-	//::ShowWindow(mHWnd, SW_HIDE);
-	mSEHOccured = true;
-	EnforceCursor();
-}
-
-std::string SexyAppBase::GetGameSEHInfo()
-{
-	int aSecLoaded = (SDL_GetTicks() - mTimeLoaded) / 1000;
-
-	char aTimeStr[16];
-	sprintf(aTimeStr, "%02d:%02d:%02d", (aSecLoaded/60/60), (aSecLoaded/60)%60, aSecLoaded%60);
-
-	char aThreadIdStr[16];
-	sprintf(aThreadIdStr, "%lX", mPrimaryThreadId);
-
-	std::string anInfoString =
-		"Product: " + mProdName + "\r\n" +
-		"Version: " + mProductVersion + "\r\n";
-
-	anInfoString +=
-		"Time Loaded: " + std::string(aTimeStr) + "\r\n"
-		"Fullscreen: " + (mIsWindowed ? std::string("No") : std::string("Yes")) + "\r\n"
-		"Primary ThreadId: " + aThreadIdStr + "\r\n";
-
-	return anInfoString;
-}
-
-
-void SexyAppBase::GetSEHWebParams(DefinesMap*){}
-
 void SexyAppBase::ShutdownHook()
 {
 }
@@ -1549,7 +1515,7 @@ void SexyAppBase::SetAlphaDisabled(bool isDisabled)
 void SexyAppBase::EnforceCursor()
 {
 	// Handle error state or mouse not in window
-	if ((mSEHOccured) || (!mMouseIn))
+	if (!mMouseIn)
 	{
 		SDL_Cursor* aCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
 		if (aCursor)

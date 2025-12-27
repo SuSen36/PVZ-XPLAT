@@ -1361,15 +1361,7 @@ Rect Board::GetShovelButtonRect()
 //0x40AF00
 void Board::GetZenButtonRect(GameObjectType theObjectType, Rect& theRect)
 {
-	// 此函数与内测版的差异在于，内测版在此函数中通过下列语句先取得了铲子按钮矩形：
-	// Rect aRect = GetShovelButtonRect();
-	// 而原版需要在函数调用前先自行取得铲子按钮矩形，并将该矩形作为参数传递给此函数，
-	// 原版中此函数有将 theRect 的引用作为返回值，但并无直接使用返回值的情况。
-	// 此处为了防止误用返回值而出现问题，故删除其返回值，如需调用可按照如下方式：
-	// Rect aButtonRect = GetShovelButtonRect();
-	// GetZenButtonRect(xxx, aButtonRect);
-
-	// @ Minerscale Zen Garden button locations
+	theRect.mX = 30;
 	if (mApp->mGameMode == GameMode::GAMEMODE_TREE_OF_WISDOM)
 	{
 		theRect.mX = 30;
@@ -1406,7 +1398,6 @@ void Board::GetZenButtonRect(GameObjectType theObjectType, Rect& theRect)
 			theRect.mX += 70;//Sexy::IMAGE_SHOVELBANK->GetWidth();
 		}
 	}
-	//return theRect;
 }
 
 //0x40AF90
@@ -2093,7 +2084,7 @@ bool Board::IsPlantInCursor()
 // GOTY @Patoke: 0x40F600
 SeedType Board::GetSeedTypeInCursor()
 {
-	if (mCursorObject->mCursorType == CursorType::CURSOR_TYPE_WHEEELBARROW)
+	if (mCursorObject->mCursorType == CursorType::CURSOR_TYPE_WHEELBARROW)
 	{
 		PottedPlant* aPottedPlant = mApp->mZenGarden->GetPottedPlantInWheelbarrow();
 		if (aPottedPlant)
@@ -3255,7 +3246,7 @@ void Board::MouseTouch(int x, int y) {
         aCursor == CursorType::CURSOR_TYPE_CHOCOLATE ||
         aCursor == CursorType::CURSOR_TYPE_GLOVE ||
         aCursor == CursorType::CURSOR_TYPE_MONEY_SIGN ||
-        aCursor == CursorType::CURSOR_TYPE_WHEEELBARROW ||
+        aCursor == CursorType::CURSOR_TYPE_WHEELBARROW ||
         aCursor == CursorType::CURSOR_TYPE_TREE_FOOD)
     {
         MouseDownWithTool(x, y, theClickCount, aCursor);
@@ -3448,7 +3439,7 @@ void Board::UpdateMousePosition()
 		mCursorObject->mCursorType == CursorType::CURSOR_TYPE_CHOCOLATE ||
 		mCursorObject->mCursorType == CursorType::CURSOR_TYPE_GLOVE || 
 		mCursorObject->mCursorType == CursorType::CURSOR_TYPE_MONEY_SIGN ||
-		(mCursorObject->mCursorType == CursorType::CURSOR_TYPE_WHEEELBARROW && !mApp->mZenGarden->GetPottedPlantInWheelbarrow()))
+		(mCursorObject->mCursorType == CursorType::CURSOR_TYPE_WHEELBARROW && !mApp->mZenGarden->GetPottedPlantInWheelbarrow()))
 	{
 		HighlightPlantsForMouse(aMouseX, aMouseY);
 		return;
@@ -4540,12 +4531,12 @@ bool Board::MouseHitTest(int x, int y, HitResult* theHitResult)
 			HitResult aHitResultCoin;
 			if (aCoin->MouseHitTest(x, y, &aHitResultCoin))
 			{
-				aCoin = (Coin*)aHitResultCoin.mObject;
-				if (aTopCoin == nullptr || aCoin->mRenderOrder >= aTopCoin->mRenderOrder)
+				Coin* aHitCoin = (Coin*)aHitResultCoin.mObject;
+				if (aTopCoin == nullptr || aHitCoin->mRenderOrder >= aTopCoin->mRenderOrder)
 				{
 					theHitResult->mObjectType = aHitResultCoin.mObjectType;
-					theHitResult->mObject = aCoin;
-					aTopCoin = aCoin;
+					theHitResult->mObject = aHitCoin;
+					aTopCoin = aHitCoin;
 				}
 			}
 		}
@@ -4722,7 +4713,7 @@ void Board::PickUpTool(GameObjectType theObjectType)
 		break;
 
 	case GameObjectType::OBJECT_TYPE_WHEELBARROW:
-		mCursorObject->mCursorType = CursorType::CURSOR_TYPE_WHEEELBARROW;
+		mCursorObject->mCursorType = CursorType::CURSOR_TYPE_WHEELBARROW;
 		mApp->PlayFoley(FoleyType::FOLEY_DROP);
 		break;
 
@@ -4835,7 +4826,7 @@ void Board::MouseDown(int x, int y, int theClickCount)
 		aCursor == CursorType::CURSOR_TYPE_CHOCOLATE ||
 		aCursor == CursorType::CURSOR_TYPE_GLOVE ||
 		aCursor == CursorType::CURSOR_TYPE_MONEY_SIGN ||
-		aCursor == CursorType::CURSOR_TYPE_WHEEELBARROW ||
+		aCursor == CursorType::CURSOR_TYPE_WHEELBARROW ||
 		aCursor == CursorType::CURSOR_TYPE_TREE_FOOD)
 	{
 		MouseDownWithTool(x, y, theClickCount, aCursor);
@@ -7653,25 +7644,32 @@ void Board::DrawUIBottom(Graphics* g)
 {
 	if (mBackground == BackgroundType::BACKGROUND_ZOMBIQUARIUM)
 	{
+		g->PushState();
+		g->mFastStretch = false;
 		int aWaveTime = abs(mMainCounter / 8 % 22 - 11);
 		g->SetDrawMode(Graphics::DRAWMODE_ADDITIVE);
-		g->DrawImageCel(Sexy::IMAGE_WAVESIDE, 0, 40, aWaveTime);
-		g->DrawImageCel(Sexy::IMAGE_WAVECENTER, 160, 40, aWaveTime);
-		g->DrawImageCel(Sexy::IMAGE_WAVECENTER, 320, 40, aWaveTime);
-		g->DrawImageCel(Sexy::IMAGE_WAVECENTER, 480, 40, aWaveTime);
-		TodDrawImageCelScaled(g, Sexy::IMAGE_WAVESIDE, 800, 40, 0, aWaveTime, -1.0f, 1.0f);
-		g->SetDrawMode(Graphics::DRAWMODE_NORMAL);
+		g->DrawImageCel(Sexy::IMAGE_WAVESIDE, -240, 40, aWaveTime);
+		g->DrawImageCel(Sexy::IMAGE_WAVECENTER, -80, 40, aWaveTime);
+		g->DrawImageCel(Sexy::IMAGE_WAVECENTER, 80, 40, aWaveTime);
+		g->DrawImageCel(Sexy::IMAGE_WAVECENTER, 240, 40, aWaveTime);
+		g->DrawImageCel(Sexy::IMAGE_WAVECENTER, 400, 40, aWaveTime);
+		g->DrawImageCel(Sexy::IMAGE_WAVECENTER, 560, 40, aWaveTime);
+		g->DrawImageCel(Sexy::IMAGE_WAVECENTER, 720, 40, aWaveTime);
+		TodDrawImageCelScaled(g, Sexy::IMAGE_WAVESIDE, 1040 - Sexy::IMAGE_WAVESIDE->mWidth, 40, 0, aWaveTime, -1.0f, 1.0f);
+		g->PopState();
 	}
 
 	if (mBackground == BackgroundType::BACKGROUND_GREENHOUSE || mBackground == BackgroundType::BACKGROUND_ZOMBIQUARIUM)
 	{
+		g->PushState();
+		g->mFastStretch = false;
 		g->SetDrawMode(Graphics::DRAWMODE_ADDITIVE);
 		g->DrawImage(
 			IMAGE_BACKGROUND_GREENHOUSE_OVERLAY, 
 			Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT), 
 			Rect(0, 0, IMAGE_BACKGROUND_GREENHOUSE_OVERLAY->mWidth, IMAGE_BACKGROUND_GREENHOUSE_OVERLAY->mHeight)
 		);
-		g->SetDrawMode(Graphics::DRAWMODE_NORMAL);
+		g->PopState();
 	}
 
 	if (mApp->mGameScene != GameScenes::SCENE_ZOMBIES_WON)
@@ -10202,9 +10200,7 @@ bool Board::CanUseGameObject(GameObjectType theGameObject)
 		return false;
 	}
 	
-	TOD_ASSERT();
-
-	unreachable();
+	return false;
 }
 
 void Board::ShakeBoard(int theShakeAmountX, int theShakeAmountY)
@@ -10276,15 +10272,3 @@ bool Board::IsZombieTypeSpawnedOnly(ZombieType theZombieType)
 {
 	return (theZombieType == ZombieType::ZOMBIE_BACKUP_DANCER || theZombieType == ZombieType::ZOMBIE_BOBSLED || theZombieType == ZombieType::ZOMBIE_IMP);
 }
-
-
-
-
-
-
-
-
-
-
-
-
