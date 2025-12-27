@@ -109,18 +109,6 @@ void PoolEffect::UpdateWaterEffect()
 //0x469DE0
 void PoolEffect::PoolEffectDraw(Sexy::Graphics* g, bool theIsNight)
 {
-    if (!mApp->Is3DAccelerated())
-    {
-        if (theIsNight)
-        {
-            g->DrawImage(IMAGE_POOL_NIGHT, 34, 278);
-        }
-        else
-        {
-            g->DrawImage(IMAGE_POOL, 34, 278);
-        }
-        return;
-    }
 
     float aGridSquareX = IMAGE_POOL->GetWidth() / 15.0f;
     float aGridSquareY = IMAGE_POOL->GetHeight() / 5.0f;

@@ -292,8 +292,8 @@ bool ResourceManager::ParseImageResource(XMLElement &theElement)
 	aRes->mA4R4G4B4 = theElement.mAttributes.find(__S("a4r4g4b4")) != theElement.mAttributes.end();
 	aRes->mDDSurface = theElement.mAttributes.find(__S("ddsurface")) != theElement.mAttributes.end();
 	aRes->mPurgeBits = (theElement.mAttributes.find(__S("nobits")) != theElement.mAttributes.end()) ||
-		((mApp->Is3DAccelerated()) && (theElement.mAttributes.find(__S("nobits3d")) != theElement.mAttributes.end())) ||
-		((!mApp->Is3DAccelerated()) && (theElement.mAttributes.find(__S("nobits2d")) != theElement.mAttributes.end()));
+		((true) && (theElement.mAttributes.find(__S("nobits3d")) != theElement.mAttributes.end())) ||
+		((!true) && (theElement.mAttributes.find(__S("nobits2d")) != theElement.mAttributes.end()));
 	aRes->mA8R8G8B8 = theElement.mAttributes.find(__S("a8r8g8b8")) != theElement.mAttributes.end();
 	aRes->mMinimizeSubdivisions = theElement.mAttributes.find(__S("minsubdivide")) != theElement.mAttributes.end();
 	aRes->mAutoFindAlpha = theElement.mAttributes.find(__S("noalpha")) == theElement.mAttributes.end();	

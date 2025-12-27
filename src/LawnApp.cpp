@@ -8,35 +8,35 @@
 #include "Lawn/Challenge.h"
 #include "Lawn/ZenGarden.h"
 #include "Sexy.TodLib/Trail.h"
-#include "Lawn/System/Music.h"
-#include "Lawn/System/SaveGame.h"
+#include "Lawn/system/Music.h"
+#include "Lawn/system/SaveGame.h"
 #include "Sexy.TodLib/TodDebug.h"
 #include "Sexy.TodLib/TodFoley.h"
 #include "Sexy.TodLib/Attachment.h"
-#include "Lawn/System/PlayerInfo.h"
-#include "Lawn/System/PoolEffect.h"
-#include "Lawn/System/ProfileMgr.h"
-#include "Lawn/Widget/GameButton.h"
+#include "Lawn/system/PlayerInfo.h"
+#include "Lawn/system/PoolEffect.h"
+#include "Lawn/system/ProfileMgr.h"
+#include "Lawn/widgets/GameButton.h"
 #include "Sexy.TodLib/Reanimator.h"
-#include "Lawn/Widget/UserDialog.h"
+#include "Lawn/widgets/UserDialog.h"
 #include "Sexy.TodLib/TodParticle.h"
-#include "Lawn/Widget/AwardScreen.h"
-#include "Lawn/Widget/TitleScreen.h"
-#include "Lawn/Widget/StoreScreen.h"
-#include "Lawn/Widget/CheatDialog.h"
-#include "Lawn/Widget/GameSelector.h"
-#include "Lawn/Widget/CreditScreen.h"
+#include "Lawn/widgets/AwardScreen.h"
+#include "Lawn/widgets/TitleScreen.h"
+#include "Lawn/widgets/StoreScreen.h"
+#include "Lawn/widgets/CheatDialog.h"
+#include "Lawn/widgets/GameSelector.h"
+#include "Lawn/widgets/CreditScreen.h"
 #include "Sexy.TodLib/EffectSystem.h"
 #include "Sexy.TodLib/FilterEffect.h"
 #include "SexyAppFramework/graphics/Graphics.h"
 #include "Sexy.TodLib/TodStringFile.h"
-#include "Lawn/Widget/AlmanacDialog.h"
-#include "Lawn/Widget/NewUserDialog.h"
-#include "Lawn/Widget/ContinueDialog.h"
-#include "Lawn/System/ReanimationLawn.h"
-#include "Lawn/Widget/ChallengeScreen.h"
-#include "Lawn/Widget/NewOptionsDialog.h"
-#include "Lawn/Widget/SeedChooserScreen.h"
+#include "Lawn/widgets/AlmanacDialog.h"
+#include "Lawn/widgets/NewUserDialog.h"
+#include "Lawn/widgets/ContinueDialog.h"
+#include "Lawn/system/ReanimationLawn.h"
+#include "Lawn/widgets/ChallengeScreen.h"
+#include "Lawn/widgets/NewOptionsDialog.h"
+#include "Lawn/widgets/SeedChooserScreen.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
 
 
@@ -44,7 +44,7 @@
 #include "SexyAppFramework/widget/Dialog.h"
 #include "SDL_timer.h"
 #include "SDL_events.h"
-#include "Lawn/Widget/PakDialog.h"
+#include "Lawn/widgets/PakDialog.h"
 
 
 bool gIsPartnerBuild = false; // GOTY @Patoke: 0x729659
@@ -3311,20 +3311,6 @@ void LawnApp::SwitchScreenMode(bool wantWindowed,  bool force)
 
 /* #################################################################################################### */
 /*
-void LawnApp::BetaSubmit(bool theAskForComments)
-{
-
-}
-
-void LawnApp::BetaRecordLevelStats()
-{
-
-}
-
-void LawnApp::BetaAddFile(std::list<std::string>& theUploadFileList, std::string theFileName, std::string theShortName)
-{
-
-}
 
 void LawnApp::TraceLoadGroup(const char* theGroupName, int theGroupTime, int theTotalGroupWeigth, int theTaskWeight)
 {

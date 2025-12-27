@@ -10,7 +10,7 @@
 #include "zlib.h"
 #include "SexyAppFramework/paklib/PakInterface.h"
 #include "../SexyAppFramework/misc/XMLParser.h"
-#include "../Resources.h"
+#include "Resources.h"
 
 DefSymbol gTrailFlagDefSymbols[] = {  //0x69E150
     { 0, "Loops" },                 { -1, nullptr }

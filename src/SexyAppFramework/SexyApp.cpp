@@ -7,14 +7,7 @@
 
 using namespace Sexy;
 
-SexyApp* Sexy::gSexyApp = NULL;
-
-// Groups of 80-byte data
-const char DYNAMIC_DATA_BLOCK[400] = 
-	"DYN00000PACPOPPOPCAPPACPOPPOPCAPBUILDINFOMARKERPACPOPPOPCAPPACPOPPOPCAPXXXXXXXXX"
-	"00000000PACPOPPOPCAPPACPOPPOPCAPBUILDINFOMARKERPACPOPPOPCAPPACPOPPOPCAPXXXXXXXXX";
-									
-const char* BUILD_INFO_MARKER		= DYNAMIC_DATA_BLOCK + 80;
+SexyApp* Sexy::gSexyApp = nullptr;
 
 SexyApp::SexyApp()
 {
@@ -33,69 +26,11 @@ SexyApp::SexyApp()
 	mLastVerCheckQueryTime = 0;
 
 	mCompanyName = "PopCap";
-
-	mBetaValidate = false;	
-
-	char aStr[9] = {0};
-	strncpy(aStr, BUILD_INFO_MARKER, 8);
-	mBuildNum = atoi(aStr);
-
-	if (mBuildNum != 0)
-		mBuildDate = BUILD_INFO_MARKER + 8;
 }
 
 SexyApp::~SexyApp()
 {
 }
-
-/*
-bool SexyApp::Validate(const std::string& theUserName, const std::string& theRegCode)
-{
-	BigInt n("42BF94023BBA6D040C8B81D9");
-	BigInt e("11");
-
-	ulong i;
-	std::string aDataString;
-	bool space = false;	
-	for (i = 0; i < theUserName.size(); i++)
-	{
-		if (theUserName[i] == ' ')
-		{
-			if (aDataString.length() > 0)
-				space = true;
-		}
-		else
-		{
-			if (space)
-			{
-				aDataString += " ";
-				space = false;
-			}
-
-			char aChar = theUserName[i];
-			for (int j = 0; gRegKeyTranslationTable[j][0] != 0; j++)
-				if (gRegKeyTranslationTable[j][0] == aChar)
-					aChar = gRegKeyTranslationTable[j][1];
-
-			aDataString += toupper(aChar);
-		}
-	}
-
-	std::string aProduct;
-	aProduct = mProdName;
-	for (i = 0; i < aProduct.length(); i++)
-		aProduct[i] = toupper(aProduct[i]);
-
-	aDataString += "\n";
-	aDataString += aProduct;
-	BigInt aHash = HashString(aDataString, 94);	
-	
-	BigInt aSignature = KeyToInt(theRegCode);
-	BigInt aHashTest = aSignature.ModPow(e, n);
-
-	return aHashTest == aHash;
-}
-*/
 
 void SexyApp::ReadFromRegistry()
 {
@@ -394,34 +329,6 @@ void SexyApp::OpenUpdateURL()
 {
 
 	Shutdown();
-}
-
-
-std::string SexyApp::GetGameSEHInfo()
-{
-	char aGamesPlayedStr[16];
-	sprintf(aGamesPlayedStr, "%d", mTimesPlayed);
-
-	std::string anInfoString = SexyAppBase::GetGameSEHInfo() + 
-		"Times Played: " + std::string(aGamesPlayedStr) + "\r\n" +
-		"Build Num: " + StrFormat("%d", mBuildNum) + "\r\n" +
-		"Build Date: " + mBuildDate + "\r\n";
-
-	if (mReferId.length() != 0)
-	{
-		anInfoString +=
-			"ReferId: " + mReferId + "\r\n";
-	}
-
-	return anInfoString;
-}
-
-void SexyApp::GetSEHWebParams(DefinesMap* theDefinesMap)
-{
-	theDefinesMap->insert(DefinesMap::value_type("username", mUserName));
-	theDefinesMap->insert(DefinesMap::value_type("buildnum", StrFormat("%d", mBuildNum)));
-	theDefinesMap->insert(DefinesMap::value_type("builddate", mBuildDate));
-	theDefinesMap->insert(DefinesMap::value_type("referid", mReferId));	
 }
 
 void SexyApp::PreDisplayHook()

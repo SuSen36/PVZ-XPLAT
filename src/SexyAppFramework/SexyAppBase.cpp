@@ -2271,9 +2271,7 @@ void SexyAppBase::Init()
 
 
     //gPakInterface->AddPakFile("main.pak", 0); // 设置 main.pak 的优先级为 99
-
-
-// 假设 gPakInterface 和 GetPakFolder()、MkDir() 已经定义好
+    
     char aPakPath[512];
     getcwd(aPakPath, sizeof(aPakPath));
     strcat(aPakPath, "/paks/");
@@ -2997,11 +2995,6 @@ void SexyAppBase::Remove3DData(MemoryImage* theMemoryImage)
 		mGLInterface->Remove3DData(theMemoryImage);
 }
 
-
-bool SexyAppBase::Is3DAccelerated()
-{
-	return true;
-}
 
 SharedImageRef SexyAppBase::SetSharedImage(const std::string& theFileName, const std::string& theVariant, GLImage* theImage, bool* isNew)
 {

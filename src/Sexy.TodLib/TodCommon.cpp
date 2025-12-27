@@ -2,11 +2,11 @@
 #include "TodList.h"
 #include "TodDebug.h"
 #include "TodCommon.h"
-#include "../LawnApp.h"
+#include "LawnApp.h"
 #include "EffectSystem.h"
-#include "../Resources.h"
+#include "Resources.h"
 #include "TodStringFile.h"
-#include "../GameConstants.h"
+#include "GameConstants.h"
 #include "SexyAppFramework/graphics/Font.h"
 #include "SexyAppFramework/graphics/GLImage.h"
 #include "SexyAppFramework/graphics/Graphics.h"
@@ -716,7 +716,7 @@ void TodBltMatrix(Graphics* g, Image* theImage, const SexyMatrix3& theTransform,
 {
 	float aOffsetX = 0.0f;
 	float aOffsetY = 0.0f;
-	if (gSexyAppBase->Is3DAccelerated())
+	if (true)
 	{
 		aOffsetX -= 0.5f;
 		aOffsetY -= 0.5f;

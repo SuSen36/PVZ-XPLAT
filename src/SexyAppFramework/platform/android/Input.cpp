@@ -7,7 +7,7 @@
 #include "SexyAppFramework/widget/Dialog.h"
 #include "ConstEnums.h"
 #include "LawnApp.h"
-#include "Lawn/Widget/GameSelector.h"
+#include "Lawn/widgets/GameSelector.h"
 
 using namespace Sexy;
 

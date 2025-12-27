@@ -434,7 +434,7 @@ bool WidgetManager::DrawScreen()
 	{
 		Graphics g(aScrG);
 		g.Translate(-mMouseDestRect.mX, -mMouseDestRect.mY);
-		bool is3D = mApp->Is3DAccelerated();
+		bool is3D = true;
 
 		WidgetList::iterator anItr = mWidgets.begin();
 		while (anItr != mWidgets.end())

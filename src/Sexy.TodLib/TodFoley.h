@@ -1,7 +1,7 @@
 #ifndef __TODFOLEY_H__
 #define __TODFOLEY_H__
 
-#include "../Resources.h"
+#include "Resources.h"
 #include "SexyAppFramework/sound/BassSoundInstance.h"
 using namespace Sexy;
 

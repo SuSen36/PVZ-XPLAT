@@ -123,8 +123,7 @@ public:
 	HANDLE					mMutex{};
 	bool					mOnlyAllowOneCopyToRun;
 	UINT					mNotifyGameMessage;
-	CritSect				mCritSect;	
-	bool					mBetaValidate{};
+	CritSect				mCritSect;
 	uchar					mAdd8BitMaxTable[512]{};
 	WidgetManager*			mWidgetManager;
 	DialogMap				mDialogMap;
@@ -418,7 +417,6 @@ public:
 	void					InitInput();
 	bool					StartTextInput(std::string& theInput); // set theInput and return true if using soft keyboard capability and user pressed OK (e.g. Switch libnx swkbd)
 	void					StopTextInput();
-	bool					Is3DAccelerated();
 	virtual std::string		NotifyCrashHook(); // return file name that you want to upload
 	
 	virtual bool			DrawDirtyStuff();

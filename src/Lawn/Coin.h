@@ -2,7 +2,7 @@
 #define __COIN_H__
 
 #include "GameObject.h"
-#include "System/PlayerInfo.h"
+#include "Lawn/system/PlayerInfo.h"
 
 class HitResult;
 namespace Sexy

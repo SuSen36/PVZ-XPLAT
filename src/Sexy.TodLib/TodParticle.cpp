@@ -2,7 +2,7 @@
 #include "Definition.h"
 #include "TodParticle.h"
 #include "EffectSystem.h"
-#include "../GameConstants.h"
+#include "GameConstants.h"
 #include "SexyAppFramework/graphics/Graphics.h"
 #include "SexyAppFramework/graphics/GLInterface.h"
 
@@ -1060,7 +1060,7 @@ void TodParticleSystem::Draw(Graphics* g)
 //0x5183A0
 void TodParticleEmitter::Draw(Graphics* g)
 {
-	bool aHardWare = gSexyAppBase->Is3DAccelerated();
+	bool aHardWare = true;
 	if ((TestBit(mEmitterDef->mParticleFlags, (int)ParticleFlags::PARTICLE_SOFTWARE_ONLY) && aHardWare) ||
 		(TestBit(mEmitterDef->mParticleFlags, (int)ParticleFlags::PARTICLE_HARDWARE_ONLY) && !aHardWare))
 		return;

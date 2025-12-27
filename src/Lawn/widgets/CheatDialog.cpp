@@ -1,7 +1,7 @@
 #include "CheatDialog.h"
 #include "../Board.h"
 #include "../../LawnApp.h"
-#include "../LawnCommon.h"
+#include "Lawn/LawnCommon.h"
 #include "ChallengeScreen.h"
 #include "../../Resources.h"
 #include "../../GameConstants.h"

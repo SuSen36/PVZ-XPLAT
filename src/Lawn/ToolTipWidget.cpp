@@ -1,6 +1,6 @@
-#include "../Resources.h"
+#include "Resources.h"
 #include "ToolTipWidget.h"
-#include "../GameConstants.h"
+#include "GameConstants.h"
 #include "Sexy.TodLib/TodCommon.h"
 #include "SexyAppFramework/graphics/Font.h"
 #include "Sexy.TodLib/TodStringFile.h"

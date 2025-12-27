@@ -1,8 +1,8 @@
 #include "Board.h"
 #include "Cutscene.h"
 #include "LawnMower.h"
-#include "../LawnApp.h"
-#include "System/ReanimationLawn.h"
+#include "LawnApp.h"
+#include "Lawn/system/ReanimationLawn.h"
 #include "Sexy.TodLib/TodFoley.h"
 #include "Sexy.TodLib/Reanimator.h"
 

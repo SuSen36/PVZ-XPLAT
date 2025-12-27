@@ -9,16 +9,16 @@
 #include "Challenge.h"
 #include "SeedPacket.h"
 #include "Projectile.h"
-#include "../LawnApp.h"
-#include "../Resources.h"
+#include "LawnApp.h"
+#include "Resources.h"
 #include "CursorObject.h"
-#include "System/Music.h"
+#include "Lawn/system/Music.h"
 #include "ToolTipWidget.h"
 #include "MessageWidget.h"
-#include "../GameConstants.h"
-#include "System/PlayerInfo.h"
-#include "Widget/GameButton.h"
-#include "Widget/StoreScreen.h"
+#include "GameConstants.h"
+#include "Lawn/system/PlayerInfo.h"
+#include "Lawn/widgets/GameButton.h"
+#include "Lawn/widgets/StoreScreen.h"
 #include "Sexy.TodLib/TodDebug.h"
 #include "Sexy.TodLib/TodFoley.h"
 #include "Sexy.TodLib/TodCommon.h"
@@ -28,7 +28,7 @@
 #include "Sexy.TodLib/TodParticle.h"
 #include "Sexy.TodLib/TodStringFile.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
-#include "Widget/AchievementsScreen.h"
+#include "Lawn/widgets/AchievementsScreen.h"
 
 int gZombieWaves[NUM_LEVELS] = {  //0x6A34E8
 	4,  6,  8,  10, 8,  10, 20, 10, 20, 20,
@@ -3077,7 +3077,7 @@ void Challenge::DrawWeather(Graphics* g)
 //0x426B90
 void Challenge::DrawRain(Graphics* g)
 {
-	if (mBoard->mCutScene->IsBeforePreloading() || !mApp->Is3DAccelerated())
+	if (mBoard->mCutScene->IsBeforePreloading())
 		return;
 
 	// Whatever is going on here is a bit yikes

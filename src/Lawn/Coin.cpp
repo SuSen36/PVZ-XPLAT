@@ -3,18 +3,18 @@
 #include "Cutscene.h"
 #include "ZenGarden.h"
 #include "Challenge.h"
-#include "../LawnApp.h"
+#include "LawnApp.h"
 #include "SeedPacket.h"
 #include "CursorObject.h"
-#include "../Resources.h"
+#include "Resources.h"
 #include "MessageWidget.h"
-#include "../GameConstants.h"
-#include "System/PlayerInfo.h"
+#include "GameConstants.h"
+#include "Lawn/system/PlayerInfo.h"
 #include "Sexy.TodLib/TodFoley.h"
 #include "Sexy.TodLib/TodDebug.h"
 #include "Sexy.TodLib/Reanimator.h"
 #include "Sexy.TodLib/Attachment.h"
-#include "Widget/AchievementsScreen.h"
+#include "Lawn/widgets/AchievementsScreen.h"
 
 Coin::Coin()
 {
@@ -1234,7 +1234,7 @@ void Coin::Collect()
             mApp->AddTodParticle(mPosX + 30.0f, mPosY + 30.0f, mRenderOrder + 1, ParticleEffect::PARTICLE_PRESENT_PICKUP);
             StartFade();
         }
-        else if (!aIsEndlessAward && mApp->Is3DAccelerated())
+		else if (!aIsEndlessAward)
         {
             float aParticleOffsetX = mWidth / 2;
             float aParticleOffsetY = mHeight / 2;

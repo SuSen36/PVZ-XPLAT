@@ -17,10 +17,7 @@ public:
 	std::string				mRegSource;
 	unsigned long			mLastVerCheckQueryTime;
 	bool					mSkipAd;
-	bool					mDontUpdate;	
-
-	int						mBuildNum;
-	std::string				mBuildDate;
+	bool					mDontUpdate;
 
 	std::string				mUserName;	
 	std::string				mRegUserName;
@@ -63,11 +60,6 @@ public:
 
 	virtual bool			OpenHTMLTemplate(const std::string& theTemplateFile, const DefinesMap& theDefinesMap);
 	virtual void			OpenUpdateURL();
-
-	virtual std::string		GetGameSEHInfo();
-	virtual void			GetSEHWebParams(DefinesMap* theDefinesMap);
-
-
 };
 
 extern SexyApp* gSexyApp;

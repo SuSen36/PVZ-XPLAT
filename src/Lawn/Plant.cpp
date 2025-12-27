@@ -11,9 +11,9 @@
 #include "SeedPacket.h"
 #include "LawnApp.h"
 #include "CursorObject.h"
-#include "../GameConstants.h"
-#include "System/PlayerInfo.h"
-#include "System/ReanimationLawn.h"
+#include "GameConstants.h"
+#include "Lawn/system/PlayerInfo.h"
+#include "Lawn/system/ReanimationLawn.h"
 #include "Sexy.TodLib/TodFoley.h"
 #include "Sexy.TodLib/TodDebug.h"
 #include "Sexy.TodLib/Attachment.h"
@@ -21,7 +21,7 @@
 #include "Sexy.TodLib/TodParticle.h"
 #include "Sexy.TodLib/EffectSystem.h"
 #include "Sexy.TodLib/TodStringFile.h"
-#include "Widget/AchievementsScreen.h"
+#include "Lawn/widgets/AchievementsScreen.h"
 
 PlantDefinition gPlantDefs[SeedType::NUM_SEED_TYPES] = {  //0x69F2B0
     { SeedType::SEED_PEASHOOTER,        nullptr, ReanimationType::REANIM_PEASHOOTER,    0,  100,    750,    PlantSubClass::SUBCLASS_SHOOTER,    150,    __S("PEASHOOTER") },
@@ -4099,15 +4099,7 @@ void Plant::Draw(Graphics* g)
             Reanimation* aBodyReanim = mApp->ReanimationTryToGet(mBodyReanimID);
             if (aBodyReanim)
             {
-                if (!mApp->Is3DAccelerated() && mSeedType == SeedType::SEED_FLOWERPOT && IsOnBoard() && 
-                    aBodyReanim->mAnimRate == 0.0f && aBodyReanim->IsAnimPlaying("anim_idle"))
-                {
-                    mApp->mReanimatorCache->DrawCachedPlant(g, aOffsetX, aOffsetY, mSeedType, DrawVariation::VARIATION_NORMAL);
-                }
-                else
-                {
-                    aBodyReanim->Draw(g);
-                }
+                aBodyReanim->Draw(g);
             }
         }
         else

@@ -26,8 +26,8 @@ file(GLOB SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/fcaseopen/*.c
 		${CMAKE_CURRENT_SOURCE_DIR}/src/Sexy.TodLib/*.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/Lawn/*.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/Lawn/Widget/*.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/Lawn/System/*.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/Lawn/widgets/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Lawn/system/*.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/glad/*.c
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/imagelib/png/*.c
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/imagelib/jpeg/*.c

@@ -2,7 +2,7 @@
 #include "LawnDialog.h"
 #include "GameButton.h"
 #include "../../LawnApp.h"
-#include "../LawnCommon.h"
+#include "Lawn/LawnCommon.h"
 #include "../../Resources.h"
 #include "ChallengeScreen.h"
 #include "Sexy.TodLib/TodDebug.h"

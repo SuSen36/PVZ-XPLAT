@@ -2,11 +2,11 @@
 #include "TodCommon.h"
 #include "Definition.h"
 #include "Reanimator.h"
-#include "../LawnApp.h"
+#include "LawnApp.h"
 #include "Attachment.h"
 #include "ReanimAtlas.h"
 #include "EffectSystem.h"
-#include "../GameConstants.h"
+#include "GameConstants.h"
 #include "SexyAppFramework/graphics/Font.h"
 #include "SexyAppFramework/graphics/MemoryImage.h"
 
@@ -588,7 +588,7 @@ void Reanimation::MatrixFromTransform(const ReanimatorTransform& theTransform, S
 //0x472190
 void Reanimation::ReanimBltMatrix(Graphics* g, Image* theImage, SexyMatrix3& theTransform, const Rect& theClipRect, const Color& theColor, int theDrawMode, const Rect& theSrcRect)
 {
-	if (!gSexyAppBase->Is3DAccelerated() &&  // 未开启 3D 硬件加速
+	if (!true &&  // 未开启 3D 硬件加速
 		TestBit(gReanimationParamArray[(int)mReanimationType].mReanimParamFlags, (int)ReanimFlags::REANIM_FAST_DRAW_IN_SW_MODE) &&  // 动画允许使用软件渲染
 		FloatApproxEqual(theTransform.m01, 0.0f) && FloatApproxEqual(theTransform.m10, 0.0f) &&  // 横向和纵向的倾斜值均为 0
 		theTransform.m00 > 0.0f && theTransform.m11 > 0.0f &&  // 横向和纵向的拉伸值均大于 0

@@ -1,18 +1,18 @@
 #include <ctime>
 #include <SDL.h>
 #include "ZenGarden.h"
-#include "System/Music.h"
-#include "System/SaveGame.h"
-#include "Widget/LawnDialog.h"
-#include "System/PlayerInfo.h"
-#include "System/PoolEffect.h"
-#include "Widget/StoreScreen.h"
-#include "Widget/AwardScreen.h"
+#include "Lawn/system/Music.h"
+#include "Lawn/system/SaveGame.h"
+#include "Lawn/widgets/LawnDialog.h"
+#include "Lawn/system/PlayerInfo.h"
+#include "Lawn/system/PoolEffect.h"
+#include "Lawn/widgets/StoreScreen.h"
+#include "Lawn/widgets/AwardScreen.h"
 #include "Sexy.TodLib/Trail.h"
-#include "Widget/ChallengeScreen.h"
+#include "Lawn/widgets/ChallengeScreen.h"
 #include "Sexy.TodLib/TodDebug.h"
 #include "Sexy.TodLib/TodFoley.h"
-#include "Widget/SeedChooserScreen.h"
+#include "Lawn/widgets/SeedChooserScreen.h"
 #include "Sexy.TodLib/Attachment.h"
 #include "Sexy.TodLib/Reanimator.h"
 #include "SexyAppFramework/widget/Dialog.h"
@@ -27,14 +27,14 @@
 #include "Challenge.h"
 #include "LawnMower.h"
 #include "SeedPacket.h"
-#include "../LawnApp.h"
+#include "LawnApp.h"
 #include "Projectile.h"
-#include "../Resources.h"
+#include "Resources.h"
 #include "CursorObject.h"
 #include "ToolTipWidget.h"
 #include "MessageWidget.h"
-#include "../GameConstants.h"
-#include "Widget/GameButton.h"
+#include "GameConstants.h"
+#include "Lawn/widgets/GameButton.h"
 #include "SexyAppFramework/graphics/Graphics.h"
 #include "Sexy.TodLib/EffectSystem.h"
 #include "Sexy.TodLib/TodStringFile.h"
@@ -43,8 +43,7 @@
 #include "SexyAppFramework/widget/ButtonWidget.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
 #include "SexyAppFramework/sound/SoundInstance.h"
-
-#include "Widget/AchievementsScreen.h"
+#include "Lawn/widgets/AchievementsScreen.h"
 
 //#define SEXY_MEMTRACE
 //#include "../SexyAppFramework/memmgr.h"
@@ -7824,7 +7823,7 @@ void Board::UpdateFog()
 //0x41A730
 void Board::DrawFog(Graphics* g)
 {
-	Image* aImageFog = mApp->Is3DAccelerated() ? Sexy::IMAGE_FOG : Sexy::IMAGE_FOG_SOFTWARE;
+	Image* aImageFog = Sexy::IMAGE_FOG;
 	for (int x = 0; x < MAX_GRID_SIZE_X; x++)
 	{
 		for (int y = 0; y < MAX_GRID_SIZE_Y + 1; y++)
@@ -7850,14 +7849,6 @@ void Board::DrawFog(Graphics* g)
 
 			int aColorVariant = 255 - aCelLook * 1.5 - aMotion * 1.5;
 			int aLightnessVariant = 255 - aCelLook - aMotion;
-			if (!mApp->Is3DAccelerated())
-			{
-				aPosX += 10;
-				aPosY += 3;
-				aCelCol = aCelLook % Sexy::IMAGE_FOG_SOFTWARE->mNumCols;
-				aColorVariant = 255;
-				aLightnessVariant = 255;
-			}
 
 			g->SetColorizeImages(true);
 			g->SetColor(Color(aColorVariant, aColorVariant, aLightnessVariant, aFadeAmount));

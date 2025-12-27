@@ -2,7 +2,7 @@
 #include "GameButton.h"
 #include "../Cutscene.h"
 #include "AlmanacDialog.h"
-#include "../LawnCommon.h"
+#include "Lawn/LawnCommon.h"
 #include "../../LawnApp.h"
 #include "../System/Music.h"
 #include "../../Resources.h"
