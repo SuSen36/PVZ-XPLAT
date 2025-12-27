@@ -966,7 +966,8 @@ void SeedChooserScreen::CancelLawnView()
 //0x486630
 void SeedChooserScreen::MouseUp(int x, int y, int theClickCount)
 {
-	(void)x;(void)y;
+	Widget::MouseUp(x, y, theClickCount);
+
 	if (theClickCount == 1)
 	{
 		if (mMenuButton->IsMouseOver()) ButtonDepress(SeedChooserScreen::SeedChooserScreen_Menu);
@@ -1026,7 +1027,7 @@ void SeedChooserScreen::MouseDown(int x, int y, int theClickCount)
 	{
 		mApp->PlaySample(Sexy::SOUND_TAP);
 	}
-	else if (mImitaterButton->IsMouseOver())
+	else if (mImitaterButton->IsMouseOver() || Rect(mImitaterButton->mX, mImitaterButton->mY, mImitaterButton->mWidth, mImitaterButton->mHeight).Contains(x, y))
 	{
 		if (mSeedsInBank != mBoard->mSeedBank->mNumPackets)
 		{
