@@ -8,8 +8,8 @@ class DataReader
 protected:
 	FILE*					mFile;			//+0x4
 	char*					mData;			//+0x8
-	uint32_t			mDataLen;		//+0xC
-	uint32_t			mDataPos;		//+0x10
+	uint32_t			    mDataLen;		//+0xC
+	uint32_t			    mDataPos;		//+0x10
 	bool					mOwnData;		//+0x14
 
 public:
@@ -61,9 +61,9 @@ public:
 	void					WriteDouble(double theDouble);
 	void					WriteString(const SexyString& theStr);
 	inline uint32_t	GetPos();
-	inline void				SetLong(uint32_t, uint32_t) { /* δ�ҵ� */ }
-	inline void				SetShort(unsigned int, uint32_t) { /* δ�ҵ� */ }
-	inline void				SetByte(unsigned int, uint32_t) { /* δ�ҵ� */ }
+	inline void				SetLong(uint32_t, uint32_t) { /* δ�ҵ� */ }
+	inline void				SetShort(unsigned int, uint32_t) { /* δ�ҵ� */ }
+	inline void				SetByte(unsigned int, uint32_t) { /* δ�ҵ� */ }
 	inline void*			GetDataPtr() { return mData; }
 	inline int				GetDataLen() { return mDataLen; }
 };
@@ -91,7 +91,7 @@ public:
 	DataSync(DataWriter& theWriter);
 	virtual ~DataSync();
 
-	inline void				SyncPointers() { /* δ�ҵ� */ }
+	inline void				SyncPointers() { /* δ�ҵ� */ }
 	inline void				SetReader(DataReader* theReader) { mReader = theReader; }
 	inline void				SetWriter(DataWriter* theWriter) { mWriter = theWriter; }
 	inline DataReader*		GetReader() { return mReader; }
@@ -99,42 +99,42 @@ public:
 	void					SyncBytes(void* theData, uint32_t theDataLen);
 	void					SyncLong(char& theNum);
 	void					SyncLong(short& theNum);
-	void					SyncLong(long& theNum);
+	void					SyncLong(slong& theNum);
 	void					SyncLong(unsigned char& theNum);
 	void					SyncLong(unsigned short& theNum);
 	void					SyncLong(uint32_t& theNum);
 	void					SyncLong(int& theNum);
 	void					SyncSLong(char& theNum);
 	void					SyncSLong(short& theNum);
-	void					SyncSLong(long& theNum);
+	void					SyncSLong(slong& theNum);
 	void					SyncSLong(unsigned char& theNum);
 	void					SyncSLong(unsigned short& theNum);
 	void					SyncSLong(uint32_t& theNum);
 	void					SyncSLong(int& theNum);
 	void					SyncShort(char& theNum);
 	void					SyncShort(short& theNum);
-	void					SyncShort(long& theNum);
+	void					SyncShort(slong& theNum);
 	void					SyncShort(unsigned char& theNum);
 	void					SyncShort(unsigned short& theNum);
 	void					SyncShort(uint32_t& theNum);
 	void					SyncShort(int& theNum);
 	void					SyncSShort(char& theNum);
 	void					SyncSShort(short& theNum);
-	void					SyncSShort(long& theNum);
+	void					SyncSShort(slong& theNum);
 	void					SyncSShort(unsigned char& theNum);
 	void					SyncSShort(unsigned short& theNum);
 	void					SyncSShort(uint32_t& theNum);
 	void					SyncSShort(int& theNum);
 	void					SyncByte(char& theChar);
 	void					SyncByte(short& theChar);
-	void					SyncByte(long& theChar);
+	void					SyncByte(slong& theChar);
 	void					SyncByte(unsigned char& theChar);
 	void					SyncByte(unsigned short& theChar);
 	void					SyncByte(uint32_t& theChar);
 	void					SyncByte(int& theChar);
 	void					SyncSByte(char& theChar);
 	void					SyncSByte(short& theChar);
-	void					SyncSByte(long& theChar);
+	void					SyncSByte(slong& theChar);
 	void					SyncSByte(unsigned char& theChar);
 	void					SyncSByte(unsigned short& theChar);
 	void					SyncSByte(uint32_t& theChar);
@@ -143,8 +143,8 @@ public:
 	void					SyncFloat(float& theFloat);
 	void					SyncDouble(double& theDouble);
 	void					SyncString(SexyString& theStr);
-	inline void				SyncPointer(void**) { /* δ�ҵ� */ }
-	inline void				RegisterPointer(void*) { /* δ�ҵ� */ }
+	inline void				SyncPointer(void**) { /* δ�ҵ� */ }
+	inline void				RegisterPointer(void*) { /* δ�ҵ� */ }
 	inline void				SetVersion(int theVersion) { mVersion = theVersion; }
 	inline int				GetVersion() const { return mVersion; }
 };

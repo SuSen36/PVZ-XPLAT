@@ -1,9 +1,9 @@
 #include "UserDialog.h"
 #include "GameButton.h"
-#include "../../LawnApp.h"
+#include "LawnApp.h"
 #include "../../Resources.h"
-#include "../System/ProfileMgr.h"
-#include "../System/PlayerInfo.h"
+#include "Lawn/system/ProfileMgr.h"
+#include "Lawn/system/PlayerInfo.h"
 #include "Sexy.TodLib/TodStringFile.h"
 #include "SexyAppFramework/widget/ListWidget.h"
 

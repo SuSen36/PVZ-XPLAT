@@ -2,9 +2,9 @@
 #define __WIDGET_H__
 
 #include "../Common.h"
-#include "../graphics/Color.h"
+#include "SexyAppFramework/graphics/Color.h"
 #include "Insets.h"
-#include "../graphics/Graphics.h"
+#include "SexyAppFramework/graphics/Graphics.h"
 #include "../misc/KeyCodes.h"
 #include "WidgetContainer.h"
 

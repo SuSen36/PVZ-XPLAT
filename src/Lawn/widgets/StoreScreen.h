@@ -1,8 +1,8 @@
 #ifndef __STORESCREEN_H__
 #define __STORESCREEN_H__
 
-#include "../../ConstEnums.h"
-#include "../System/PlayerInfo.h"
+#include "ConstEnums.h"
+#include "Lawn/system/PlayerInfo.h"
 #include "Sexy.TodLib/DataArray.h"
 #include "SexyAppFramework/widget/Dialog.h"
 //using namespace std;

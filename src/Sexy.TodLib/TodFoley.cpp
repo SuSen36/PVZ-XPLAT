@@ -131,7 +131,7 @@ FoleyTypeData::FoleyTypeData()
 int TodDSoundInstance::GetSoundPosition()
 {
 	/*
-	unsigned long dwCurrentPlayerCursor;
+	ulong dwCurrentPlayerCursor;
 	mSoundBuffer->GetCurrentPosition(&dwCurrentPlayerCursor, nullptr);
 	return dwCurrentPlayerCursor;
 	*/

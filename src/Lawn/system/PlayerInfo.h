@@ -51,13 +51,13 @@ public:
     int                 mCoins;                             //+0x28
     int                 mFinishedAdventure;                 //+0x2C
     int                 mChallengeRecords[100];             //+0x30
-    long                mPurchases[80];                     //+0x1C0
+    slong               mPurchases[80];                     //+0x1C0
     int                 mPlayTimeActivePlayer;              //+0x300
     int                 mPlayTimeInactivePlayer;            //+0x304
     int                 mHasUsedCheatKeys;                  //+0x308
     int                 mHasWokenStinky;                    //+0x30C
     int                 mDidntPurchasePacketUpgrade;        //+0x310
-    long                mLastStinkyChocolateTime;           //+0x314
+    slong               mLastStinkyChocolateTime;           //+0x314
     int                 mStinkyPosX;                        //+0x318
     int                 mStinkyPosY;                        //+0x31C
     int                 mHasUnlockedMinigames;              //+0x320

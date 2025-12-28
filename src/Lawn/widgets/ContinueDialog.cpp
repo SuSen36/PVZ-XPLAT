@@ -1,7 +1,7 @@
 #include "../Board.h"
 #include "../Zombie.h"
 #include "GameButton.h"
-#include "../../LawnApp.h"
+#include "LawnApp.h"
 #include "ContinueDialog.h"
 #include "../../Resources.h"
 #include "Sexy.TodLib/TodFoley.h"

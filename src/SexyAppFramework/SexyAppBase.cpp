@@ -861,7 +861,7 @@ void SexyAppBase::ReadFromRegistry()
 	RegistryWriteInteger("InProgress", 1);
 }
 
-bool SexyAppBase::WriteBytesToFile(const std::string& theFileName, const void *theData, unsigned long theDataLen)
+bool SexyAppBase::WriteBytesToFile(const std::string& theFileName, const void *theData, ulong theDataLen)
 {
 	MkDir(GetFileDir(theFileName));
 	FILE* aFP = fcaseopen(theFileName.c_str(), "w+b");

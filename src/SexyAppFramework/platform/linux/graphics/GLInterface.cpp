@@ -2,7 +2,7 @@
 #include "SexyAppFramework/glad/glad.h"
 
 
-#include "../graphics/GLInterface.h"
+#include "SexyAppFramework/graphics/GLInterface.h"
 
 #include <iostream>
 #include <SDL_egl.h>

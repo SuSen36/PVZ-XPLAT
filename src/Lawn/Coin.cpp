@@ -7,7 +7,7 @@
 #include "SeedPacket.h"
 #include "CursorObject.h"
 #include "Resources.h"
-#include "MessageWidget.h"
+#include "WidgetMessage.h"
 #include "GameConstants.h"
 #include "Lawn/system/PlayerInfo.h"
 #include "Sexy.TodLib/TodFoley.h"

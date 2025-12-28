@@ -2,14 +2,14 @@
 #include "Challenge.h"
 #include "LawnApp.h"
 #include "Resources.h"
-#include "MessageWidget.h"
+#include "WidgetMessage.h"
 #include "SexyAppFramework/graphics/Font.h"
 #include "Sexy.TodLib/TodCommon.h"
 #include "Sexy.TodLib/Reanimator.h"
 #include "Sexy.TodLib/TodStringFile.h"
 
 //(0x4081F1)
-MessageWidget::MessageWidget(LawnApp* theApp)
+WidgetMessage::WidgetMessage(LawnApp* theApp)
 {
 	mApp = theApp;
 	mDuration = 0;
@@ -22,7 +22,7 @@ MessageWidget::MessageWidget(LawnApp* theApp)
 }
 
 //0x458FC0
-void MessageWidget::ClearReanim()
+void WidgetMessage::ClearReanim()
 {
 	for (int i = 0; i < MAX_MESSAGE_LENGTH; i++)
 	{
@@ -35,7 +35,7 @@ void MessageWidget::ClearReanim()
 	}
 }
 
-void MessageWidget::ClearLabel()
+void WidgetMessage::ClearLabel()
 {
 	if (mReanimType != ReanimationType::REANIM_NONE)
 	{
@@ -49,7 +49,7 @@ void MessageWidget::ClearLabel()
 
 //0x459010
 // GOTY @Patoke: inlined 0x459715
-void MessageWidget::SetLabel(const SexyString& theNewLabel, MessageStyle theMessageStyle)
+void WidgetMessage::SetLabel(const SexyString& theNewLabel, MessageStyle theMessageStyle)
 {
     SexyString aLabel = TodStringTranslate(theNewLabel);
 
@@ -142,7 +142,7 @@ void MessageWidget::SetLabel(const SexyString& theNewLabel, MessageStyle theMess
 
 
 //0x4591E0
-void MessageWidget::LayoutReanimText()
+void WidgetMessage::LayoutReanimText()
 {
 	float aMaxWidth = 0;
 	int aCurLine = 0, aCurPos = 0;
@@ -192,7 +192,7 @@ void MessageWidget::LayoutReanimText()
 }
 
 //0x4594B0
-void MessageWidget::Update()
+void WidgetMessage::Update()
 {
 	if (!mApp->mBoard || mApp->mBoard->mPaused)
 		return;
@@ -249,7 +249,7 @@ void MessageWidget::Update()
 }
 
 //0x459710
-void MessageWidget::DrawReanimatedText(Graphics* g, Font* theFont, const Color& theColor, float thePosY)
+void WidgetMessage::DrawReanimatedText(Graphics* g, Font* theFont, const Color& theColor, float thePosY)
 {
 	int aLabelLen = sexystrlen(mLabel);
 	for (int aPos = 0; aPos < aLabelLen; aPos++)
@@ -289,7 +289,7 @@ void MessageWidget::DrawReanimatedText(Graphics* g, Font* theFont, const Color& 
 
 //0x459990
 // GOTY @Patoke: inlined 0x45CAEF
-Font* MessageWidget::GetFont()
+Font* WidgetMessage::GetFont()
 {
 	switch (mMessageStyle)
 	{
@@ -324,7 +324,7 @@ Font* MessageWidget::GetFont()
 
 //0x4599E0
 // GOTY @Patoke: 0x45D2B0
-void MessageWidget::Draw(Graphics* g)
+void WidgetMessage::Draw(Graphics* g)
 {
 	if (mDuration <= 0)
 		return;

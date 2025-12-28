@@ -1,6 +1,6 @@
 #include "ScrollbuttonWidget.h"
 #include "ButtonListener.h"
-#include "../graphics/Graphics.h"
+#include "SexyAppFramework/graphics/Graphics.h"
 
 using namespace Sexy;
 

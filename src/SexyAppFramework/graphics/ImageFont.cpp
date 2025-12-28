@@ -3,7 +3,7 @@
 #include "Image.h"
 #include "../SexyAppBase.h"
 #include "MemoryImage.h"
-#include "../graphics/GLImage.h"
+#include "SexyAppFramework/graphics/GLImage.h"
 #include "../misc/AutoCrit.h"
 #include "SexyAppFramework/fcaseopen/fcaseopen.h"
 

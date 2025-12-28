@@ -1,6 +1,6 @@
 #include "Slider.h"
-#include "../graphics/Graphics.h"
-#include "../graphics/Image.h"
+#include "SexyAppFramework/graphics/Graphics.h"
+#include "SexyAppFramework/graphics/Image.h"
 #include "SliderListener.h"
 #include "WidgetManager.h"
 #include "../SexyAppBase.h"

@@ -1786,10 +1786,10 @@ void MemoryImage::BltMatrixHelper(Image* theImage, float x, float y, const SexyM
 
 	SWHelper::XYZStruct aVerts[4] =
 	{
-		{ -w2,	-h2,	u0, v0, static_cast<long int>(0xFFFFFFFF) },
-		{ w2,	-h2,	u1,	v0,	static_cast<long int>(0xFFFFFFFF) },
-		{ -w2,	h2,		u0,	v1,	static_cast<long int>(0xFFFFFFFF) },
-		{ w2,	h2,		u1,	v1,	static_cast<long int>(0xFFFFFFFF) }
+		{ -w2,	-h2,	u0, v0, static_cast<ulong>(0xFFFFFFFF) },
+		{ w2,	-h2,	u1,	v0,	static_cast<ulong>(0xFFFFFFFF) },
+		{ -w2,	h2,		u0,	v1,	static_cast<ulong>(0xFFFFFFFF) },
+		{ w2,	h2,		u1,	v1,	static_cast<ulong>(0xFFFFFFFF) }
 	};
 
 	for (int i=0; i<4; i++)

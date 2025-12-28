@@ -1,5 +1,5 @@
 #include "NewUserDialog.h"
-#include "../../LawnApp.h"
+#include "LawnApp.h"
 #include "../../Resources.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
 

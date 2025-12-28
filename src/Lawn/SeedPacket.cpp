@@ -5,7 +5,7 @@
 #include "LawnApp.h"
 #include "CursorObject.h"
 #include "Resources.h"
-#include "MessageWidget.h"
+#include "WidgetMessage.h"
 #include "SexyAppFramework/graphics/Font.h"
 #include "Sexy.TodLib/FilterEffect.h"
 #include "SexyAppFramework/misc/SexyMatrix.h"

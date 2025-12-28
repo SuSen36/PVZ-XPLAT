@@ -263,7 +263,7 @@ bool XMLParser::OpenFile(const std::string& theFileName)
 	else if (!mForcedEncodingType)
 	{
 		p_fseek(mFile, 0, SEEK_END);
-		long aFileLen = p_ftell(mFile);
+		slong aFileLen = p_ftell(mFile);
 		p_fseek(mFile, 0, SEEK_SET);
 
 		mGetCharFunc = &XMLParser::GetAsciiChar;

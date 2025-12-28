@@ -211,9 +211,14 @@ void DataSync::SyncLong(short& theNum)
 	SyncLong((uint32_t&)theNum);
 }
 
-void DataSync::SyncLong(long& theNum)
+void DataSync::SyncLong(slong& theNum)
 {
-	SyncLong((uint32_t&)theNum);
+	uint32_t tmp = static_cast<uint32_t>(theNum);
+	SyncLong(tmp);
+	if (mReader)
+	{
+		theNum = static_cast<slong>(tmp);
+	}
 }
 
 void DataSync::SyncLong(unsigned char& theNum)
@@ -231,46 +236,46 @@ void DataSync::SyncLong(int& theNum)
 	SyncLong((uint32_t&)theNum);
 }
 
-void DataSync::SyncSLong(long& theNum)
+void DataSync::SyncSLong(slong& theNum)
 {
 	if (mReader)
 	{
-		theNum = (long)mReader->ReadLong();
+		theNum = static_cast<slong>(mReader->ReadLong());
 	}
 	else
 	{
-		mWriter->WriteLong((uint32_t)theNum);
+		mWriter->WriteLong(static_cast<uint32_t>(theNum));
 	}
 }
 
 void DataSync::SyncSLong(char& theNum)
 {
-	SyncSLong((long&)theNum);
+	SyncSLong((slong&)theNum);
 }
 
 void DataSync::SyncSLong(short& theNum)
 {
-	SyncSLong((long&)theNum);
+	SyncSLong((slong&)theNum);
 }
 
 void DataSync::SyncSLong(int& theNum)
 {
-	SyncSLong((long&)theNum);
+	SyncSLong((slong&)theNum);
 }
 
 void DataSync::SyncSLong(unsigned char& theNum)
 {
-	SyncSLong((long&)theNum);
+	SyncSLong((slong&)theNum);
 }
 
 void DataSync::SyncSLong(unsigned short& theNum)
 {
-	SyncSLong((long&)theNum);
+	SyncSLong((slong&)theNum);
 }
 
 void DataSync::SyncSLong(uint32_t& theNum)
 {
-	SyncSLong((long&)theNum);
+	SyncSLong((slong&)theNum);
 }
 
 void DataSync::SyncShort(unsigned short& theNum)
@@ -295,9 +300,14 @@ void DataSync::SyncShort(short& theNum)
 	SyncShort((unsigned short&)theNum);
 }
 
-void DataSync::SyncShort(long& theNum)
+void DataSync::SyncShort(slong& theNum)
 {
-	SyncShort((unsigned short&)theNum);
+	unsigned short tmp = static_cast<unsigned short>(theNum);
+	SyncShort(tmp);
+	if (mReader)
+	{
+		theNum = static_cast<slong>(tmp);
+	}
 }
 
 void DataSync::SyncShort(unsigned char& theNum)
@@ -332,29 +342,36 @@ void DataSync::SyncSShort(char& theNum)
 	SyncSShort((short&)theNum);
 }
 
-void DataSync::SyncSShort(long& theNum)
+void DataSync::SyncSShort(slong& theNum)
 {
-	SyncSShort((short&)theNum);
+	if (mReader)
+	{
+		theNum = static_cast<slong>(static_cast<short>(mReader->ReadShort()));
+	}
+	else
+	{
+		mWriter->WriteShort(static_cast<unsigned short>(theNum));
+	}
 }
 
 void DataSync::SyncSShort(unsigned char& theNum)
 {
-	SyncSShort((short&)theNum);
+	SyncSShort((slong&)theNum);
 }
 
 void DataSync::SyncSShort(unsigned short& theNum)
 {
-	SyncSShort((short&)theNum);
+	SyncSShort((slong&)theNum);
 }
 
 void DataSync::SyncSShort(uint32_t& theNum)
 {
-	SyncSShort((short&)theNum);
+	SyncSShort((slong&)theNum);
 }
 
 void DataSync::SyncSShort(int& theNum)
 {
-	SyncSShort((short&)theNum);
+	SyncSShort((slong&)theNum);
 }
 
 void DataSync::SyncByte(unsigned char& theChar)
@@ -379,9 +396,14 @@ void DataSync::SyncByte(short& theChar)
 	SyncByte((unsigned char&)theChar);
 }
 
-void DataSync::SyncByte(long& theChar)
+void DataSync::SyncByte(slong& theChar)
 {
-	SyncByte((unsigned char&)theChar);
+	unsigned char tmp = static_cast<unsigned char>(theChar);
+	SyncByte(tmp);
+	if (mReader)
+	{
+		theChar = static_cast<slong>(tmp);
+	}
 }
 
 void DataSync::SyncByte(unsigned short& theChar)
@@ -416,29 +438,36 @@ void DataSync::SyncSByte(short& theChar)
 	SyncByte((char&)theChar);
 }
 
-void DataSync::SyncSByte(long& theChar)
+void DataSync::SyncSByte(slong& theChar)
 {
-	SyncByte((char&)theChar);
+	if (mReader)
+	{
+		theChar = static_cast<slong>(static_cast<signed char>(mReader->ReadByte()));
+	}
+	else
+	{
+		mWriter->WriteByte(static_cast<unsigned char>(theChar));
+	}
 }
 
 void DataSync::SyncSByte(unsigned char& theChar)
 {
-	SyncByte((char&)theChar);
+	SyncSByte((slong&)theChar);
 }
 
 void DataSync::SyncSByte(unsigned short& theChar)
 {
-	SyncByte((char&)theChar);
+	SyncSByte((slong&)theChar);
 }
 
 void DataSync::SyncSByte(uint32_t& theChar)
 {
-	SyncByte((char&)theChar);
+	SyncSByte((slong&)theChar);
 }
 
 void DataSync::SyncSByte(int& theChar)
 {
-	SyncByte((char&)theChar);
+	SyncSByte((slong&)theChar);
 }
 
 void DataSync::SyncBool(bool& theBool)

@@ -1,7 +1,7 @@
 #include "Music.h"
 #include "../Board.h"
 #include "PlayerInfo.h"
-#include "../../LawnApp.h"
+#include "LawnApp.h"
 #include "SexyAppFramework/paklib/PakInterface.h"
 #include "Sexy.TodLib/TodDebug.h"
 #include "Sexy.TodLib/TodCommon.h"
@@ -410,7 +410,7 @@ void Music::PlayMusic(MusicTune theMusicTune, int theOffset, int theDrumsOffset)
     }
 }
 
-unsigned long Music::GetMusicOrder(MusicFile theMusicFile)
+ulong Music::GetMusicOrder(MusicFile theMusicFile)
 {
 	TOD_ASSERT(theMusicFile != MusicFile::MUSIC_FILE_NONE);
 	return ((BassMusicInterface*)mApp->mMusicInterface)->GetMusicOrder((int)theMusicFile);

@@ -6,7 +6,7 @@
 #include "SeedPacket.h"
 #include "CursorObject.h"
 #include "Resources.h"
-#include "MessageWidget.h"
+#include "WidgetMessage.h"
 #include "Lawn/system/ReanimationLawn.h"
 #include "Sexy.TodLib/TodFoley.h"
 #include "Sexy.TodLib/Reanimator.h"

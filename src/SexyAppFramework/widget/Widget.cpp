@@ -1,8 +1,8 @@
 #include "Widget.h"
 #include "WidgetManager.h"
-#include "../graphics/Graphics.h"
-#include "../graphics/Font.h"
-#include "../graphics/Image.h"
+#include "SexyAppFramework/graphics/Graphics.h"
+#include "SexyAppFramework/graphics/Font.h"
+#include "SexyAppFramework/graphics/Image.h"
 #include "../SexyAppBase.h"
 #include "../misc/ResourceManager.h"
 

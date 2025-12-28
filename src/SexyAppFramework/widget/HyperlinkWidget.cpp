@@ -1,7 +1,7 @@
 #include "HyperlinkWidget.h"
-#include "../graphics/Graphics.h"
-#include "../graphics/ImageFont.h"
-//#include "../graphics/SysFont.h"
+#include "SexyAppFramework/graphics/Graphics.h"
+#include "SexyAppFramework/graphics/ImageFont.h"
+//#include "SexyAppFramework/graphics/SysFont.h"
 #include "WidgetManager.h"
 #include "../../Resources.h" // bad
 

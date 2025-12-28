@@ -287,23 +287,23 @@ int PakInterface::FClose(PFILE* theFile)
 }
 
 //0x5D87B0
-int PakInterface::FSeek(PFILE* theFile, long theOffset, int theOrigin)
+int PakInterface::FSeek(PFILE* theFile, slong theOffset, int theOrigin)
 {
 	if (theFile->mRecord != NULL)
 	{
 		if (theOrigin == SEEK_SET)
-			theFile->mPos = theOffset;
+			theFile->mPos = static_cast<int>(theOffset);
 		else if (theOrigin == SEEK_END)
-			theFile->mPos = theFile->mRecord->mSize - theOffset;
+			theFile->mPos = theFile->mRecord->mSize - static_cast<int>(theOffset);
 		else if (theOrigin == SEEK_CUR)
-			theFile->mPos += theOffset;
+			theFile->mPos += static_cast<int>(theOffset);
 
 		// 当前指针位置不能超过整个文件的大小，且不能小于 0
 		theFile->mPos = std::max(std::min(theFile->mPos, theFile->mRecord->mSize), 0);
 		return 0;
 	}
 	else
-		return fseek(theFile->mFP, theOffset, theOrigin);
+		return fseek(theFile->mFP, static_cast<slong>(theOffset), theOrigin);
 }
 
 //0x5D8830

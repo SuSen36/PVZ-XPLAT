@@ -9,7 +9,7 @@
 #include "LawnApp.h"
 #include "Lawn/system/Music.h"
 #include "Resources.h"
-#include "MessageWidget.h"
+#include "WidgetMessage.h"
 #include "GameConstants.h"
 #include "Lawn/widgets/LawnDialog.h"
 #include "Lawn/widgets/GameButton.h"

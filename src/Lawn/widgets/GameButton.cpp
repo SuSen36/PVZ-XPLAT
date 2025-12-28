@@ -1,5 +1,5 @@
 #include "GameButton.h"
-#include "../../LawnApp.h"
+#include "LawnApp.h"
 #include "../../Resources.h"
 #include "Sexy.TodLib/TodCommon.h"
 #include "SexyAppFramework/graphics/Font.h"

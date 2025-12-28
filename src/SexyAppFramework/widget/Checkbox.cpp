@@ -1,6 +1,6 @@
 #include "Checkbox.h"
 #include "CheckboxListener.h"
-#include "../graphics/Graphics.h"
+#include "SexyAppFramework/graphics/Graphics.h"
 
 using namespace Sexy;
 

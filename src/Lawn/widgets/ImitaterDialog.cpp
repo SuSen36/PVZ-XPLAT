@@ -1,11 +1,11 @@
 #include "../Plant.h"
 #include "GameButton.h"
 #include "../SeedPacket.h"
-#include "../../LawnApp.h"
+#include "LawnApp.h"
 #include "ImitaterDialog.h"
 #include "SeedChooserScreen.h"
 #include "../ToolTipWidget.h"
-#include "../../GameConstants.h"
+#include "GameConstants.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
 
 //0x482B00

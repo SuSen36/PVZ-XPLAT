@@ -25,6 +25,15 @@
 #include <SDL_endian.h>
 #include "Sexy.TodLib/TodDebug.h"
 
+////////////////////////////////////////////
+typedef Uint8   uchar;
+typedef Uint16  ushort;
+typedef Uint32  uint;
+typedef Uint64  ulong;
+typedef Sint64  slong;
+typedef Sint64  int64;
+////////////////////////////////////////////
+
 #ifdef ANDROID
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
@@ -49,11 +58,11 @@ typedef uint8_t BYTE;
 typedef uint16_t WORD;
 typedef uint32_t DWORD;
 typedef uint64_t QWORD;
-typedef uint32_t UINT;
+typedef uint UINT;
 typedef int64_t int64;
 typedef int INT;
-typedef long LONG;
-typedef unsigned long ULONG;
+typedef slong LONG;
+typedef ulong ULONG;
 typedef LONG WINBOOL;
 typedef void* HANDLE;
 typedef WORD* LPWORD;
@@ -138,12 +147,6 @@ typedef std::string			SexyString;
 
 #define LENGTH(anyarray) (sizeof(anyarray) / sizeof(anyarray[0]))
 
-typedef Uint8   uchar;
-typedef Uint16  ushort;
-typedef Uint32  uint;
-typedef Uint64  ulong;
-typedef Sint64  int64;
-
 typedef std::map<std::string, std::string>		DefinesMap;
 typedef std::map<std::wstring, std::wstring>	WStringWStringMap;
 typedef SexyString::value_type					SexyChar;
@@ -168,8 +171,7 @@ extern std::string	vformat(const char* fmt, va_list argPtr);
 extern std::wstring	vformat(const wchar_t* fmt, va_list argPtr);
 extern std::string	StrFormat(const char* fmt ...);
 extern std::wstring	StrFormat(const wchar_t* fmt ...);
-//bool				CheckFor98Mill();
-//bool				CheckForVista();
+
 std::string			GetAppDataFolder();
 void				SetAppDataFolder(const std::string& thePath);
 std::string			GetPakFolder();

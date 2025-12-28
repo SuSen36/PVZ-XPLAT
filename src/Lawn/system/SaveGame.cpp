@@ -3,11 +3,11 @@
 #include "../Board.h"
 #include "../Challenge.h"
 #include "../SeedPacket.h"
-#include "../../LawnApp.h"
+#include "LawnApp.h"
 #include "../CursorObject.h"
 #include "../../Resources.h"
 #include "../../ConstEnums.h"
-#include "../MessageWidget.h"
+#include "Lawn/WidgetMessage.h"
 #include "Sexy.TodLib/Trail.h"
 #include "zlib.h"
 #include "Sexy.TodLib/Attachment.h"
@@ -26,7 +26,7 @@ void SaveGameContext::SyncBytes(void* theDest, int theReadSize)
 	int aReadSize = theReadSize;
 	if (mReading)
 	{
-		if ((unsigned long)ByteLeftToRead() < 4)
+		if ((ulong)ByteLeftToRead() < 4)
 		{
 			mFailed = true;
 		}
@@ -65,7 +65,7 @@ void SaveGameContext::SyncInt(int& theInt)
 {
 	if (mReading)
 	{
-		if ((unsigned long)ByteLeftToRead() < 4)
+		if ((ulong)ByteLeftToRead() < 4)
 		{
 			mFailed = true;
 		}
@@ -402,14 +402,14 @@ void SyncBoard(SaveGameContext& theContext, Board* theBoard)
 
 	theContext.SyncBytes(theBoard->mCursorObject, sizeof(CursorObject));
 	theContext.SyncBytes(theBoard->mCursorPreview, sizeof(CursorPreview));
-	theContext.SyncBytes(theBoard->mAdvice, sizeof(MessageWidget));
+	theContext.SyncBytes(theBoard->mAdvice, sizeof(WidgetMessage));
 	theContext.SyncBytes(theBoard->mSeedBank, sizeof(SeedBank));
 	theContext.SyncBytes(theBoard->mChallenge, sizeof(Challenge));
 	theContext.SyncBytes(theBoard->mApp->mMusic, sizeof(Music));
 	
 	if (theContext.mReading)
 	{
-		if ((unsigned long)theContext.ByteLeftToRead() < 4)
+		if ((ulong)theContext.ByteLeftToRead() < 4)
 		{
 			theContext.mFailed = true;
 		}

@@ -4,16 +4,16 @@
 #include "StoreScreen.h"
 #include "../Cutscene.h"
 #include "../SeedPacket.h"
-#include "../../LawnApp.h"
+#include "LawnApp.h"
 #include "AlmanacDialog.h"
 #include "ImitaterDialog.h"
-#include "../System/Music.h"
+#include "Lawn/System/Music.h"
 #include "../../Resources.h"
-#include "../../Lawn/Plant.h"
+#include "Lawn/Plant.h"
 #include "../ToolTipWidget.h"
 #include "SeedChooserScreen.h"
-#include "../../GameConstants.h"
-#include "../System/PlayerInfo.h"
+#include "GameConstants.h"
+#include "Lawn/system/PlayerInfo.h"
 #include "SexyAppFramework/widget/Dialog.h"
 #include "SexyAppFramework/misc/MTRand.h"
 #include "Sexy.TodLib/TodStringFile.h"
@@ -188,7 +188,7 @@ int SeedChooserScreen::PickFromWeightedArrayUsingSpecialRandSeed(TodWeightedArra
 		aTotalWeight += theArray[i].mWeight;
 	TOD_ASSERT(aTotalWeight > 0);
 
-	int aRndResult = theLevelRNG.Next((unsigned long)aTotalWeight);
+	int aRndResult = theLevelRNG.Next((ulong)aTotalWeight);
 	int aWeight = 0;
 	for (int j = 0; j < theCount; j++)
 	{

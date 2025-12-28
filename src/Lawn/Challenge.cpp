@@ -14,7 +14,7 @@
 #include "CursorObject.h"
 #include "Lawn/system/Music.h"
 #include "ToolTipWidget.h"
-#include "MessageWidget.h"
+#include "WidgetMessage.h"
 #include "GameConstants.h"
 #include "Lawn/system/PlayerInfo.h"
 #include "Lawn/widgets/GameButton.h"
@@ -2525,7 +2525,7 @@ void Challenge::InitZombieWavesSurvival()
 	mBoard->mZombieAllowed[ZOMBIE_NORMAL] = true;
 	MTRand aLevelRNG = MTRand(mBoard->GetLevelRandSeed());
 
-	if (aLevelRNG.Next((unsigned long)5) == 0)
+	if (aLevelRNG.Next((ulong)5) == 0)
 	{
 		mBoard->mZombieAllowed[ZOMBIE_NEWSPAPER] = true;
 	}
@@ -2537,7 +2537,7 @@ void Challenge::InitZombieWavesSurvival()
 	int aCapacity = std::min(mSurvivalStage + 1, 9);
 	while (aCapacity > 0)
 	{
-		ZombieType aRandZombie = (ZombieType)aLevelRNG.Next((unsigned long)NUM_ZOMBIE_TYPES);
+		ZombieType aRandZombie = (ZombieType)aLevelRNG.Next((ulong)NUM_ZOMBIE_TYPES);
 		if (mBoard->mZombieAllowed[aRandZombie])																	continue;
 		if (mBoard->IsZombieTypePoolOnly(aRandZombie) && !mBoard->StageHasPool())									continue;
 		if (mBoard->StageHasRoof() && (aRandZombie == ZOMBIE_DIGGER || aRandZombie == ZOMBIE_DANCER))				continue;
@@ -3052,7 +3052,7 @@ void Challenge::SpawnZombieWave()
 void Challenge::DrawStormFlash(Graphics* g, int theTime, int theMaxAmount)
 {
 	MTRand aDrawRand = MTRand(mBoard->mMainCounter / 6);
-	int aDarkness = TodAnimateCurve(150, 0, theTime, 255 - theMaxAmount, 255, CURVE_LINEAR) + aDrawRand.NextNoAssert((unsigned long)64) - 32;
+	int aDarkness = TodAnimateCurve(150, 0, theTime, 255 - theMaxAmount, 255, CURVE_LINEAR) + aDrawRand.NextNoAssert((ulong)64) - 32;
 	// 设置暴风雨阴暗的颜色
 	g->SetColor(Color(0, 0, 0, std::clamp(aDarkness, 0, 255)));
 	// 绘制暴风雨阴暗的主色

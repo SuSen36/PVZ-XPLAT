@@ -9,13 +9,11 @@ namespace Sexy
 class SexyApp : public SexyAppBase
 {
 public:
-	std::string				mBetaSupportSiteOverride;
-	std::string				mBetaSupportProdNameOverride;
 	std::string				mReferId;
 	std::string				mVariation;
-	unsigned long			mDownloadId;
+	ulong					mDownloadId;
 	std::string				mRegSource;
-	unsigned long			mLastVerCheckQueryTime;
+	ulong					mLastVerCheckQueryTime;
 	bool					mSkipAd;
 	bool					mDontUpdate;
 

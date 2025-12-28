@@ -1,6 +1,7 @@
 #ifndef __SEXY_SMARTPTR_H__
 #define __SEXY_SMARTPTR_H__
 #include "../Common.h"
+#include <atomic>
 
 #pragma pack(push,8) // need 8 byte alignment for InterlockedIncrement
 
@@ -13,7 +14,7 @@ namespace Sexy
 class RefCount
 {
 private:
-	mutable long mRefCount;
+	mutable std::atomic<slong> mRefCount;
 
 protected: 
 	// The compiler allows a derived destructor to be called if it's not explicitly declared 
@@ -27,13 +28,13 @@ public:
 
 	const RefCount* CreateRef() const
 	{ 
-		InterlockedIncrement(&mRefCount);
+		mRefCount.fetch_add(1, std::memory_order_relaxed);
 		return this;
 	}
 	
 	void Release()
 	{
-		if(InterlockedDecrement(&mRefCount)<=0)
+		if(mRefCount.fetch_sub(1, std::memory_order_acq_rel)<=1)
 			delete this;
 	}
 
@@ -43,7 +44,7 @@ public:
 	RefCount(const RefCount&) : mRefCount(0) {}
 	RefCount& operator=(const RefCount&) { return *this; }
 
-	unsigned long GetRefCount() { return mRefCount; }	
+	ulong GetRefCount() { return static_cast<ulong>(mRefCount.load(std::memory_order_relaxed)); }	
 };
 
 ///////////////////////////////////////////////////////////////////////////////

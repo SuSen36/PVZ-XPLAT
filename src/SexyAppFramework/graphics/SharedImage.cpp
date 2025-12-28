@@ -1,5 +1,5 @@
 #include "SharedImage.h"
-#include "../graphics/GLImage.h"
+#include "SexyAppFramework/graphics/GLImage.h"
 #include "../SexyAppBase.h"
 
 using namespace Sexy;

@@ -2,6 +2,7 @@
 #define __MTRAND_H__
 
 #include <string>
+#include "SexyAppFramework/Common.h"
 
 namespace Sexy
 {
@@ -10,20 +11,20 @@ namespace Sexy
 
 class MTRand
 {
-	unsigned long mt[MTRAND_N]; /* the array for the state vector  */
+	ulong mt[MTRAND_N]; /* the array for the state vector  */
 	int mti;
 
 public:
 	MTRand(const std::string& theSerialData);
-	MTRand(unsigned long seed);
+	MTRand(ulong seed);
 	MTRand();
 
 	void SRand(const std::string& theSerialData);
-	void SRand(unsigned long seed);
-	unsigned long NextNoAssert();
-	unsigned long Next();
-	unsigned long NextNoAssert(unsigned long range);
-	unsigned long Next(unsigned long range);
+	void SRand(ulong seed);
+	ulong NextNoAssert();
+	ulong Next();
+	ulong NextNoAssert(ulong range);
+	ulong Next(ulong range);
 	float NextNoAssert(float range);
 	float Next( float range );
 

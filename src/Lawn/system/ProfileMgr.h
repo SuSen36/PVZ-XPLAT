@@ -14,8 +14,8 @@ class ProfileMgr
 {
 protected:
 	ProfileMap			mProfileMap;			//+0x4
-	unsigned long		mNextProfileId;			//+0x10
-	unsigned long		mNextProfileUseSeq;		//+0x14
+	ulong				mNextProfileId;			//+0x10
+	ulong				mNextProfileUseSeq;		//+0x14
 
 protected:
 	void				SyncState(DataSync& theSync);

@@ -2,6 +2,7 @@
 #define __MUSIC_H__
 
 #include <string>
+#include "SexyAppFramework/Common.h"
 #include <bass.h>
 
 class LawnApp;
@@ -109,7 +110,7 @@ public:
 	/*inline*/ void				MakeSureMusicIsPlaying(MusicTune theMusicTune);
 	/*inline*/ void				FadeOut(int theFadeOutDuration);
 	void						SetupMusicFileForTune(MusicFile theMusicFile, MusicTune theMusicTune);
-	unsigned long				GetMusicOrder(MusicFile theMusicFile);
+	ulong						GetMusicOrder(MusicFile theMusicFile);
 	void						MusicCreditScreenInit();
 	int							GetNumLoadingTasks();
 };

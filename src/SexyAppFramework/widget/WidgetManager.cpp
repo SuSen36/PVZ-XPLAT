@@ -1,9 +1,9 @@
 #include "WidgetManager.h"
 #include "Widget.h"
-#include "../graphics/Graphics.h"
-#include "../graphics/Image.h"
+#include "SexyAppFramework/graphics/Graphics.h"
+#include "SexyAppFramework/graphics/Image.h"
 #include "../misc/KeyCodes.h"
-#include "../graphics/GLImage.h"
+#include "SexyAppFramework/graphics/GLImage.h"
 #include "../SexyAppBase.h"
 
 using namespace Sexy;

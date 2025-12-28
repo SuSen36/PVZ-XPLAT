@@ -28,7 +28,7 @@ class LawnApp;
 class CursorObject;
 class CursorPreview;
 class GameButton;
-class MessageWidget;
+class WidgetMessage;
 class SeedBank;
 class ToolTipWidget;
 class CutScene;
@@ -112,7 +112,7 @@ public:
 	DataArray<GridItem>				mGridItems;												//+0x11C
 	CursorObject*					mCursorObject;											//+0x138
 	CursorPreview*					mCursorPreview;											//+0x13C
-	MessageWidget*					mAdvice;												//+0x140
+	WidgetMessage*					mAdvice;												//+0x140
 	SeedBank*						mSeedBank;												//+0x144
 	GameButton*						mMenuButton;											//+0x148
 	GameButton*						mStoreButton;											//+0x14C

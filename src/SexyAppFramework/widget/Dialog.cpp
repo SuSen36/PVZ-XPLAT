@@ -3,8 +3,8 @@
 #include "DialogButton.h"
 #include "../SexyAppBase.h"
 #include "WidgetManager.h"
-//#include "../graphics/SysFont.h"
-#include "../graphics/ImageFont.h"
+//#include "SexyAppFramework/graphics/SysFont.h"
+#include "SexyAppFramework/graphics/ImageFont.h"
 #include "../../Resources.h" // bad
 
 using namespace Sexy;

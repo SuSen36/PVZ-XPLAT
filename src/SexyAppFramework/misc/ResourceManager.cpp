@@ -2,10 +2,10 @@
 #include "ResourceManager.h"
 #include "XMLParser.h"
 #include "SexyAppFramework/sound/SoundManager.h"
-#include "../graphics/GLImage.h"
+#include "SexyAppFramework/graphics/GLImage.h"
 #include "SexyAppFramework/graphics/GLInterface.h"
-#include "../graphics/ImageFont.h"
-//#include "../graphics/SysFont.h"
+#include "SexyAppFramework/graphics/ImageFont.h"
+//#include "SexyAppFramework/graphics/SysFont.h"
 #include "SexyAppFramework/imagelib/ImageLib.h"
 
 

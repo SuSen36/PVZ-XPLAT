@@ -3,7 +3,7 @@
 #include "SexyAppFramework/widget/WidgetManager.h"
 #include "SexyAppFramework/graphics/ImageFont.h"
 #include "SexyAppFramework/sound/SoundManager.h"
-#include "../../LawnApp.h"
+#include "LawnApp.h"
 #include "../../Resources.h"
 #include "Sexy.TodLib/TodCommon.h"
 #include "SexyAppFramework/misc/SexyMatrix.h"
@@ -11,8 +11,8 @@
 #include "Sexy.TodLib/EffectSystem.h"
 #include "Sexy.TodLib/TodDebug.h"
 #include "Sexy.TodLib/Reanimator.h"
-#include "../../GameConstants.h"
-#include "../System/Music.h"
+#include "GameConstants.h"
+#include "Lawn/system/Music.h"
 #include "SDL_timer.h"
 
 //0x48D4B0

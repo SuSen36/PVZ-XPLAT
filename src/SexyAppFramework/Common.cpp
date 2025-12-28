@@ -46,7 +46,7 @@ int Sexy::Rand()
 
 int Sexy::Rand(int range)
 {
-	return gMTRand.Next((unsigned long)range);
+	return gMTRand.Next(static_cast<ulong>(range));
 }
 
 float Sexy::Rand(float range)

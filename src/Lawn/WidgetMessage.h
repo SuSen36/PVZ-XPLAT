@@ -1,5 +1,5 @@
-#ifndef __MESSAGEWIDGET_H__
-#define __MESSAGEWIDGET_H__
+#ifndef __WIDGETMESSAGE_H__
+#define __WIDGETMESSAGE_H__
 
 #include "ConstEnums.h"
 #include "SexyAppFramework/Common.h"
@@ -15,7 +15,7 @@ namespace Sexy
 	class Graphics;
 }
 
-class MessageWidget
+class WidgetMessage
 {
 public:
 	LawnApp*			mApp;									//+0x0
@@ -30,8 +30,8 @@ public:
 	MessageStyle		mMessageStyleNext;						//+0x318
 
 public:
-	MessageWidget(LawnApp* theApp);
-	~MessageWidget() { ClearReanim(); }
+	WidgetMessage(LawnApp* theApp);
+	~WidgetMessage() { ClearReanim(); }
 
 	/*inline*/ void		SetLabel(const SexyString& theNewLabel, MessageStyle theMessageStyle);
 	void				Update();

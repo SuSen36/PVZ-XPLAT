@@ -1,6 +1,6 @@
 #include "DialogButton.h"
-//#include "../graphics/SysFont.h"
-#include "../graphics/ImageFont.h"
+//#include "SexyAppFramework/graphics/SysFont.h"
+#include "SexyAppFramework/graphics/ImageFont.h"
 #include "WidgetManager.h"
 #include "../../Resources.h" // bad
 

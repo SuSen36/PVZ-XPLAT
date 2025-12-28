@@ -32,7 +32,7 @@
 #include "Resources.h"
 #include "CursorObject.h"
 #include "ToolTipWidget.h"
-#include "MessageWidget.h"
+#include "WidgetMessage.h"
 #include "GameConstants.h"
 #include "Lawn/widgets/GameButton.h"
 #include "SexyAppFramework/graphics/Graphics.h"
@@ -168,7 +168,7 @@ Board::Board(LawnApp* theApp)
 	mShowShovel = false;
 	mToolTip = new ToolTipWidget();
 	//mDebugFont = new SysFont("Arial Unicode MS", 10, true, false, false);
-	mAdvice = new MessageWidget(mApp);
+	mAdvice = new WidgetMessage(mApp);
 	mBackground = BackgroundType::BACKGROUND_1_DAY;
 	mMainCounter = 0;
 	mTutorialState = TutorialState::TUTORIAL_OFF;
@@ -538,7 +538,7 @@ void Board::AddGraveStones(int theGridX, int theCount, MTRand& theLevelRNG)
 	int i = 0;
 	while (i < theCount)
 	{
-		int aGridY = theLevelRNG.Next((unsigned long)MAX_GRID_SIZE_Y);
+		int aGridY = theLevelRNG.Next((ulong)MAX_GRID_SIZE_Y);
 		//if (aAllowGraveStone[aGridY])
 		//{
 		//	aAllowGraveStone[aGridY] = false;

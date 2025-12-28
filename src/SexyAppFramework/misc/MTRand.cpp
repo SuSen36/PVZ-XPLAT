@@ -62,7 +62,7 @@ MTRand::MTRand(const std::string& theSerialData)
 	mti=MTRAND_N+1; /* mti==MTRAND_N+1 means mt[MTRAND_N] is not initialized */
 }
 
-MTRand::MTRand(unsigned long seed)    
+MTRand::MTRand(ulong seed)    
 {
 	SRand(seed);
 }
@@ -88,15 +88,16 @@ void MTRand::SetRandAllowed(bool allowed)
 
 void MTRand::SRand(const std::string& theSerialData)
 {
-	if (theSerialData.size() == MTRAND_N*4)
+	const size_t kStateBytes = MTRAND_N * sizeof(ulong);
+	if (theSerialData.size() == kStateBytes)
 	{
-		memcpy(mt, theSerialData.c_str(), MTRAND_N*4);
+		memcpy(mt, theSerialData.c_str(), kStateBytes);
 	}
 	else
 		SRand(4357);
 }
 
-void MTRand::SRand(unsigned long seed)
+void MTRand::SRand(ulong seed)
 {
 	if (seed == 0)
 		seed = 4357;
@@ -119,16 +120,16 @@ void MTRand::SRand(unsigned long seed)
 	}
 }
 
-unsigned long MTRand::Next()
+ulong MTRand::Next()
 {
 	TOD_ASSERT(gRandAllowed==0);
 	return NextNoAssert();
 }
 
-unsigned long MTRand::NextNoAssert()
+ulong MTRand::NextNoAssert()
 {
-    unsigned long y;
-    static unsigned long mag01[2]={0x0, MATRIX_A};
+    ulong y;
+    static ulong mag01[2]={0x0, MATRIX_A};
     /* mag01[x] = x * MATRIX_A  for x=0,1 */
 
 	if (mti >= MTRAND_N) { /* generate MTRAND_N words at one time */
@@ -163,12 +164,12 @@ unsigned long MTRand::NextNoAssert()
     return y; 
 }
 
-unsigned long MTRand::NextNoAssert(unsigned long range)
+ulong MTRand::NextNoAssert(ulong range)
 {
 	return NextNoAssert() % range;
 }
 
-unsigned long MTRand::Next(unsigned long range)
+ulong MTRand::Next(ulong range)
 {
 	TOD_ASSERT(gRandAllowed==0);
 	return NextNoAssert( range );
@@ -189,8 +190,9 @@ std::string MTRand::Serialize()
 {
 	std::string aString;
 
-	aString.resize(MTRAND_N*4);
-	memcpy((char*) aString.c_str(), mt, MTRAND_N*4);
+	const size_t kStateBytes = MTRAND_N * sizeof(ulong);
+	aString.resize(kStateBytes);
+	memcpy((char*) aString.c_str(), mt, kStateBytes);
 
 	return aString;
 }

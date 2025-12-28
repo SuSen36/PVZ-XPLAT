@@ -578,7 +578,7 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
 
     case ZombieType::ZOMBIE_DANCER:  //0x5234DF
         // @Patoke: add scaling for new assets
-        mScaleZombie = 0.8f;
+        mScaleZombie = 0.79872f;
         if (!IsOnBoard())
         {
             // @Patoke: oops
@@ -596,8 +596,7 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
         break;
 
     case ZombieType::ZOMBIE_BACKUP_DANCER:  //0x523541
-        // @Patoke: add scaling for new assets
-        mScaleZombie = 0.8f;
+        mScaleZombie = 0.79872f;
         if (!IsOnBoard())
         {
             PlayZombieReanim("anim_armraise", ReanimLoopType::REANIM_LOOP, 0, 12.0f);

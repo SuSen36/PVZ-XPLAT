@@ -17,7 +17,7 @@ public:
 		float	mY;
 		float	mU;
 		float	mV;
-		long	mDiffuse;
+		slong	mDiffuse;
 	};
 
 	struct SWVertex

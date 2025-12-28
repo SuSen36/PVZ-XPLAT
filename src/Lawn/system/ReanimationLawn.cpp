@@ -1,6 +1,6 @@
 #include "../Plant.h"
 #include "../Zombie.h"
-#include "../../LawnApp.h"
+#include "LawnApp.h"
 #include "ReanimationLawn.h"
 #include "Sexy.TodLib/TodDebug.h"
 #include "SexyAppFramework/graphics/Color.h"
@@ -346,6 +346,29 @@ MemoryImage* ReanimatorCache::MakeCachedZombieFrame(ZombieType theZombieType)
 		aReanim.AssignRenderGroupToTrack("boss_body1", RENDER_GROUP_HIDDEN);
 		aReanim.AssignRenderGroupToTrack("boss_neck", RENDER_GROUP_HIDDEN);
 		aReanim.AssignRenderGroupToTrack("boss_head2", RENDER_GROUP_HIDDEN);
+		aReanim.Draw(&aMemoryGraphics);
+	}
+	else if (theZombieType == ZombieType::ZOMBIE_DANCER)
+	{
+		Reanimation aReanim;
+		aReanim.OverrideScale(0.79872f, 0.79872f);
+		aPosX += 8.0f;
+		aPosY += 32.0f;
+
+		aReanim.ReanimationInitializeType(aPosX, aPosY, aZombieDef.mReanimationType);
+		aReanim.PlayReanim("anim_moonwalk", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 24.0f);
+		aReanim.Draw(&aMemoryGraphics);
+	}
+	else if (theZombieType == ZombieType::ZOMBIE_BACKUP_DANCER)
+	{
+		Reanimation aReanim;
+		aReanim.OverrideScale(0.79872f, 0.79872f);
+		aPosX += 8.0f;
+		aPosY += 32.0f;
+
+		aReanim.ReanimationInitializeType(aPosX, aPosY, aZombieDef.mReanimationType);
+		aReanim.PlayReanim("anim_armraise", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 24.0f);
+		aReanim.mAnimTime = 0.5f;
 		aReanim.Draw(&aMemoryGraphics);
 	}
 	else

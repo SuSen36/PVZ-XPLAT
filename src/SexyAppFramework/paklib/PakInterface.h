@@ -20,7 +20,7 @@ class PakCollection;
 struct PakRecord
 {
 public:
-    PakCollection* mCollection;         // 指向该资源文件所在的资源包
+    PakCollection* mCollection;          // 指向该资源文件所在的资源包
     std::string mFileName;               // 资源文件的名称及路径
     int64_t mFileTime;                   // 资源文件的时间戳
     int mStartPos;                       // 该资源文件在资源包中的位置（偏移量）
@@ -61,7 +61,7 @@ class PakInterfaceBase
 public:
     virtual PFILE* FOpen(const char* theFileName, const char* theAccess) = 0;
     virtual int FClose(PFILE* theFile) = 0;
-    virtual int FSeek(PFILE* theFile, long theOffset, int theOrigin) = 0;
+    virtual int FSeek(PFILE* theFile, slong theOffset, int theOrigin) = 0;
     virtual int FTell(PFILE* theFile) = 0;
     virtual size_t FRead(void* thePtr, int theElemSize, int theCount, PFILE* theFile) = 0;
     virtual int FGetC(PFILE* theFile) = 0;
@@ -86,7 +86,7 @@ public:
     void            StorePakPriority(const std::string& theFileName, int thePriority); // 新增函数用于存储优先级
     PFILE*          FOpen(const char* theFileName, const char* theAccess) override;
     int             FClose(PFILE* theFile) override;
-    int             FSeek(PFILE* theFile, long theOffset, int theOrigin) override;
+    int             FSeek(PFILE* theFile, slong theOffset, int theOrigin) override;
     int             FTell(PFILE* theFile) override;
     size_t          FRead(void* thePtr, int theElemSize, int theCount, PFILE* theFile) override;
     int             FGetC(PFILE* theFile) override;
@@ -109,7 +109,7 @@ static int p_fclose(PFILE* theFile) {
     return gPakInterface->FClose(theFile);
 }
 
-static int p_fseek(PFILE* theFile, long theOffset, int theOrigin) {
+static int p_fseek(PFILE* theFile, slong theOffset, int theOrigin) {
     return gPakInterface->FSeek(theFile, theOffset, theOrigin);
 }
 

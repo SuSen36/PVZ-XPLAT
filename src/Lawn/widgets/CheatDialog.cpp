@@ -1,11 +1,11 @@
 #include "CheatDialog.h"
 #include "../Board.h"
-#include "../../LawnApp.h"
+#include "LawnApp.h"
 #include "Lawn/LawnCommon.h"
 #include "ChallengeScreen.h"
 #include "../../Resources.h"
-#include "../../GameConstants.h"
-#include "../System/PlayerInfo.h"
+#include "GameConstants.h"
+#include "Lawn/system/PlayerInfo.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
 
 CheatDialog::CheatDialog(LawnApp* theApp) : LawnDialog(theApp, Dialogs::DIALOG_CHEAT, true, __S("CHEAT"), __S("Enter Your Cheat Code:"), __S(""), Dialog::BUTTONS_OK_CANCEL)
