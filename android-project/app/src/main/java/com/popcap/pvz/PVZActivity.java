@@ -20,13 +20,12 @@ public class PVZActivity extends SDLActivity {
     static {
         System.loadLibrary("SDL2");
         System.loadLibrary("bass");
-        System.loadLibrary("re-plants-vs-zombies");
+        System.loadLibrary("xp-plants-vs-zombies");
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE); // 强制为横屏
         copyAssetsToExternalStorage();
     }
 

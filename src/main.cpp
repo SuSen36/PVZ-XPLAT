@@ -24,11 +24,6 @@ void runGame() {
     // Initialize SDL
     SDL_SetMainReady();
 
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        TodLog("SDL Initialization failed: " , SDL_GetError());
-        return;
-    }
-
     // Initialize necessary settings
     TodStringListSetColors(gLawnStringFormats, gLawnStringFormatCount);
     gGetCurrentLevelName = LawnGetCurrentLevelName;
@@ -36,8 +31,8 @@ void runGame() {
     gAppHasUsedCheatKeys = LawnHasUsedCheatKeys;
     gExtractResourcesByName = Sexy::ExtractResourcesByName;
 
-    // Create an instance of LawnApp
-    std::unique_ptr<LawnApp> gLawnApp(new LawnApp());
+    // Create an instance of LawnApp using the global pointer
+    gLawnApp = new LawnApp();
     if (gLawnApp) {
         gLawnApp->Init();
         gLawnApp->Start();
@@ -45,6 +40,10 @@ void runGame() {
     } else {
         TodLog("Failed to create LawnApp instance.");
     }
+
+    // Clean up the global LawnApp instance
+    delete gLawnApp;
+    gLawnApp = nullptr;
 
     SDL_Quit();  // Quit SDL
 }

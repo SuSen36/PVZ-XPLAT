@@ -9,11 +9,14 @@
 #include "GameConstants.h"
 #include "SexyAppFramework/graphics/Font.h"
 #include "SexyAppFramework/graphics/MemoryImage.h"
+#include "ConstEnums.h"
+#include "SexyAppFramework/Common.h"
+#include <cstring>
 
 unsigned int gReanimatorDefCount;                     //[0x6A9EE4]
-ReanimatorDefinition* gReanimatorDefArray;   //[0x6A9EE8]
+ReanimatorDefinition* gReanimatorDefArray;            //[0x6A9EE8]
 unsigned int gReanimationParamArraySize;              //[0x6A9EEC]
-ReanimationParams* gReanimationParamArray;   //[0x6A9EF0]
+ReanimationParams* gReanimationParamArray;            //[0x6A9EF0]
 
 ReanimationParams gLawnReanimationArray[(int)ReanimationType::NUM_REANIMS] = { //0x6A1340
 	{ ReanimationType::REANIM_LOADBAR_SPROUT,                       "reanim/LoadBar_sprout.reanim",                    1 },
@@ -67,7 +70,8 @@ ReanimationParams gLawnReanimationArray[(int)ReanimationType::NUM_REANIMS] = { /
 	{ ReanimationType::REANIM_BLOVER,                               "reanim/Blover.reanim",                            0 },
 	{ ReanimationType::REANIM_FLOWER_POT,                           "reanim/Pot.reanim",                               0 },
 	{ ReanimationType::REANIM_CACTUS,                               "reanim/Cactus.reanim",                            0 },
-	{ ReanimationType::REANIM_DANCER,                               "reanim/Zombie_disco.reanim",						0 }, // @Patoke: GOTY has different reanim name
+	{ ReanimationType::REANIM_DANCER_DISCO,                         "reanim/Zombie_disco.reanim",					   0 },
+	{ ReanimationType::REANIM_DANCER_JACKSON,                        "reanim/Zombie_Jackson.reanim",				   0 },
 	{ ReanimationType::REANIM_TANGLEKELP,                           "reanim/Tanglekelp.reanim",                        0 },
 	{ ReanimationType::REANIM_STARFRUIT,                            "reanim/Starfruit.reanim",                         0 },
 	{ ReanimationType::REANIM_POLEVAULTER,                          "reanim/Zombie_polevaulter.reanim",                0 },
@@ -78,7 +82,8 @@ ReanimationParams gLawnReanimationArray[(int)ReanimationType::NUM_REANIMS] = { /
 	{ ReanimationType::REANIM_DIGGER_DIRT,                          "reanim/Digger_rising_dirt.reanim",                0 },
 	{ ReanimationType::REANIM_ZOMBIE_DOLPHINRIDER,                  "reanim/Zombie_dolphinrider.reanim",               0 },
 	{ ReanimationType::REANIM_POGO,                                 "reanim/Zombie_pogo.reanim",                       0 },
-	{ ReanimationType::REANIM_BACKUP_DANCER,                        "reanim/Zombie_backup.reanim",                     0 }, // @Patoke: GOTY has different reanim name
+	{ ReanimationType::REANIM_BACKUP_DANCER_DISCO,                  "reanim/Zombie_backup.reanim",                     0 },
+	{ ReanimationType::REANIM_BACKUP_DANCER_JACKSON,                 "reanim/Zombie_dancer.reanim",                     0 },
 	{ ReanimationType::REANIM_BOBSLED,                              "reanim/Zombie_bobsled.reanim",                    0 },
 	{ ReanimationType::REANIM_JACKINTHEBOX,                         "reanim/Zombie_jackbox.reanim",                    0 },
 	{ ReanimationType::REANIM_SNORKEL,                              "reanim/Zombie_snorkle.reanim",                    0 },
@@ -1124,14 +1129,6 @@ void ReanimatorEnsureDefinitionLoaded(ReanimationType theReanimType, bool theIsP
 		if (gSexyAppBase->mShutdown || gAppCloseRequest())  // 预加载时若程序退出，则取消加载
 			return;
 	}
-	else  // < 以下部分仅内测版执行 >
-	{
-		if (gAppHasUsedCheatKeys())
-			TodTraceAndLog("Cheater failed to preload '%s' on %s", aReanimParams->mReanimFileName, gGetCurrentLevelName().c_str());
-		else
-			TodTraceAndLog("Non-cheater failed to preload '%s' on %s", aReanimParams->mReanimFileName, gGetCurrentLevelName().c_str());
-	}  // < 以上部分仅内测版执行 >
-
 	TodHesitationBracket aHesitation("Load Reanim '%s'", aReanimParams->mReanimFileName);
 	if (!ReanimationLoadDefinition(aReanimParams->mReanimFileName, aReanimDef))
 	{

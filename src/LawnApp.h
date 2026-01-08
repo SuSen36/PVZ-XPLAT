@@ -112,6 +112,7 @@ public:
 	std::string					    mDanceCheck;									//+0x8AC
 	std::string					    mDaisyCheck;									//+0x8B0
 	std::string					    mSukhbirCheck;									//+0x8B4
+	std::string					    mThrillerCheck;							    	//+0x8C0
 	bool							mMustacheMode;									//+0x8B8
 	bool							mSuperMowerMode;								//+0x8B9
 	bool							mFutureMode;									//+0x8BA
@@ -119,6 +120,7 @@ public:
 	bool							mDanceMode;										//+0x8BC
 	bool							mDaisyMode;										//+0x8BD
 	bool							mSukhbirMode;									//+0x8BE
+	bool							mThrillerMode;								    //+0x8BF true = Disco, false = Jackson
 	TrialType						mTrialType;										//+0x8C0
 	bool							mDebugTrialLocked;								//+0x8C4
 	bool							mMuteSoundsForCutscene;							//+0x8C5
@@ -295,7 +297,6 @@ public:
 	bool							AdvanceCrazyDaveText();
 	/*inline*/ bool					IsWhackAZombieLevel();
 	void							UpdatePlayTimeStats();
-	void							BetaAddFile(std::list<std::string>& theUploadFileList, std::string theFileName, std::string theShortName);
 	bool							CanPauseNow();
 	/*inline*/ bool					IsPuzzleMode();
 	/*inline*/ bool					IsChallengeMode();
@@ -307,7 +308,6 @@ public:
 	void							LoadGroup(const char* theGroupName, int theGroupAveMsToLoad);
 //	void							TraceLoadGroup(const char* theGroupName, int theGroupTime, int theTotalGroupWeigth, int theTaskWeight);
 	void							CrazyDaveStopSound();
-	/*inline*/ bool					IsTrialStageLocked();
 	/*inline*/ void					FinishZenGardenToturial();
 	bool							UpdatePlayerProfileForFinishingLevel();
 	bool							SaveFileExists();
@@ -321,7 +321,6 @@ public:
 SexyString							LawnGetCurrentLevelName();
 bool								LawnGetCloseRequest();
 bool								LawnHasUsedCheatKeys();
-void								BetaSubmitFunc();
 
 extern bool (*gAppCloseRequest)();				//[0x69E6A0]
 extern bool (*gAppHasUsedCheatKeys)();			//[0x69E6A4]

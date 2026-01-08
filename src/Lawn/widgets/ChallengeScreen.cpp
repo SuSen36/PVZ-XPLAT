@@ -245,22 +245,6 @@ int ChallengeScreen::MoreTrophiesNeeded(int theChallengeIndex)
 		return aDef.mChallengeMode == GAMEMODE_CHALLENGE_FINAL_BOSS ? 1 : 0;
 	}
 	
-	if (mApp->IsTrialStageLocked())
-	{
-		if (mPageIndex == CHALLENGE_PAGE_PUZZLE && aDef.mChallengeMode >= GAMEMODE_SCARY_POTTER_4)
-		{
-			return aDef.mChallengeMode == GAMEMODE_SCARY_POTTER_4 ? 1 : 2;
-		}
-		else if (mPageIndex == CHALLENGE_PAGE_CHALLENGE && aDef.mChallengeMode >= GAMEMODE_CHALLENGE_RAINING_SEEDS)
-		{
-			return aDef.mChallengeMode == GAMEMODE_CHALLENGE_RAINING_SEEDS ? 1 : 2;
-		}
-		else if (mPageIndex == CHALLENGE_PAGE_SURVIVAL && aDef.mChallengeMode >= GAMEMODE_SURVIVAL_NORMAL_STAGE_4)
-		{
-			return aDef.mChallengeMode == GAMEMODE_SURVIVAL_NORMAL_STAGE_4 ? 1 : 2;
-		}
-	}
-
 	if (aDef.mPage == CHALLENGE_PAGE_PUZZLE)
 	{
 		if (IsScaryPotterLevel(aDef.mChallengeMode))
@@ -371,7 +355,7 @@ int ChallengeScreen::AccomplishmentsNeeded(int theChallengeIndex)
 	int aTrophiesNeeded = MoreTrophiesNeeded(theChallengeIndex);
 	GameMode aGameMode = GetChallengeDefinition(theChallengeIndex).mChallengeMode;
 	if (mApp->IsSurvivalEndless(aGameMode) && aTrophiesNeeded <= 3 && mApp->GetNumTrophies(CHALLENGE_PAGE_SURVIVAL) < 10 &&
-		mApp->HasFinishedAdventure() && !mApp->IsTrialStageLocked()) aTrophiesNeeded = 1;
+		mApp->HasFinishedAdventure()) aTrophiesNeeded = 1;
 	return mCheatEnableChallenges ? 0 : aTrophiesNeeded;
 }
 
@@ -675,7 +659,7 @@ void ChallengeScreen::UpdateToolTip()
 						}
 					}
 				}
-				else if (!mApp->HasFinishedAdventure() || mApp->IsTrialStageLocked())
+				else if (!mApp->HasFinishedAdventure())
 				{
 					aLabel = __S("[FINISH_ADVENTURE_TOOLTIP]");
 				}

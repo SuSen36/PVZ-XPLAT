@@ -206,12 +206,6 @@ AwardScreen::AwardScreen(LawnApp* theApp, AwardType theAwardType, bool theShowin
 		ReportAchievement::GiveAchievement(mApp, NovelPeasPrize, false);
 	}
 
-	if (mApp->IsFirstTimeAdventureMode() && aLevel == 25 && mApp->IsTrialStageLocked() && !mApp->mPlayerInfo->mHasSeenUpsell)
-	{
-		mMenuButton->mBtnNoDraw = true;
-		mMenuButton->mDisabled = true;
-	}
-
 	// @Patoke: implemented
 	if (mShowingAchievements) {
 		mShowStartButtonAfterAchievements = !mStartButton->mBtnNoDraw;
@@ -265,10 +259,7 @@ void AwardScreen::DrawAwardSeed(Graphics* g)
 	SeedType aSeedType = mApp->GetAwardSeedForLevel(mApp->mPlayerInfo->GetLevel() - 1);
 	SexyString aAward = Plant::GetNameString(aSeedType, SEED_NONE);
 	SexyString aMessage;
-	if (mApp->IsTrialStageLocked() && aSeedType >= SEED_SQUASH && aSeedType != SEED_TANGLEKELP)
-		aMessage = __S("[AVAILABLE_IN_FULL_VERSION]");
-	else
-		aMessage = Plant::GetToolTip(aSeedType);
+	aMessage = Plant::GetToolTip(aSeedType);
 	DrawBottom(g, __S("[NEW_PLANT]"), aAward, aMessage);
 
 	g->SetScale(2, 2, 350, 129);
@@ -513,17 +504,6 @@ void AwardScreen::StartButtonPressed()
 				{
 					mApp->KillAwardScreen();
 					mApp->ShowGameSelector();
-					return;
-				}
-				if (mApp->IsTrialStageLocked())
-				{
-					mApp->KillAwardScreen();
-					mApp->PreNewGame(GAMEMODE_UPSELL, false);
-					if (!mApp->mPlayerInfo->mHasSeenUpsell)
-					{
-						mApp->mBoard->mStoreButton->mBtnNoDraw = true;
-						mApp->mPlayerInfo->mHasSeenUpsell = true;
-					}
 					return;
 				}
 			}

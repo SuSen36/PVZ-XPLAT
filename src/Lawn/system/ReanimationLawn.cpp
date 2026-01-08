@@ -6,6 +6,7 @@
 #include "SexyAppFramework/graphics/Color.h"
 #include "Sexy.TodLib/Reanimator.h"
 #include "SexyAppFramework/graphics/MemoryImage.h"
+#include "SexyAppFramework/Common.h"
 
 //0x46EF00
 void ReanimatorCache::UpdateReanimationForVariation(Reanimation* theReanim, DrawVariation theDrawVariation)
@@ -350,23 +351,80 @@ MemoryImage* ReanimatorCache::MakeCachedZombieFrame(ZombieType theZombieType)
 	}
 	else if (theZombieType == ZombieType::ZOMBIE_DANCER)
 	{
+		// 智能选择舞王动画类型（优先使用Disco）
+		bool aDiscoExists = FileExists("reanim/Zombie_disco.reanim");
+		bool aJacksonExists = FileExists("reanim/Zombie_Jackson.reanim");
+		ReanimationType aReanimType = ReanimationType::REANIM_DANCER_DISCO;
+		
+		if (aDiscoExists && aJacksonExists)
+		{
+			// 同时加载两个动画定义，确保资源都已加载
+			ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_DANCER_DISCO, true);
+			ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_DANCER_JACKSON, true);
+			// 资源加载阶段优先使用Disco（自然生成的僵尸会在ZombieInitialize中随机选择）
+			aReanimType = ReanimationType::REANIM_DANCER_DISCO;
+		}
+		else if (aDiscoExists)
+		{
+			aReanimType = ReanimationType::REANIM_DANCER_DISCO;
+		}
+		else if (aJacksonExists)
+		{
+			aReanimType = ReanimationType::REANIM_DANCER_JACKSON;
+		}
+		
 		Reanimation aReanim;
-		aReanim.OverrideScale(0.79872f, 0.79872f);
-		aPosX += 8.0f;
-		aPosY += 32.0f;
+		bool aIsDisco = (aReanimType == ReanimationType::REANIM_DANCER_DISCO);
+		
+		// 只有Disco需要缩放和位置偏移
+		if (aIsDisco)
+		{
+			aReanim.OverrideScale(0.79872f, 0.79872f);
+			aPosX += 8.0f;
+			aPosY += 32.0f; 
+		}
 
-		aReanim.ReanimationInitializeType(aPosX, aPosY, aZombieDef.mReanimationType);
+		aReanim.ReanimationInitializeType(aPosX, aPosY, aReanimType);
 		aReanim.PlayReanim("anim_moonwalk", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 24.0f);
 		aReanim.Draw(&aMemoryGraphics);
 	}
 	else if (theZombieType == ZombieType::ZOMBIE_BACKUP_DANCER)
 	{
+		// 智能选择伴舞动画类型（优先使用Disco）
+		bool aDiscoExists = FileExists("reanim/Zombie_backup.reanim");
+		bool aJacksonExists = FileExists("reanim/Zombie_dancer.reanim");
+		ReanimationType aReanimType = ReanimationType::REANIM_BACKUP_DANCER_DISCO;
+		
+		// 在资源加载阶段同时加载两个动画（如果都存在）
+		if (aDiscoExists && aJacksonExists)
+		{
+			// 同时加载两个动画定义，确保资源都已加载
+			ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_BACKUP_DANCER_DISCO, true);
+			ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_BACKUP_DANCER_JACKSON, true);
+			// 资源加载阶段优先使用Disco（自然生成的僵尸会在ZombieInitialize中随机选择）
+			aReanimType = ReanimationType::REANIM_BACKUP_DANCER_DISCO;
+		}
+		else if (aDiscoExists)
+		{
+			aReanimType = ReanimationType::REANIM_BACKUP_DANCER_DISCO;
+		}
+		else if (aJacksonExists)
+		{
+			aReanimType = ReanimationType::REANIM_BACKUP_DANCER_JACKSON;
+		}
+		
 		Reanimation aReanim;
-		aReanim.OverrideScale(0.79872f, 0.79872f);
-		aPosX += 8.0f;
-		aPosY += 32.0f;
+		bool aIsDisco = (aReanimType == ReanimationType::REANIM_BACKUP_DANCER_DISCO);
+		
+		// 只有Disco需要缩放和位置偏移
+		if (aIsDisco)
+		{
+			aReanim.OverrideScale(0.79872f, 0.79872f);
+			aPosX += 8.0f;
+			aPosY += 32.0f; // Stable-Decompile-master使用32而不是36
+		}
 
-		aReanim.ReanimationInitializeType(aPosX, aPosY, aZombieDef.mReanimationType);
+		aReanim.ReanimationInitializeType(aPosX, aPosY, aReanimType);
 		aReanim.PlayReanim("anim_armraise", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 0, 24.0f);
 		aReanim.mAnimTime = 0.5f;
 		aReanim.Draw(&aMemoryGraphics);

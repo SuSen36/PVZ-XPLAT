@@ -204,7 +204,8 @@ public:
 	bool							mDanceMode;												//+0x5765
 	bool							mDaisyMode;												//+0x5766
 	bool							mSukhbirMode;											//+0x5767
-	BoardResult						mPrevBoardResult;										//+0x5768
+	bool							mThrillerMode;										//+0x5768 true = Disco, false = Jackson
+	BoardResult						mPrevBoardResult;										//+0x576C
 	int								mTriggeredLawnMowers;									//+0x576C
 	int								mPlayTimeActiveLevel;									//+0x5770
 	int								mPlayTimeInactiveLevel;									//+0x5774
@@ -249,7 +250,7 @@ public:
 	Projectile*						AddProjectile(int theX, int theY, int theRenderOrder, int theRow, ProjectileType theProjectileType);
 	Coin*							AddCoin(int theX, int theY, CoinType theCoinType, CoinMotion theCoinMotion);
 	void							RefreshSeedPacketFromCursor();
-	ZombieType						PickGraveRisingZombieType();
+	ZombieType						PickGraveRisingZombieType(int theZombiePoints);
 	ZombieType						PickZombieType(int theZombiePoints, int theWaveIndex, ZombiePicker* theZombiePicker);
 	int								PickRowForNewZombie(ZombieType theZombieType);
 	/*inline*/ Zombie*				AddZombie(ZombieType theZombieType, int theFromWave);
@@ -480,6 +481,7 @@ public:
 	void							SetPinataMode(bool theEnablePinata);
 	void							SetDaisyMode(bool theEnableDaisy);
 	void							SetSukhbirMode(bool theEnableSukhbir);
+	void							SetThrillerMode(bool theThrillerMode);
 	bool							MouseHitTestPlant(int x, int y, HitResult* theHitResult);
 	
 	/*inline*/ Reanimation*			CreateRakeReanim(float theRakeX, float theRakeY, int theRenderOrder);

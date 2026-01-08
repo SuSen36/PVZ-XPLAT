@@ -91,6 +91,7 @@ LawnApp::LawnApp()
     mDanceCheck = "dance";
     mDaisyCheck = "daisies";
     mSukhbirCheck = "sukhbir";
+    mThrillerCheck = "thriller";
 	mMustacheMode = false;
 	mSuperMowerMode = false;
 	mFutureMode = false;
@@ -98,6 +99,7 @@ LawnApp::LawnApp()
 	mDanceMode = false;
 	mDaisyMode = false;
 	mSukhbirMode = false;
+	mThrillerMode = false;
 	mGameScene = GameScenes::SCENE_LOADING;
 	mPoolEffect = nullptr;
 	mZenGarden = nullptr;
@@ -2301,9 +2303,6 @@ int LawnApp::GetSeedsAvailable()
 // GOTY @Patoke: 0x456FE0
 bool LawnApp::HasSeedType(SeedType theSeedType)
 {
-	if (IsTrialStageLocked() && theSeedType >= SeedType::SEED_JALAPENO)
-		return false;
-
 	/*  优化
 	if (theSeedType >= SeedType::SEED_TWINSUNFLOWER && theSeedType <= SeedType::SEED_IMITATER)
 		return mPlayerInfo->mPurchases[theSeedType - SeedType::SEED_GATLINGPEA];
@@ -2459,9 +2458,6 @@ bool LawnApp::CanShowStore()
 bool LawnApp::CanShowZenGarden()
 {
 	if (mPlayerInfo == nullptr)
-		return false;
-
-	if (IsTrialStageLocked())
 		return false;
 
 	return HasFinishedAdventure() || mPlayerInfo->mLevel >= 45;
@@ -3192,15 +3188,6 @@ void LawnApp::FinishZenGardenToturial()
 }
 
 //0x455C90
-bool LawnApp::IsTrialStageLocked()
-{
-	if (mDebugTrialLocked)
-		return true;
-
-	return mTrialType == TrialType::TRIALTYPE_STAGELOCKED;
-}
-
-//0x455CC0
 void LawnApp::InitHook()
 {
 }

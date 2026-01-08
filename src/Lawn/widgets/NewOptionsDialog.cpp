@@ -60,7 +60,7 @@ NewOptionsDialog::NewOptionsDialog(LawnApp* theApp, bool theFromGameSelector) :
     {
         mRestartButton->SetVisible(false);
         mBackToGameButton->SetLabel(__S("[DIALOG_BUTTON_OK]"));
-        if (mApp->HasFinishedAdventure() && !mApp->IsTrialStageLocked())
+        if (mApp->HasFinishedAdventure())
         {
             mBackToMainButton->SetLabel(__S("[CREDITS]"));
         }
@@ -68,6 +68,11 @@ NewOptionsDialog::NewOptionsDialog(LawnApp* theApp, bool theFromGameSelector) :
         {
             mBackToMainButton->SetVisible(false);
         }
+    }
+
+    if (!mApp->HasFinishedAdventure() && !(mApp->mPlayerInfo && mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_TREE_OF_WISDOM] > 0))
+    {
+        mCheatButton->SetVisible(false);
     }
 
     if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ICE || 

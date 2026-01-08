@@ -420,3 +420,5 @@ build-*/
 /.idea/
 /.vscode/
 /android-project/.gradle/
+/android-project/app/src/main/assets/
+/ck/

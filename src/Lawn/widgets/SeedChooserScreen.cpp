@@ -326,7 +326,8 @@ bool SeedChooserScreen::SeedNotAllowedToPick(SeedType theSeedType)
 //0x484640
 bool SeedChooserScreen::SeedNotAllowedDuringTrial(SeedType theSeedType)
 {
-	return mApp->IsTrialStageLocked() && (theSeedType == SEED_SQUASH || theSeedType == SEED_THREEPEATER);
+	// Trial stage locking removed; no seeds are blocked for trial
+	return false;
 }
 
 //0x484690

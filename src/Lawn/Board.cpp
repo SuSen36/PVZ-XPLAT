@@ -165,6 +165,7 @@ Board::Board(LawnApp* theApp)
 	mDanceMode = mApp->mDanceMode;
 	mDaisyMode = mApp->mDaisyMode;
 	mSukhbirMode = mApp->mSukhbirMode;
+	mThrillerMode = mApp->mThrillerMode;
 	mShowShovel = false;
 	mToolTip = new ToolTipWidget();
 	//mDebugFont = new SysFont("Arial Unicode MS", 10, true, false, false);
@@ -2492,7 +2493,7 @@ ZombieType Board::GetIntroducedZombieType()
 }
 
 //0x40D770
-ZombieType Board::PickGraveRisingZombieType()
+ZombieType Board::PickGraveRisingZombieType(int theZombiePoints)
 {
 	TodWeightedArray aZombieWeightArray[(int)ZombieType::NUM_ZOMBIE_TYPES];
 	int aCount = 2;
@@ -2769,6 +2770,12 @@ Zombie* Board::AddZombieInRow(ZombieType theZombieType, int theRow, int theFromW
 	}
 
 	bool aVariant = !Rand(5);
+	// 舞王类型根据彩蛋代码设置：false = Disco, true = Jackson
+	if (theZombieType == ZombieType::ZOMBIE_DANCER)
+	{
+		aVariant = mThrillerMode;  // mThrillerMode: false = Disco, true = Jackson
+	}
+	
 	Zombie* aZombie = mZombies.DataArrayAlloc();
 	aZombie->ZombieInitialize(theRow, theZombieType, aVariant, nullptr, theFromWave);
 	if (theZombieType == ZombieType::ZOMBIE_BOBSLED && aZombie->IsOnBoard())
@@ -5135,7 +5142,7 @@ void Board::SpawnZombiesFromPool()
 		TodWeightedGridArray* aGrid = TodPickFromWeightedGridArray(aGridArray, aGridArrayCount);
 		aGrid->mWeight = 0;
 
-		ZombieType aZombieType = PickGraveRisingZombieType();
+		ZombieType aZombieType = PickGraveRisingZombieType(aZombiePoints);
 		Zombie* aZombie = AddZombieInRow(aZombieType, aGrid->mY, mCurrentWave);
 		if (aZombie == nullptr)
 		{
@@ -5217,7 +5224,7 @@ void Board::SpawnZombiesFromSky()
 
 	for (int i = 0; i < aCount; i++)
 	{
-		ZombieType aZombieType = PickGraveRisingZombieType();
+		ZombieType aZombieType = PickGraveRisingZombieType(aZombiePoints);
 		BungeeDropZombie(&aBungeeDropGrid, aZombieType);
 		aZombiePoints -= GetZombieDefinition(aZombieType).mZombieValue;
 		if (aZombiePoints < 1)
@@ -5243,7 +5250,7 @@ void Board::SpawnZombiesFromGraves()
 		return;
 	}
 	
-//	int aZombiePoints = GetGraveStonesCount();
+	int aZombiePoints = GetGraveStonesCount();
 	GridItem* aGridItem = nullptr;
 	while (IterateGridItems(aGridItem))
 	{
@@ -5256,7 +5263,7 @@ void Board::SpawnZombiesFromGraves()
 			continue;
 		}
 		
-		ZombieType aZombieType = PickGraveRisingZombieType();
+		ZombieType aZombieType = PickGraveRisingZombieType(aZombiePoints);
 		Zombie* aZombie = AddZombie(aZombieType, mCurrentWave);
 		if (aZombie == nullptr)
 		{
@@ -5264,13 +5271,11 @@ void Board::SpawnZombiesFromGraves()
 		}
 
 		aZombie->RiseFromGrave(aGridItem->mGridX, aGridItem->mGridY);
-		/*
 		aZombiePoints -= GetZombieDefinition(aZombieType).mZombieValue;
-		if (aZombieType < 1)
+		if (aZombiePoints < 1)
 		{
 			aZombiePoints = 1;
 		}
-		*/
 	}
 }
 
@@ -5338,10 +5343,6 @@ void Board::SpawnZombieWave()
 	}
 
 	if (mCurrentWave == mNumWaves - 1 && !mApp->IsContinuousChallenge())
-	{
-		mRiseFromGraveCounter = 210;
-	}
-	else if (StageHasGraveStones())
 	{
 		mRiseFromGraveCounter = 210;
 	}
@@ -8048,6 +8049,26 @@ void Board::SetSukhbirMode(bool theEnableSukhbir)
 	mApp->mSukhbirMode = theEnableSukhbir;
 }
 
+void Board::SetThrillerMode(bool theThrillerMode)
+{
+	// 播放舞王音效
+	mApp->PlayFoley(FoleyType::FOLEY_DANCER);
+	
+	// 设置模式：true = Jackson, false = Disco
+	mThrillerMode = theThrillerMode;
+	mApp->mThrillerMode = theThrillerMode;
+	
+	// 更新所有现有的舞王和伴舞
+	Zombie* aZombie = nullptr;
+	while (IterateZombies(aZombie))
+	{
+		if (!aZombie->mDead && (aZombie->mZombieType == ZombieType::ZOMBIE_DANCER || aZombie->mZombieType == ZombieType::ZOMBIE_BACKUP_DANCER))
+		{
+			aZombie->EnableThriller(theThrillerMode);
+		}
+	}
+}
+
 //0x41B1D0
 bool Board::DoTypingCheck(const std::string& theString)
 {
@@ -8056,23 +8077,23 @@ bool Board::DoTypingCheck(const std::string& theString)
 		mApp->PlayFoley(FoleyType::FOLEY_DROP);
 		return true;
 	}
-	if (mApp->mMustacheCheck == theString || mApp->mMoustacheCheck == theString)
+	else if (mApp->mMustacheCheck == theString || mApp->mMoustacheCheck == theString)
 	{
 		SetMustacheMode(!mMustacheMode);
 		ReportAchievement::GiveAchievement(mApp, MustacheMode, false); // @Patoke: add achievement
 		return true;
 	}
-	if (mApp->mSuperMowerCheck == theString || mApp->mSuperMowerCheck2 == theString)
+	else if (mApp->mSuperMowerCheck == theString || mApp->mSuperMowerCheck2 == theString)
 	{
 		SetSuperMowerMode(!mSuperMowerMode);
 		return true;
 	}
-	if (mApp->mFutureCheck == theString)
+	else if (mApp->mFutureCheck == theString)
 	{
 		SetFutureMode(!mFutureMode);
 		return true;
 	}
-	if (mApp->mPinataCheck == theString)
+	else if (mApp->mPinataCheck == theString)
 	{
 		if (mApp->CanDoPinataMode())
 		{
@@ -8088,7 +8109,7 @@ bool Board::DoTypingCheck(const std::string& theString)
 		}
         return true;
 	}
-	if (mApp->mDanceCheck == theString)
+	else if (mApp->mDanceCheck == theString)
 	{
 		if (mApp->CanDoDanceMode())
 		{
@@ -8104,7 +8125,7 @@ bool Board::DoTypingCheck(const std::string& theString)
 		}
         return true;
 	}
-	if (mApp->mDaisyCheck == theString)
+	else if (mApp->mDaisyCheck == theString)
 	{
 		if (mApp->CanDoDaisyMode())
 		{
@@ -8120,9 +8141,14 @@ bool Board::DoTypingCheck(const std::string& theString)
 		}
         return true;
 	}
-	if (mApp->mSukhbirCheck == theString)
+	else if (mApp->mSukhbirCheck == theString)
 	{
 		SetSukhbirMode(!mSukhbirMode);
+		return true;
+	}
+	else if (mApp->mThrillerCheck == theString)
+	{
+		SetThrillerMode(!mThrillerMode);
 		return true;
 	}
     return false;
@@ -9789,7 +9815,7 @@ int Board::GetGraveStoneCount()
 //0x41CDB0
 void Board::DropLootPiece(int thePosX, int thePosY, int theDropFactor)
 {
-	if (mApp->IsFirstTimeAdventureMode())
+	if (mApp->IsFirstTimeAdventureMode() && mLevel == mApp->mPlayerInfo->GetLevel())
 	{
 		if (mLevel == 22 && mCurrentWave > 5 && !mApp->mPlayerInfo->mHasUnlockedMinigames && CountCoinByType(CoinType::COIN_PRESENT_MINIGAMES) == 0)
 		{
@@ -9806,7 +9832,7 @@ void Board::DropLootPiece(int thePosX, int thePosY, int theDropFactor)
 	}
 
 	int aDropHit = Rand(30000);
-	if (mApp->IsFirstTimeAdventureMode() && mLevel == 11 && !mDroppedFirstCoin && mCurrentWave > 5)
+	if (mApp->IsFirstTimeAdventureMode() && mLevel == 11 && !mDroppedFirstCoin && mCurrentWave > 5 && mLevel == mApp->mPlayerInfo->GetLevel())
 	{
 		aDropHit = 1000;
 	}

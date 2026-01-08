@@ -47,12 +47,6 @@ using namespace Sexy;
 
 SexyAppBase* Sexy::gSexyAppBase = NULL;
 
-//HMODULE gDDrawDLL = NULL;
-//HMODULE gDSoundDLL = NULL;
-//HMODULE gVersionDLL = NULL;
-
-static GLImage* gFPSImage = NULL;
-
 //////////////////////////////////////////////////////////////////////////
 SexyAppBase::SexyAppBase()
 {
@@ -107,7 +101,6 @@ SexyAppBase::SexyAppBase()
 	//mHWnd = NULL;
 	mGLInterface = NULL;
 	mMusicInterface = NULL;
-	//mInvisHWnd = NULL;
 	mFrameTime = 10;
 	mNonDrawCount = 0;
 	mDrawCount = 0;
@@ -248,8 +241,6 @@ SexyAppBase::~SexyAppBase()
 
 	delete mWidgetManager;
 	delete mResourceManager;
-	delete gFPSImage;
-	gFPSImage = NULL;
 
 	SharedImageMap::iterator aSharedImageItr = mSharedImageMap.begin();
 	while (aSharedImageItr != mSharedImageMap.end())

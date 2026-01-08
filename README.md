@@ -1,4 +1,4 @@
-# REPVZ (Re-Plants vs Zombies)
+# XP-PVZ (XPlant-Plants vs Zombies)
 
 ## 项目介绍
 这是一个使用 SDL2 和 GLAD 重新实现的植物大战僵尸游戏，支持跨平台（Windows/Linux/Android）。本项目基于社区反编译的植物大战僵尸源码，进行了现代化重构和跨平台移植。

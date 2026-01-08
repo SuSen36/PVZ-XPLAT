@@ -22,6 +22,7 @@
 #include "SexyAppFramework/misc/CritSect.h"
 #include "SexyAppFramework/graphics/Graphics.h"
 #include "SexyAppFramework/graphics/MemoryImage.h"
+#include "Sexy.TodLib/TodDebug.h"
 #include "stb_image.h"
 
 
@@ -1381,6 +1382,16 @@ void GLInterface::UpdateViewport()
 
 int GLInterface::Init(bool IsWindowed)
 {
+    // Ensure SDL video subsystem is initialized before using OpenGL
+    if ((SDL_WasInit(SDL_INIT_VIDEO) & SDL_INIT_VIDEO) == 0)
+    {
+        if (SDL_Init(SDL_INIT_VIDEO) < 0)
+        {
+            TodLog("SDL Initialization failed: ", SDL_GetError());
+            return -1;
+        }
+    }
+
     static bool inited = false;
     if (!inited)
     {

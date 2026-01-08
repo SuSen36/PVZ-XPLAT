@@ -1165,11 +1165,11 @@ Font* ResourceManager::GetFontThrow(const std::string &theId)
 	if (anItr != mFontMap.end())
 	{
 		FontRes *aRes = (FontRes*)anItr->second;
-		if (aRes->mFont!=NULL)
+		if (aRes->mFont!=nullptr)
 			return aRes->mFont;
 
 		if (mAllowMissingProgramResources && aRes->mFromProgram)
-			return NULL;
+			return nullptr;
 	}
 
 	Fail(StrFormat("Font resource not found: %s",theId.c_str()));

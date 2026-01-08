@@ -1,4 +1,6 @@
 #include <unistd.h>
+#include <vector>
+#include <SDL.h>
 #include "../Common.h"
 #include "PakInterface.h"
 #include "SexyAppFramework/fcaseopen/fcaseopen.h"
@@ -28,6 +30,39 @@ PakInterface::PakInterface()
 
 PakInterface::~PakInterface()
 {
+}
+
+// 尝试从 pak 加载 icon.bmp，失败则回退文件系统
+SDL_Surface* LoadWindowIcon(const char* iconPath)
+{
+	const char* iconName = iconPath ? iconPath : "properties/icon.bmp";
+	if (gPakInterface)
+	{
+		PFILE* pf = gPakInterface->FOpen(iconName, "rb");
+		if (pf)
+		{
+			std::vector<uint8_t> buffer;
+			uint8_t chunk[4096];
+			size_t readBytes = 0;
+			while ((readBytes = gPakInterface->FRead(chunk, 1, sizeof(chunk), pf)) > 0)
+			{
+				buffer.insert(buffer.end(), chunk, chunk + readBytes);
+			}
+			gPakInterface->FClose(pf);
+
+			if (!buffer.empty())
+			{
+				SDL_RWops* rw = SDL_RWFromConstMem(buffer.data(), static_cast<int>(buffer.size()));
+				if (rw)
+				{
+					SDL_Surface* surf = SDL_LoadBMP_RW(rw, 1); // SDL 会释放 rw
+					if (surf)
+						return surf;
+				}
+			}
+		}
+	}
+	return SDL_LoadBMP(iconName);
 }
 
 std::vector<std::string> PakInterface::GetPakFileNames() const

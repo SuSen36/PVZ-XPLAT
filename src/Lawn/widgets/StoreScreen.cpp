@@ -122,7 +122,7 @@ StoreScreen::StoreScreen(LawnApp* theApp) : Dialog(nullptr, nullptr, DIALOG_STOR
     mDrawnOnce = false;
     mGoToTreeNow = false;
     mPurchasedFullVersion = false;
-    mTrialLockedWhenStoreOpened = mApp->IsTrialStageLocked();
+    mTrialLockedWhenStoreOpened = false;
 }
 
 //0x48A610、0x48A630
@@ -142,27 +142,11 @@ StoreItem StoreScreen::GetStoreItemType(int theSpotIndex)
 
     if (mPage < NUM_STORE_PAGES && theSpotIndex < MAX_PAGE_SPOTS)
     {
-        if (mPage == STORE_PAGE_SLOT_UPGRADES && theSpotIndex == 6 && mApp->IsTrialStageLocked())
-        {
-            return STORE_ITEM_PVZ;
-        }
         return gStoreItemSpots[mPage][theSpotIndex];
     }
 
     TOD_ASSERT();
     return STORE_ITEM_INVALID;
-}
-
-//0x48A8D0
-bool StoreScreen::IsFullVersionOnly(StoreItem theStoreItem)
-{
-    if (!mApp->IsTrialStageLocked())
-        return false;
-
-    if (theStoreItem == STORE_ITEM_PACKET_UPGRADE && mApp->mPlayerInfo->mPurchases[STORE_ITEM_PACKET_UPGRADE] >= 2)
-        return true;
-    
-    return theStoreItem == STORE_ITEM_PLANT_TWINSUNFLOWER;
 }
 
 bool StoreScreen::IsPottedPlant(StoreItem theStoreItem)
@@ -173,9 +157,7 @@ bool StoreScreen::IsPottedPlant(StoreItem theStoreItem)
 //0x48A940
 bool StoreScreen::IsComingSoon(StoreItem theStoreItem)
 {
-    if (IsFullVersionOnly(theStoreItem))
-        return true;
-    else if (theStoreItem == STORE_ITEM_WHEEL_BARROW)
+    if (theStoreItem == STORE_ITEM_WHEEL_BARROW)
         return !mApp->mPlayerInfo->mPurchases[STORE_ITEM_MUSHROOM_GARDEN] && !mApp->mPlayerInfo->mPurchases[STORE_ITEM_AQUARIUM_GARDEN];
     else if (IsPottedPlant(theStoreItem))
         return !mApp->HasFinishedAdventure();
@@ -239,15 +221,15 @@ bool StoreScreen::IsItemUnavailable(StoreItem theStoreItem)
 
     if (theStoreItem == STORE_ITEM_ROOF_CLEANER)
     {
-        return mApp->IsTrialStageLocked() || (!mApp->HasFinishedAdventure() && mApp->mPlayerInfo->GetLevel() < 42);
+        return !mApp->HasFinishedAdventure() && mApp->mPlayerInfo->GetLevel() < 42;
     }
     if (theStoreItem == STORE_ITEM_PLANT_GLOOMSHROOM)
     {
-        return mApp->IsTrialStageLocked() || (!mApp->HasFinishedAdventure() && mApp->mPlayerInfo->GetLevel() < 35);
+        return !mApp->HasFinishedAdventure() && mApp->mPlayerInfo->GetLevel() < 35;
     }
     if (theStoreItem == STORE_ITEM_PLANT_CATTAIL)
     {
-        return mApp->IsTrialStageLocked() || (!mApp->HasFinishedAdventure() && mApp->mPlayerInfo->GetLevel() < 35);
+        return !mApp->HasFinishedAdventure() && mApp->mPlayerInfo->GetLevel() < 35;
     }
     if (theStoreItem == STORE_ITEM_PLANT_SPIKEROCK)
     {
@@ -337,10 +319,6 @@ void StoreScreen::DrawItemIcon(Graphics* g, int theItemPosition, StoreItem theIt
     {
         g->DrawImage(Sexy::IMAGE_STORE_FIRSTAIDWALLNUTICON, aPosX - 1, aPosY + 13);
     }
-    else if (theItemType == STORE_ITEM_PVZ)
-    {
-        g->DrawImage(Sexy::IMAGE_STORE_PVZICON, aPosX, aPosY - 9);
-    }
     else if (theItemType == STORE_ITEM_TREE_FOOD)
     {
         g->DrawImage(Sexy::IMAGE_TREEFOOD, aPosX - 8, aPosY - 2);
@@ -398,12 +376,11 @@ void StoreScreen::DrawItem(Graphics* g, int theItemPosition, StoreItem theItemTy
 
     int aPosX, aPosY;
     GetStorePosition(theItemPosition, aPosX, aPosY);
-    if (theItemType != STORE_ITEM_PVZ)
-    {
-        g->DrawImage(Sexy::IMAGE_STORE_PRICETAG, aPosX - 3, aPosY + 70);
-        SexyString aCostString = LawnApp::GetMoneyString(GetItemCost(theItemType));
-        TodDrawString(g, aCostString, aPosX + 23, aPosY + 85, Sexy::FONT_BRIANNETOD12, Color::Black, DS_ALIGN_CENTER);
-    }
+
+    g->DrawImage(Sexy::IMAGE_STORE_PRICETAG, aPosX - 3, aPosY + 70);
+    SexyString aCostString = LawnApp::GetMoneyString(GetItemCost(theItemType));
+    TodDrawString(g, aCostString, aPosX + 23, aPosY + 85, Sexy::FONT_BRIANNETOD12, Color::Black, DS_ALIGN_CENTER);
+
     if (IsComingSoon(theItemType))
     {
         Rect aRect(aPosX, aPosY, 60, 70);
@@ -579,13 +556,12 @@ void StoreScreen::UpdateMouse()
                 case STORE_ITEM_TREE_OF_WISDOM:         aMessageIndex = 2030;                           break;
                 case STORE_ITEM_TREE_FOOD:              aMessageIndex = 2031;                           break;
                 case STORE_ITEM_FIRSTAID:               aMessageIndex = 2033;                           break;
-                case STORE_ITEM_PVZ:                    aMessageIndex = 2034;                           break;
                 default:                                TOD_ASSERT();                                   break;
                 }
                 if (mApp->mCrazyDaveMessageIndex != aMessageIndex)
                     SetBubbleText(aMessageIndex, 100, false);
                 else mBubbleCountDown = 100;
-                if (IsFullVersionOnly(aItemType) || (!IsItemSoldOut(aItemType) && !IsItemUnavailable(aItemType) && !IsComingSoon(aItemType)))
+                if (!IsItemSoldOut(aItemType) && !IsItemUnavailable(aItemType) && !IsComingSoon(aItemType))
                     aShowFinger = true;
                 break;
             }
@@ -764,7 +740,7 @@ void StoreScreen::Update()
 
     UpdateMouse();
     // 如果进入商店时为试玩版，而当前为完整版，且可以与按钮进行交互，则可以判断玩家已购买完整版
-    if (CanInteractWithButtons() && mTrialLockedWhenStoreOpened && !mApp->IsTrialStageLocked())
+    if (CanInteractWithButtons() && mTrialLockedWhenStoreOpened)
     {
         mPurchasedFullVersion = true;
         mResult = Dialog::ID_OK;
@@ -807,8 +783,6 @@ void StoreScreen::ButtonPress(int theId)
 //0x48C440
 bool StoreScreen::IsPageShown(StorePages thePage)
 {
-    // 试玩模式下，仅显示默认页
-    if (mApp->IsTrialStageLocked()) return thePage == STORE_PAGE_SLOT_UPGRADES;
     // 一周目完成后，所有页全解锁
     if (mApp->HasFinishedAdventure()) return true;
     // 到达或已通过冒险模式 5-2 关卡时，显示紫卡页
@@ -1126,24 +1100,7 @@ void StoreScreen::MouseDown(int x, int y, int theClickCount)
         GetStorePosition(aItemPos, aItemX, aItemY);
         if (Rect(aItemX, aItemY, 50, 87).Contains(x, y))
         {
-            if (IsFullVersionOnly(aItemType))
-            {
-                mWaitForDialog = true;
-                mApp->LawnMessageBox(DIALOG_MESSAGE, "[GET_FULL_VERSION_TITLE]", "[FULL_VERSION_TO_BUY]", "[DIALOG_BUTTON_OK]", "", BUTTONS_FOOTER);
-                mWaitForDialog = false;
-            }
-            else if (aItemType == STORE_ITEM_PVZ)
-            {
-                mWaitForDialog = true;
-                int aResult = mApp->LawnMessageBox(
-                    DIALOG_MESSAGE, "[BUY_PVZ_TITLE]", "[BUY_PVZ_BODY]", "[GET_FULL_VERSION_YES_BUTTON]", "[GET_FULL_VERSION_NO_BUTTON]", BUTTONS_YES_NO);
-                mWaitForDialog = false;
-                if (aResult == ID_OK)
-                {
-                   // @Patoke: implemented
-                }
-            }
-            else if(!IsItemSoldOut(aItemType) && !IsItemUnavailable(aItemType) && !IsComingSoon(aItemType))
+            if(!IsItemSoldOut(aItemType) && !IsItemUnavailable(aItemType) && !IsComingSoon(aItemType))
                 PurchaseItem(aItemType);
             break;
         }

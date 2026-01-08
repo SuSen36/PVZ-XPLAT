@@ -217,8 +217,8 @@ void TodAssertInitForApp()
 	MkDir(GetAppDataFolder() + "userdata");
 	std::string aRelativeUserPath = GetAppDataFolder() + "userdata/";
 	strcpy(gDebugDataFolder, aRelativeUserPath.c_str());
-	strcpy(gLogFileName, gDebugDataFolder);
-	strcpy(gLogFileName + strlen(gLogFileName), "log.txt");
+	std::string logPath = GetAppDataFolder() + "log.txt";
+	strcpy(gLogFileName, logPath.c_str());
 	TOD_ASSERT(strlen(gLogFileName) < 512);
 
 	time_t aclock = time(nullptr);

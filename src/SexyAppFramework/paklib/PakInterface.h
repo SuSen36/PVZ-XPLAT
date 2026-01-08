@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 #include "../Common.h"
+#include <SDL.h>
 
 
 class PakCollection;
@@ -136,6 +137,9 @@ static char* p_fgets(char* thePtr, int theSize, PFILE* theFile) {
 static int p_feof(PFILE* theFile) {
     return gPakInterface->FEof(theFile);
 }
+
+// 从 pak 或文件系统加载窗口图标
+SDL_Surface* LoadWindowIcon(const char* iconPath);
 
 #endif // __PAKINTERFACE_H__
 

@@ -1,0 +1,14 @@
+root = true
+
+# Default for all code/text files
+[*]
+charset = utf-8
+
+# Common source files
+[*.{c,cc,cpp,cxx,h,hpp,hxx,mm,m,java,kt,cs}]
+charset = utf-8
+
+# Scripts and web assets
+[*.{js,ts,tsx,jsx,css,scss,html,xml,json,yml,yaml,md,txt,sh,ps1,bat,cmake}]
+charset = utf-8
+

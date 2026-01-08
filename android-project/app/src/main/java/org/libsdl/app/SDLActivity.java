@@ -273,7 +273,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
             // "SDL2_image",
             // "SDL2_mixer",
             "bass",
-            "re-plants-vs-zombies"
+            "xp-plants-vs-zombies"
         };
     }
 

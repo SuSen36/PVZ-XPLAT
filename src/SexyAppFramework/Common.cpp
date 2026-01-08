@@ -32,10 +32,6 @@ void Sexy::PrintF(const char *text, ...)
 	vsnprintf(str, sizeof(str), text, args);
 	va_end(args);
 
-#if defined(__SWITCH__) || defined(__3DS__)
-	svcOutputDebugString(str, sizeof(str));
-#endif
-
 	fprintf(stdout, "%s", str);
 }
 

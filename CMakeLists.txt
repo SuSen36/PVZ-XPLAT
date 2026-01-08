@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.2.2)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_STANDARD 17)  # 设置 C++ 标准为 C++17
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-project(re-plants-vs-zombies LANGUAGES C CXX ASM)
+project(xp-plants-vs-zombies LANGUAGES C CXX ASM)
 
 # 启用并行编译
 set(CMAKE_JOB_POOL_COMPILE compile_job_pool)
@@ -43,7 +43,7 @@ list(REMOVE_ITEM SOURCES
 
 if(ANDROID)
 	list(APPEND SOURCES
-		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/android/graphics/Window.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/android/Window.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/android/Input.cpp
 	)
 	list(APPEND PLAT_INCLUDES
@@ -51,7 +51,7 @@ if(ANDROID)
 	)
 elseif (EMSCRIPTEN)
     list(APPEND SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/emscripten/graphics/Window.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/emscripten/Window.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/emscripten/Input.cpp
     )
     list(APPEND PLAT_INCLUDES
@@ -59,7 +59,7 @@ elseif (EMSCRIPTEN)
     )
 else()
 	list(APPEND SOURCES
-		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/pc/graphics/Window.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/pc/Window.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/pc/Input.cpp
 	)
 	list(APPEND PLAT_INCLUDES
@@ -145,48 +145,48 @@ if(NOT EMSCRIPTEN) # Fetch bass only if not Emscripten
 endif()
 
 if (WIN32)
-	add_executable(re-plants-vs-zombies ${SOURCES})
+	add_executable(xp-plants-vs-zombies ${SOURCES})
 elseif (ANDROID)
-	add_library(re-plants-vs-zombies SHARED ${SOURCES})
+	add_library(xp-plants-vs-zombies SHARED ${SOURCES})
 elseif (EMSCRIPTEN)
-    add_executable(re-plants-vs-zombies ${SOURCES}) # Emscripten output is an executable (.js or .html)
-    set_target_properties(re-plants-vs-zombies PROPERTIES SUFFIX ".html") # Set suffix to .html for convenience
+    add_executable(xp-plants-vs-zombies ${SOURCES}) # Emscripten output is an executable (.js or .html)
+    set_target_properties(xp-plants-vs-zombies PROPERTIES SUFFIX ".html") # Set suffix to .html for convenience
 else ()
-	add_executable(re-plants-vs-zombies ${SOURCES})
+	add_executable(xp-plants-vs-zombies ${SOURCES})
 endif()
 
-target_compile_definitions(re-plants-vs-zombies PRIVATE $<$<CONFIG:Debug>:_DEBUG>)
+target_compile_definitions(xp-plants-vs-zombies PRIVATE $<$<CONFIG:Debug>:_DEBUG>)
 
 
-target_include_directories(re-plants-vs-zombies PRIVATE
+target_include_directories(xp-plants-vs-zombies PRIVATE
 	${PROJECT_SOURCE_DIR}/src
 	${PROJECT_SOURCE_DIR}/Libs/SDL/include
 	${PLAT_INCLUDES}
 	${bass_SOURCE_DIR}/${BASS_INCLUDE}
 )
 
-#target_compile_definitions(re-plants-vs-zombies PRIVATE _DEBUG)
+#target_compile_definitions(xp-plants-vs-zombies PRIVATE _DEBUG)
 
 
 if (NOT EMSCRIPTEN)
-    target_link_libraries(re-plants-vs-zombies SDL2::SDL2 bass)
+    target_link_libraries(xp-plants-vs-zombies SDL2::SDL2 bass)
 else()
-    target_link_libraries(re-plants-vs-zombies SDL2) # Emscripten provides its own SDL2
+    target_link_libraries(xp-plants-vs-zombies SDL2) # Emscripten provides its own SDL2
 endif()
 
 if (WIN32)
-	target_link_options(re-plants-vs-zombies PRIVATE -static -static-libgcc -static-libstdc++)
-	target_link_libraries(re-plants-vs-zombies opengl32 ws2_32 ddraw dinput8 dxguid dxerr8 user32 gdi32 winmm imm32)
-	target_compile_definitions(re-plants-vs-zombies PRIVATE WINDOWS)
+	target_link_options(xp-plants-vs-zombies PRIVATE -static -static-libgcc -static-libstdc++)
+	target_link_libraries(xp-plants-vs-zombies opengl32 ws2_32 ddraw dinput8 dxguid dxerr8 user32 gdi32 winmm imm32)
+	target_compile_definitions(xp-plants-vs-zombies PRIVATE WINDOWS)
 
 	if(NOT CONSOLE)
-		target_link_options(re-plants-vs-zombies PRIVATE -mwindows)
+		target_link_options(xp-plants-vs-zombies PRIVATE -mwindows)
 	endif()
 elseif (ANDROID)  # 增加安卓平台的支持
-    target_link_libraries(re-plants-vs-zombies android log EGL GLESv2)  # 链接需要的库
-	target_compile_definitions(re-plants-vs-zombies PRIVATE ANDROID)  # 定义ANDROID宏
+    target_link_libraries(xp-plants-vs-zombies android log EGL GLESv2)  # 链接需要的库
+	target_compile_definitions(xp-plants-vs-zombies PRIVATE ANDROID)  # 定义ANDROID宏
 elseif (EMSCRIPTEN)
-    target_link_libraries(re-plants-vs-zombies GLESv2) # For WebGL
+    target_link_libraries(xp-plants-vs-zombies GLESv2) # For WebGL
 else()
-	target_link_libraries(re-plants-vs-zombies GL)
+	target_link_libraries(xp-plants-vs-zombies GL)
 endif()

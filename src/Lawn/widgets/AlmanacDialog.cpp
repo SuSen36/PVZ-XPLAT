@@ -556,10 +556,6 @@ bool AlmanacDialog::ZombieHasSilhouette(ZombieType theZombieType)
 // GOTY @Patoke: 0x404C50
 bool AlmanacDialog::ZombieIsShown(ZombieType theZombieType)
 {
-	// ����ģʽ�£���չʾǱˮ��ʬ����֮ǰ���ֵĽ�ʬ
-	if (mApp->IsTrialStageLocked() && theZombieType > ZombieType::ZOMBIE_SNORKEL)
-		return false;
-
 	// ����ѩ�˽�ʬ��Ҫ���������ˢ���г��֣��Ѿ���������ð��ģʽ����Ŀ 4-10 �ؿ�����
 	// ���ѵ�֪����ڵ�δ�����������Ѿ����ð��ģʽһ��Ŀ 4-10 �ؿ�����δ�������Ŀ 4-10 �ؿ���
 	if (theZombieType == ZombieType::ZOMBIE_YETI)

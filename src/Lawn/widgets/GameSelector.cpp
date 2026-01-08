@@ -575,18 +575,13 @@ void GameSelector::SyncProfile(bool theShowLoading)
 	if (mApp->mPlayerInfo)
 		mLevel = mApp->mPlayerInfo->GetLevel();
 	mShowStartButton = true;
-#ifdef _DEBUG
-	mMinigamesLocked = false;
-	mPuzzleLocked = false;
-	mSurvivalLocked = false;
-#else
     mMinigamesLocked = true;
 	mPuzzleLocked = true;
 	mSurvivalLocked = true;
-#endif
+
 	if (mApp->mPlayerInfo)
 	{
-		if (mLevel >= 2)
+		if (mApp->SaveFileExists() || mApp->HasFinishedAdventure() || mApp->mPlayerInfo->mLevel > 1)
 			mShowStartButton = false;
 
 		if (mApp->HasFinishedAdventure())
@@ -603,15 +598,9 @@ void GameSelector::SyncProfile(bool theShowLoading)
 			mPuzzleLocked = false;
 		if (mApp->mPlayerInfo->mHasUnlockedSurvivalMode)
 			mSurvivalLocked = false;
-
-		if (mApp->IsTrialStageLocked())
-		{
-			mPuzzleLocked = true;
-			mSurvivalLocked = true;
-		}
 	}
 
-	if (mApp->HasFinishedAdventure() && !mApp->IsTrialStageLocked())
+	if (mApp->HasFinishedAdventure())
 		mHasTrophy = true;
 	else
 		mHasTrophy = false;
@@ -712,26 +701,17 @@ void GameSelector::DrawOverlay(Graphics* g)
 
 		int aStage = std::clamp((mLevel - 1) / 10 + 1, 1, 6);  // 大关
 		int aSub = mLevel - (aStage - 1) * 10;  // 小关
-		if (mApp->IsTrialStageLocked() && (mLevel >= 25 || mApp->HasFinishedAdventure()))
-		{
-			aStage = 3;
-			aSub = 4;
-		}
-		else
-		{
-			if (aStage == 1)
-			{
-				aTransAreaY += 1.0f;
-			}
-			else if (aStage == 4)
-			{
-				aTransAreaX -= 1.0f;
-			}
-			if (aSub == 3)
-			{
-				aTransSubX -= 1.0f;
-			}
-		}
+		if (aStage == 1)
+        {
+            aTransAreaY += 1.0f;
+        }
+        else if (aStage == 4)
+        {
+            aTransAreaX -= 1.0f;
+        }
+        if (aSub == 3) {
+            aTransSubX -= 1.0f;
+        }
 
 		g->SetColorizeImages(true);
 		g->SetColor(mAdventureButton->mColors[ButtonWidget::COLOR_BKG]);
@@ -1305,22 +1285,6 @@ void GameSelector::ButtonPress(int theId)
 // GOTY @Patoke: 0x44F270
 void GameSelector::ClickedAdventure()
 {
-	if (mApp->IsTrialStageLocked() && (mLevel >= 25 || mApp->HasFinishedAdventure()))
-	{
-		if (mApp->LawnMessageBox(
-			Dialogs::DIALOG_MESSAGE,
-			__S("[REPLAY_LEVEL_HEADER]"),
-			__S("[REPLAY_LEVEL_BODY]"),
-			__S("[DIALOG_BUTTON_YES]"),
-			__S("[DIALOG_BUTTON_NO]"),
-			Dialog::BUTTONS_YES_NO) == Dialog::ID_NO)
-			return;
-
-		mApp->mPlayerInfo->mLevel = 24;
-		mApp->mPlayerInfo->mFinishedAdventure = 0;
-		mApp->EraseFile(GetSavedGameName(GameMode::GAMEMODE_ADVENTURE, mApp->mPlayerInfo->mId));
-	}
-
 	mApp->mMusic->StopAllMusic();
 	mApp->PlaySample(Sexy::SOUND_LOSEMUSIC);
 	mStartingGame = true;

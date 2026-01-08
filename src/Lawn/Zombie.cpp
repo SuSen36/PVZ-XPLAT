@@ -16,6 +16,7 @@
 #include "Sexy.TodLib/Reanimator.h"
 #include "Sexy.TodLib/Attachment.h"
 #include "Sexy.TodLib/TodParticle.h"
+#include "SexyAppFramework/Common.h"
 
 #include <climits>
 
@@ -28,8 +29,8 @@ ZombieDefinition gZombieDefs[NUM_ZOMBIE_TYPES] = {  //0x69DA80
     { ZOMBIE_NEWSPAPER,         REANIM_ZOMBIE_NEWSPAPER,    2,      11,     1,      1000,   __S("NEWSPAPER_ZOMBIE") },
     { ZOMBIE_DOOR,              REANIM_ZOMBIE,              4,      13,     5,      3500,   __S("SCREEN_DOOR_ZOMBIE") },
     { ZOMBIE_FOOTBALL,          REANIM_ZOMBIE_FOOTBALL,     7,      16,     5,      2000,   __S("FOOTBALL_ZOMBIE") },
-    { ZOMBIE_DANCER,            REANIM_DANCER,              5,      18,     5,      1000,   __S("DANCING_ZOMBIE") },
-    { ZOMBIE_BACKUP_DANCER,     REANIM_BACKUP_DANCER,       1,      18,     1,      0,      __S("BACKUP_DANCER") },
+    { ZOMBIE_DANCER,            REANIM_DANCER_DISCO,       5,      18,     5,      1000,   __S("DANCING_ZOMBIE") },
+    { ZOMBIE_BACKUP_DANCER,     REANIM_BACKUP_DANCER_DISCO, 1,      18,     1,      0,      __S("BACKUP_DANCER") },
     { ZOMBIE_DUCKY_TUBE,        REANIM_ZOMBIE,              1,      21,     5,      0,      __S("DUCKY_TUBE_ZOMBIE") },
     { ZOMBIE_SNORKEL,           REANIM_SNORKEL,             3,      23,     10,     2000,   __S("SNORKEL_ZOMBIE") },
     { ZOMBIE_ZAMBONI,           REANIM_ZOMBIE_ZAMBONI,      7,      26,     10,     2000,   __S("ZOMBONI") },
@@ -172,9 +173,28 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
     const ZombieDefinition& aZombieDef = GetZombieDefinition(mZombieType);
     RenderLayer aRenderLayer = RenderLayer::RENDER_LAYER_ZOMBIE;
     int aRenderOffset = 4;
-    if (aZombieDef.mReanimationType != ReanimationType::REANIM_NONE)
+    
+    // 使用 mVariant 存储舞王类型：false = Disco, true = Jackson
+    ReanimationType aReanimType = aZombieDef.mReanimationType;
+   
+    if (theType == ZombieType::ZOMBIE_DANCER)
     {
-        LoadReanim(aZombieDef.mReanimationType);
+        aReanimType = mVariant ? ReanimationType::REANIM_DANCER_JACKSON : ReanimationType::REANIM_DANCER_DISCO;
+    }
+    else if (theType == ZombieType::ZOMBIE_BACKUP_DANCER && theParentZombie != nullptr)
+    {
+        // 伴舞继承父舞王的类型
+        aReanimType = mVariant ? ReanimationType::REANIM_BACKUP_DANCER_JACKSON : ReanimationType::REANIM_BACKUP_DANCER_DISCO;
+    }
+    else if (theType == ZombieType::ZOMBIE_BACKUP_DANCER)
+    {
+        // 独立的伴舞（不应该发生，但为了安全）
+        aReanimType = mVariant ? ReanimationType::REANIM_BACKUP_DANCER_JACKSON : ReanimationType::REANIM_BACKUP_DANCER_DISCO;
+    }
+    
+    if (aReanimType != ReanimationType::REANIM_NONE)
+    {
+        LoadReanim(aReanimType);
     }
 
     switch (theType)
@@ -577,8 +597,16 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
     }
 
     case ZombieType::ZOMBIE_DANCER:  //0x5234DF
-        // @Patoke: add scaling for new assets
-        mScaleZombie = 0.79872f;
+        // 根据mVariant设置大小：Disco需要缩放，Jackson不需要
+        // mVariant: false = Disco, true = Jackson
+        if (!mVariant) // Disco舞王需要缩放
+        {
+            mScaleZombie = 0.79872f;
+        }
+        else // Jackson舞王不需要缩放
+        {
+            mScaleZombie = 1.0f;
+        }
         if (!IsOnBoard())
         {
             // @Patoke: oops
@@ -592,17 +620,24 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
             PlayZombieReanim("anim_moonwalk", ReanimLoopType::REANIM_LOOP, 0, 24.0f);
         }
         mBodyHealth = 500;
-        mVariant = false;
         break;
 
     case ZombieType::ZOMBIE_BACKUP_DANCER:  //0x523541
-        mScaleZombie = 0.79872f;
+        // 根据mVariant设置大小：Disco需要缩放，Jackson不需要
+        // mVariant: false = Disco, true = Jackson
+        if (!mVariant) // Disco伴舞需要缩放
+        {
+            mScaleZombie = 0.79872f;
+        }
+        else // Jackson伴舞不需要缩放
+        {
+            mScaleZombie = 1.0f;
+        }
         if (!IsOnBoard())
         {
             PlayZombieReanim("anim_armraise", ReanimLoopType::REANIM_LOOP, 0, 12.0f);
         }
         mZombiePhase = ZombiePhase::PHASE_DANCER_DANCING_LEFT;
-        mVariant = false;
         break;
 
     case ZombieType::ZOMBIE_IMP:  //0x523576
@@ -811,7 +846,8 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
     }
 
     UpdateAnimSpeed();
-    if (mVariant)
+    // mVariant 用于舞王类型（false = Disco, true = Jackson），其他僵尸类型用于舌头变体
+    if (mVariant && mZombieType != ZombieType::ZOMBIE_DANCER && mZombieType != ZombieType::ZOMBIE_BACKUP_DANCER)
     {
         ReanimShowPrefix("anim_tongue", RENDER_GROUP_NORMAL);
     }
@@ -957,6 +993,7 @@ void Zombie::LoadPlainZombieReanim()
     {
         EnableMustache(mBoard->mMustacheMode);
         EnableFuture(mBoard->mFutureMode);
+        EnableThriller(mBoard->mThrillerMode);
     }
 
     if ((mBoard && mBoard->mPlantRow[mRow] == PlantRowType::PLANTROW_POOL) || mZombieType == ZombieType::ZOMBIE_DUCKY_TUBE)
@@ -977,6 +1014,20 @@ Reanimation* Zombie::LoadReanim(ReanimationType theReanimationType)
     mBodyReanimID = mApp->ReanimationGetID(aBodyReanim);
     aBodyReanim->mLoopType = ReanimLoopType::REANIM_LOOP;
     aBodyReanim->mIsAttachment = true;
+
+    if (mZombieType == ZombieType::ZOMBIE_DANCER || mZombieType == ZombieType::ZOMBIE_BACKUP_DANCER)
+    {
+        if (theReanimationType == ReanimationType::REANIM_DANCER_DISCO || 
+            theReanimationType == ReanimationType::REANIM_BACKUP_DANCER_DISCO)
+        {
+            mScaleZombie = 0.79872f;
+        }
+        else if (theReanimationType == ReanimationType::REANIM_DANCER_JACKSON || 
+                 theReanimationType == ReanimationType::REANIM_BACKUP_DANCER_JACKSON)
+        {
+            mScaleZombie = 1.0f;
+        }
+    }
 
     if (!IsOnBoard())
     {
@@ -2762,6 +2813,9 @@ ZombieID Zombie::SummonBackupDancer(int theRow, int thePosX)
     if (aZombie == nullptr)
         return ZombieID::ZOMBIEID_NULL;
 
+    // 伴舞继承父舞王的类型（通过 EnableThriller 设置）
+    aZombie->EnableThriller(mVariant);  // mVariant: false = Disco, true = Jackson
+
     aZombie->mPosX = thePosX;
     aZombie->mPosY = GetPosYBasedOnRow(theRow);
     aZombie->SetRow(theRow);
@@ -2915,7 +2969,7 @@ void Zombie::UpdateZombieDancer()
     if (mSummonCounter > 0)
     {
         mSummonCounter--;
-        if (mSummonCounter == 1) // @Patoke: checking 0 instead of 1
+        if (mSummonCounter == 0)
         {
             if (GetDancerFrame() == 12 && mHasHead && mPosX < 700.0f)
             {
@@ -2959,9 +3013,23 @@ void Zombie::UpdateZombieDancer()
         {
             if (mPhaseCounter != 0)
                 return;
-
+            
+            PlayZombieReanim("anim_walk", ReanimLoopType::REANIM_LOOP, 20, 18.0f);
             mZombiePhase = ZombiePhase::PHASE_DANCER_DANCING_LEFT;
-            PlayZombieReanim("anim_walk", ReanimLoopType::REANIM_LOOP, 20, 0.0f);
+            UpdateAnimSpeed();
+
+            for (int i = 0; i < NUM_BACKUP_DANCERS; i++)
+            {
+                Zombie* aDancer = mBoard->ZombieTryToGet(mFollowerZombieID[i]);
+
+                if (aDancer && !aDancer->IsDeadOrDying() && !aDancer->IsImmobilizied() && !aDancer->mIsEating)
+                {
+                    aDancer->PlayZombieReanim("anim_walk", ReanimLoopType::REANIM_LOOP, 20, 18.0f);
+                    aDancer->mZombiePhase = ZombiePhase::PHASE_DANCER_DANCING_LEFT;
+                    UpdateAnimSpeed();
+
+                }
+            }
         }
 
         ZombiePhase aDancerPhase = GetDancerPhase();
@@ -2970,20 +3038,23 @@ void Zombie::UpdateZombieDancer()
             switch (aDancerPhase)
             {
             case ZombiePhase::PHASE_DANCER_DANCING_LEFT:
+            {
                 mZombiePhase = aDancerPhase;
-                PlayZombieReanim("anim_walk", ReanimLoopType::REANIM_LOOP, 10, 0.0f);
+                PlayZombieReanim("anim_walk", ReanimLoopType::REANIM_LOOP, 10, 18.0f);
                 break;
-
+            }
             case ZombiePhase::PHASE_DANCER_WALK_TO_RAISE:
                 mZombiePhase = aDancerPhase;
                 PlayZombieReanim("anim_armraise", ReanimLoopType::REANIM_LOOP, 10, 18.0f);
                 mApp->ReanimationTryToGet(mBodyReanimID)->mAnimTime = 0.6f;
                 break;
-
-            case ZombiePhase::PHASE_DANCER_RAISE_LEFT_1:
+            
             case ZombiePhase::PHASE_DANCER_RAISE_RIGHT_1:
             case ZombiePhase::PHASE_DANCER_RAISE_LEFT_2:
+#ifndef _HAS_NEW_DANCERS
+            case ZombiePhase::PHASE_DANCER_RAISE_LEFT_1:
             case ZombiePhase::PHASE_DANCER_RAISE_RIGHT_2:
+#endif
                 mZombiePhase = aDancerPhase;
                 PlayZombieReanim("anim_armraise", ReanimLoopType::REANIM_LOOP, 10, 18.0f);
                 break;
@@ -3469,17 +3540,30 @@ void Zombie::DropHead(unsigned int theDamageFlags)
     {
         if (mZombieType == ZombieType::ZOMBIE_DANCER)
         {
-            // @Patoke: added new assets
-            ReanimShowPrefix("Zombie_disco_chops", RENDER_GROUP_HIDDEN);
-            ReanimShowPrefix("Zombie_disco_glasses", RENDER_GROUP_HIDDEN);
-            aParticle->OverrideImage(nullptr, IMAGE_ZOMBIEDANCERHEAD);
+            // 根据 mVariant 选择掉头资源：false = Disco, true = Jackson
+            if (mVariant)
+            {
+                aParticle->OverrideImage(nullptr, IMAGE_ZOMBIEDANCERHEAD_JACKSON);
+            }
+            else
+            {
+                ReanimShowPrefix("Zombie_disco_chops", RENDER_GROUP_HIDDEN);
+                ReanimShowPrefix("Zombie_disco_glasses", RENDER_GROUP_HIDDEN);
+                aParticle->OverrideImage(nullptr, IMAGE_ZOMBIEDANCERHEAD);
+            }
         }
         else if (mZombieType == ZombieType::ZOMBIE_BACKUP_DANCER)
         {
-            // @Patoke: added new assets
-            ReanimShowPrefix("Zombie_disco_chops", RENDER_GROUP_HIDDEN);
-            ReanimShowPrefix("Zombie_backup_stash", RENDER_GROUP_HIDDEN);
-            aParticle->OverrideImage(nullptr, IMAGE_ZOMBIEBACKUPDANCERHEAD);
+            if (mVariant)
+            {
+                aParticle->OverrideImage(nullptr, IMAGE_ZOMBIEBACKUPDANCERHEAD_JACKSON);
+            }
+            else
+            {
+                ReanimShowPrefix("Zombie_disco_chops", RENDER_GROUP_HIDDEN);
+                ReanimShowPrefix("Zombie_backup_stash", RENDER_GROUP_HIDDEN);
+                aParticle->OverrideImage(nullptr, IMAGE_ZOMBIEBACKUPDANCERHEAD);
+            }
         }
         else if (mZombieType == ZombieType::ZOMBIE_BOBSLED)
         {
@@ -3598,12 +3682,30 @@ void Zombie::SetupReanimForLostArm(unsigned int theDamageFlags)
         break;
     // @Patoke: add cases
     case ZombieType::ZOMBIE_DANCER:
-        ReanimShowTrack("Zombie_disco_outerarm_lower", RENDER_GROUP_HIDDEN);
-        ReanimShowTrack("Zombie_disco_outerhand_point", RENDER_GROUP_HIDDEN);
+        // 根据 mVariant 选择轨道：false = Disco, true = Jackson
+        if (mVariant)
+        {
+            ReanimShowTrack("Zombie_outerarm_lower", RENDER_GROUP_HIDDEN);
+            ReanimShowTrack("Zombie_outerarm_hand", RENDER_GROUP_HIDDEN);
+        }
+        else
+        {
+            // Disco 舞王使用 Disco 特有轨道名称
+            ReanimShowTrack("Zombie_disco_outerarm_lower", RENDER_GROUP_HIDDEN);
+            ReanimShowTrack("Zombie_disco_outerhand_point", RENDER_GROUP_HIDDEN);
+        }
         break;   
     case ZombieType::ZOMBIE_BACKUP_DANCER:
-        ReanimShowTrack("Zombie_disco_outerarm_lower", RENDER_GROUP_HIDDEN);
-        ReanimShowTrack("Zombie_disco_outerhand", RENDER_GROUP_HIDDEN);
+        if (mVariant)
+        {
+            ReanimShowTrack("Zombie_outerarm_lower", RENDER_GROUP_HIDDEN);
+            ReanimShowTrack("Zombie_outerarm_hand", RENDER_GROUP_HIDDEN);
+        }
+        else
+        {
+            ReanimShowTrack("Zombie_disco_outerarm_lower", RENDER_GROUP_HIDDEN);
+            ReanimShowTrack("Zombie_disco_outerhand", RENDER_GROUP_HIDDEN);
+        }
         break;
     default:
         ReanimShowPrefix("Zombie_outerarm_lower", RENDER_GROUP_HIDDEN);
@@ -3685,14 +3787,34 @@ void Zombie::SetupReanimForLostArm(unsigned int theDamageFlags)
             break;
         }
         case ZombieType::ZOMBIE_DANCER:
-            // @Patoke: updated for new assets
-            GetTrackPosition("Zombie_disco_outerarm_lower", aPosX, aPosY);
-            aBodyReanim->SetImageOverride("Zombie_disco_outerarm_upper", IMAGE_REANIM_ZOMBIE_DISCO_OUTERARM_UPPER2); // @Patoke: GOTY assets have different name
+            // 根据 mVariant 选择轨道和图片：false = Disco, true = Jackson
+            if (mVariant)
+            {
+                // Jackson 舞王使用标准轨道和图片
+                GetTrackPosition("Zombie_outerarm_lower", aPosX, aPosY);
+                aBodyReanim->SetImageOverride("Zombie_outerarm_upper", IMAGE_REANIM_ZOMBIE_OUTERARM_UPPER2);
+            }
+            else
+            {
+                // Disco 舞王使用 Disco 特有轨道和图片
+                GetTrackPosition("Zombie_disco_outerarm_lower", aPosX, aPosY);
+                aBodyReanim->SetImageOverride("Zombie_disco_outerarm_upper", IMAGE_REANIM_ZOMBIE_DISCO_OUTERARM_UPPER2); // @Patoke: GOTY assets have different name
+            }
             break;
         case ZombieType::ZOMBIE_BACKUP_DANCER:
-            // @Patoke: updated for new assets
-            GetTrackPosition("Zombie_disco_outerarm_lower", aPosX, aPosY);
-            aBodyReanim->SetImageOverride("Zombie_disco_outerarm_upper", IMAGE_REANIM_ZOMBIE_BACKUP_OUTERARM_UPPER2); // @Patoke: added call
+            // 根据 mVariant 选择轨道和图片：false = Disco, true = Jackson
+            if (mVariant)
+            {
+                // Jackson 伴舞使用标准轨道和图片
+                GetTrackPosition("Zombie_outerarm_lower", aPosX, aPosY);
+                aBodyReanim->SetImageOverride("Zombie_outerarm_upper", IMAGE_REANIM_ZOMBIE_OUTERARM_UPPER2);
+            }
+            else
+            {
+                // Disco 伴舞使用 Disco 特有轨道和图片
+                GetTrackPosition("Zombie_disco_outerarm_lower", aPosX, aPosY);
+                aBodyReanim->SetImageOverride("Zombie_disco_outerarm_upper", IMAGE_REANIM_ZOMBIE_BACKUP_OUTERARM_UPPER2); // @Patoke: added call
+            }
             break;
         case ZombieType::ZOMBIE_LADDER:
             GetTrackPosition("Zombie_outerarm_hand", aPosX, aPosY);
@@ -4502,7 +4624,8 @@ void Zombie::UpdatePlaying()
         {
             mApp->PlayFoley(FoleyType::FOLEY_LOW_GROAN);
         }
-        else if (mVariant)
+        // mVariant 用于舞王类型（false = Disco, true = Jackson），其他僵尸类型用于舌头变体
+        else if (mVariant && mZombieType != ZombieType::ZOMBIE_DANCER && mZombieType != ZombieType::ZOMBIE_BACKUP_DANCER)
         {
             mApp->PlayFoleyPitch(FoleyType::FOLEY_BRAINS, aPitch);
         }
@@ -4636,7 +4759,8 @@ void Zombie::ShowYuckyFace(bool theShow)
             aBodyReanim->SetImageOverride("anim_head1", nullptr);
             aBodyReanim->AssignRenderGroupToTrack("anim_head2", RENDER_GROUP_NORMAL);
             aBodyReanim->AssignRenderGroupToTrack("anim_head_jaw", RENDER_GROUP_NORMAL);
-            if (mVariant)
+            // mVariant 用于舞王类型（false = Disco, true = Jackson），其他僵尸类型用于舌头变体
+            if (mVariant && mZombieType != ZombieType::ZOMBIE_DANCER && mZombieType != ZombieType::ZOMBIE_BACKUP_DANCER)
             {
                 aBodyReanim->AssignRenderGroupToTrack("anim_tongue", RENDER_GROUP_NORMAL);
             }
@@ -5154,7 +5278,8 @@ void Zombie::DrawZombieHead(Graphics* g, const ZombieDrawPosition& theDrawPos, i
     {
         DrawZombiePart(g, IMAGE_ZOMBIE, mFrame, ZombieParts::PART_HEAD, theDrawPos);
 
-        if (mVariant)
+        // mVariant 用于舞王类型（false = Disco, true = Jackson），其他僵尸类型用于舌头变体
+        if (mVariant && mZombieType != ZombieType::ZOMBIE_DANCER && mZombieType != ZombieType::ZOMBIE_BACKUP_DANCER)
         {
             DrawZombiePart(g, IMAGE_ZOMBIE, theFrame, ZombieParts::PART_TONGUE, theDrawPos);
         }
@@ -5576,7 +5701,7 @@ void Zombie::DrawDancerReanim(Graphics* g)
     {
         g->SetColorizeImages(true);
         g->SetColor(aSpotLightColor);
-        TodDrawImageScaledF(g, IMAGE_SPOTLIGHT, -30.0f, -480.0f, 4.0f, 4.0f);
+        TodDrawImageScaledF(g, IMAGE_SPOTLIGHT, -30.0f, -480.0f - 31, 4.0f, 4.2f);
         g->SetColorizeImages(false);
     }
 }
@@ -6128,11 +6253,12 @@ ZombiePhase Zombie::GetDancerPhase()
     int aFrame = GetDancerFrame();
 
     return
-        aFrame <= 11 ? ZombiePhase::PHASE_DANCER_DANCING_LEFT :
-        aFrame <= 12 ? ZombiePhase::PHASE_DANCER_WALK_TO_RAISE :
+        aFrame <= 11 || aFrame > 21 ? ZombiePhase::PHASE_DANCER_DANCING_LEFT :
+        aFrame <= 12 ? ZombiePhase::PHASE_DANCER_WALK_TO_RAISE : 
         aFrame <= 15 ? ZombiePhase::PHASE_DANCER_RAISE_RIGHT_1 :
         aFrame <= 18 ? ZombiePhase::PHASE_DANCER_RAISE_LEFT_1 :
-        aFrame <= 21 ? ZombiePhase::PHASE_DANCER_RAISE_RIGHT_2 : ZombiePhase::PHASE_DANCER_RAISE_LEFT_2;
+        aFrame <= 21 ? ZombiePhase::PHASE_DANCER_RAISE_RIGHT_2 :
+        ZombiePhase::PHASE_DANCER_RAISE_LEFT_2;
 }
 
 //0x52E020
@@ -10609,7 +10735,8 @@ void Zombie::PreloadZombieResources(ZombieType theZombieType)
     }
     else if (theZombieType == ZombieType::ZOMBIE_DANCER)
     {
-        ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_BACKUP_DANCER, true);
+        ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_BACKUP_DANCER_DISCO, true);
+        ReanimatorEnsureDefinitionLoaded(ReanimationType::REANIM_BACKUP_DANCER_JACKSON, true);
     }
     else if (theZombieType == ZombieType::ZOMBIE_GARGANTUAR || theZombieType == ZombieType::ZOMBIE_REDEYE_GARGANTUAR)
     {
@@ -10725,6 +10852,96 @@ void Zombie::EnableFuture(bool theEnableFuture)
     else
     {
         aBodyReanim->SetImageOverride("anim_head1", nullptr);
+    }
+}
+
+//0x536E00
+void Zombie::EnableThriller(bool theEnableThriller)
+{
+    // 只对舞王和伴舞有效
+    if (mZombieType != ZombieType::ZOMBIE_DANCER && mZombieType != ZombieType::ZOMBIE_BACKUP_DANCER)
+        return;
+    
+    // 如果已经是目标状态，不需要切换
+    if (mVariant == theEnableThriller)
+        return;
+    
+    // mVariant: true = Jackson, false = Disco
+    mVariant = theEnableThriller;
+    
+    // 根据 mVariant 选择对应的动画类型并重新加载
+    if (mBodyReanimID != ReanimationID::REANIMATIONID_NULL)
+    {
+        Reanimation* aOldReanim = mApp->ReanimationTryToGet(mBodyReanimID);
+        bool aWasOnBoard = IsOnBoard();
+        ZombiePhase aOldPhase = mZombiePhase;
+        
+        // 选择新的动画类型
+        ReanimationType aReanimType;
+        if (mZombieType == ZombieType::ZOMBIE_DANCER)
+        {
+            aReanimType = mVariant ? ReanimationType::REANIM_DANCER_JACKSON : ReanimationType::REANIM_DANCER_DISCO;
+        }
+        else // ZOMBIE_BACKUP_DANCER
+        {
+            aReanimType = mVariant ? ReanimationType::REANIM_BACKUP_DANCER_JACKSON : ReanimationType::REANIM_BACKUP_DANCER_DISCO;
+        }
+        
+        if (aOldReanim)
+            aOldReanim->ReanimationDie();
+        
+        LoadReanim(aReanimType);
+        
+        // 设置动画
+        Reanimation* aBodyReanim = mApp->ReanimationGet(mBodyReanimID);
+        if (aBodyReanim)
+        {
+            SetupReanimLayers(aBodyReanim, mZombieType);
+            
+            // 根据状态选择动画并重置进度
+            if (!aWasOnBoard)
+            {
+                // 等待界面：使用anim_armraise动画
+                if (aBodyReanim->TrackExists("anim_armraise"))
+                {
+                    PlayZombieReanim("anim_armraise", ReanimLoopType::REANIM_LOOP, 0, 12.0f);
+                }
+            }
+            else if (mZombieType == ZombieType::ZOMBIE_DANCER)
+            {
+                // 舞王：根据阶段选择动画
+                if (aOldPhase == ZombiePhase::PHASE_DANCER_DANCING_IN && aBodyReanim->TrackExists("anim_moonwalk"))
+                {
+                    PlayZombieReanim("anim_moonwalk", ReanimLoopType::REANIM_LOOP, 0, 24.0f);
+                }
+                else if (aBodyReanim->TrackExists("anim_walk"))
+                {
+                    PlayZombieReanim("anim_walk", ReanimLoopType::REANIM_LOOP, 0, 12.0f);
+                }
+                else
+                {
+                    StartWalkAnim(0);
+                }
+            }
+            else // ZOMBIE_BACKUP_DANCER
+            {
+                // 伴舞：使用anim_armraise动画
+                if (aBodyReanim->TrackExists("anim_armraise"))
+                {
+                    PlayZombieReanim("anim_armraise", ReanimLoopType::REANIM_LOOP, 0, 12.0f);
+                }
+                else
+                {
+                    StartWalkAnim(0);
+                }
+            }
+            
+            // 重置动画进度（切换模式后重新开始）
+            if (aBodyReanim->mFrameCount > 0)
+            {
+                aBodyReanim->mAnimTime = 0.0f;
+            }
+        }
     }
 }
 

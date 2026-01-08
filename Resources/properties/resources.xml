@@ -5,9 +5,6 @@
   <SetDefaults path="images" idprefix="IMAGE_" />
   <Image id="BLANK" path="blank" />
   <Image id="POPCAP_LOGO" path="PopCap_Logo" />
-  
-  <SetDefaults path="properties" idprefix="IMAGE_" />
-  <Image id="PARTNER_LOGO" path="partner_logo" />
 </Resources>
 
 <Resources id="LoaderBar">
@@ -281,6 +278,7 @@
 <Image id="PUFFSHROOM_PUFF1" path="PuffShroom_puff1"  />
 <Image id="ZAMBONISMOKE" path="ZamboniSmoke" cols="3" />
 <Image id="ZOMBIEDANCERHEAD" path="ZombieDancerHead_disco" />
+<Image id="ZOMBIEDANCERHEAD_JACKSON" path="ZombieDancerHead" />
 <Image id="ZOMBIEBALLOONHEAD" path="ZombieBalloonHead" />
 <Image id="ZOMBIEIMPHEAD" path="ZombieImpHead" />
 <Image id="ZOMBIEDIGGERHEAD" path="ZombieDiggerHead" />
@@ -288,6 +286,7 @@
 <Image id="ZOMBIEDOLPHINRIDERHEAD" path="ZombieDolphinRiderHead" />
 <Image id="ZOMBIEPOGO" path="ZombiePogo" cols="3" />
 <Image id="ZOMBIEBACKUPDANCERHEAD" path="ZombieBackupDancerHead_disco" />
+<Image id="ZOMBIEBACKUPDANCERHEAD_JACKSON" path="ZombieBackupDancerHead" />
 <Image id="ZOMBIEBOBSLEDHEAD" path="ZombieBobSledHead" />
 <Image id="ZOMBIELADDERHEAD" path="ZombieLadderHead" />
 <Image id="ZOMBIEYETIHEAD" path="ZombieYetiHead" />
