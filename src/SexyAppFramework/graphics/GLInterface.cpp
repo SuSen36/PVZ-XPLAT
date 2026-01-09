@@ -1717,6 +1717,17 @@ void GLInterface::BltRotated(Image* theImage, float theX, float theY, const Rect
     BltTransformed(theImage,theClipRect,theColor,theDrawMode,theSrcRect,aTransform,true);
 }
 
+void GLInterface::BltRotatedAdditive(Image* theImage, float theX, float theY, const Rect* theClipRect, const Color& theColor, double theRot, float theRotCenterX, float theRotCenterY, const Rect& theSrcRect)
+{
+    SexyTransform2D aTransform;
+
+    aTransform.Translate(-theRotCenterX, -theRotCenterY);
+    aTransform.RotateRad(theRot);
+    aTransform.Translate(theX+theRotCenterX,theY+theRotCenterY);
+
+    BltTransformed(theImage,theClipRect,theColor,Graphics::DRAWMODE_ADDITIVE,theSrcRect,aTransform,true);
+}
+
 void GLInterface::BltTransformed(Image* theImage, const Rect* theClipRect, const Color& theColor, int theDrawMode, const Rect &theSrcRect, const SexyMatrix3 &theTransform, bool linearFilter, float theX, float theY, bool center)
 {
     if (!PreDraw())

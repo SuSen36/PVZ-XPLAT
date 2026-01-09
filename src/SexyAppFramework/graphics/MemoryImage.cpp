@@ -726,60 +726,503 @@ void MemoryImage::NormalDrawLineAA(double theStartX, double theStartY, double th
 
 	if (theColor.mAlpha != 255)
 	{
-		#define PIXEL_TYPE				uint32_t
-		#define CALC_WEIGHT_A(w)		(((w) * (theColor.mAlpha+1)) >> 8)
-		#define BLEND_PIXEL(p) \
-		{\
-			int aDestAlpha = dest >> 24;\
-			int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;\
-			a = 255 * a / aNewDestAlpha;\
-			oma = 256 - a;\
-			*(p) = (aNewDestAlpha << 24) |\
-					((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |\
-					((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |\
-					((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);\
-		}
 		const int STRIDE = mWidth;
 
-		#include "inc_routines/GENERIC_DrawLineAA.inc"
+		{
+			uint32_t* aDestPixels = &aBits[aY0*STRIDE + aX0];
+			uint32_t anErrAcc = (uint32_t)(fabs(theStartX - aX0)*fabs(theStartY - aY0) * 0x10000);
+			if (dx >= dy) // mostly horizontal
+			{ 
+				uint32_t anErrAdj = (uint32_t)(dyd / dxd * 0x10000);
 
-		#undef PIXEL_TYPE
-		#undef CALC_WEIGHT_A
-		#undef BLEND_PIXEL
+				uchar aWeight = 255 - (uchar)(anErrAcc >> 8);
+
+				int a = (((aWeight) * (theColor.mAlpha+1)) >> 8);
+				int oma = 256 - a;
+				uint32_t dest = *aDestPixels;
+				{
+					int aDestAlpha = dest >> 24;
+					int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+					a = 255 * a / aNewDestAlpha;
+					oma = 256 - a;
+					*(aDestPixels) = (aNewDestAlpha << 24) |
+							((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+							((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+							((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+				}
+				while (--dx)
+				{
+					anErrAcc += anErrAdj;
+					if (anErrAcc >= 0x10000)
+					{
+						anErrAcc &= 0xFFFF;
+							aDestPixels += STRIDE;
+							aY0++;
+					}
+					aDestPixels += aXinc;
+
+					uchar aWeight = 255 - (uchar)(anErrAcc >> 8);
+					uchar aWeight2 = (aWeight ^ 0xFF);
+
+					dest = *aDestPixels;
+						a = (((aWeight) * (theColor.mAlpha+1)) >> 8);
+						oma = 256 - a;
+
+						{
+							int aDestAlpha = dest >> 24;
+							int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+							a = 255 * a / aNewDestAlpha;
+							oma = 256 - a;
+							*(aDestPixels) = (aNewDestAlpha << 24) |
+									((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+									((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+									((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+						}
+						if (aY0 < mHeight-1)
+						{
+							dest = *(aDestPixels+STRIDE);
+								a = (((aWeight2) * (theColor.mAlpha+1)) >> 8);
+								oma = 256 - a;
+								{
+									int aDestAlpha = dest >> 24;
+									int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+									a = 255 * a / aNewDestAlpha;
+									oma = 256 - a;
+									*(aDestPixels+STRIDE) = (aNewDestAlpha << 24) |
+											((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+											((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+											((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+								}
+						}
+				}
+			}
+			else // mostly vertical
+			{
+				uint32_t anErrAdj = (uint32_t)(dxd / dyd * 0x10000);
+
+				uchar aWeight = 255 - (uchar)(anErrAcc >> 8);
+
+				int a = (((aWeight) * (theColor.mAlpha+1)) >> 8);
+				int oma = 256 - a;
+				uint32_t dest = *aDestPixels;
+				{
+					int aDestAlpha = dest >> 24;
+					int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+					a = 255 * a / aNewDestAlpha;
+					oma = 256 - a;
+					*(aDestPixels) = (aNewDestAlpha << 24) |
+							((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+							((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+							((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+				}
+				while (--dy)
+				{
+					anErrAcc += anErrAdj;
+					if (anErrAcc >= 0x10000)
+					{
+						anErrAcc &= 0xFFFF;
+							aDestPixels += aXinc;
+							aX0 += aXinc;
+					}
+					aDestPixels += STRIDE;
+
+					uchar aWeight = 255 - (uchar)(anErrAcc >> 8);
+					uchar aWeight2 = (aWeight ^ 0xFF);
+
+					dest = *aDestPixels;
+						a = (((aWeight) * (theColor.mAlpha+1)) >> 8);
+						oma = 256 - a;
+
+						{
+							int aDestAlpha = dest >> 24;
+							int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+							a = 255 * a / aNewDestAlpha;
+							oma = 256 - a;
+							*(aDestPixels) = (aNewDestAlpha << 24) |
+									((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+									((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+									((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+						}
+						if (aX0 < STRIDE-1)
+						{
+							a = (((aWeight2) * (theColor.mAlpha+1)) >> 8);
+								oma = 256 - a;
+								dest = *(aDestPixels+aXinc);
+								{
+									int aDestAlpha = dest >> 24;
+									int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+									a = 255 * a / aNewDestAlpha;
+									oma = 256 - a;
+									*(aDestPixels+aXinc) = (aNewDestAlpha << 24) |
+											((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+											((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+											((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+								}
+						}
+				}
+			}
+			aDestPixels = &aBits[aY1*STRIDE + aX1];
+			uchar aWeight = 255 - (uchar)(anErrAcc >> 8);
+
+			int a = (((aWeight) * (theColor.mAlpha+1)) >> 8);
+			int oma = 256 - a;
+			uint32_t dest = *aDestPixels;
+			{
+				int aDestAlpha = dest >> 24;
+				int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+				a = 255 * a / aNewDestAlpha;
+				oma = 256 - a;
+				*(aDestPixels) = (aNewDestAlpha << 24) |
+						((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+						((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+						((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+			}
+		}
 	}
 	else
 	{
-		#define PIXEL_TYPE				uint32_t
-		#define CALC_WEIGHT_A(w)		(w)
-		#define BLEND_PIXEL(p) \
-		{\
-			int aDestAlpha = dest >> 24;\
-			int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;\
-			a = 255 * a / aNewDestAlpha;\
-			oma = 256 - a;\
-			*(p) = (aNewDestAlpha << 24) |\
-					((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |\
-					((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |\
-					((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);\
-		}
 		const int STRIDE = mWidth;
 
-		#include "inc_routines/GENERIC_DrawLineAA.inc"
+		{
+			uint32_t* aDestPixels = &aBits[aY0*STRIDE + aX0];
+			uint32_t anErrAcc = (uint32_t)(fabs(theStartX - aX0)*fabs(theStartY - aY0) * 0x10000);
+			if (dx >= dy) // mostly horizontal
+			{ 
+				uint32_t anErrAdj = (uint32_t)(dyd / dxd * 0x10000);
 
-		#undef PIXEL_TYPE
-		#undef CALC_WEIGHT_A
-		#undef BLEND_PIXEL
+				uchar aWeight = 255 - (uchar)(anErrAcc >> 8);
+
+				int a = (aWeight);
+				int oma = 256 - a;
+				uint32_t dest = *aDestPixels;
+				{
+					int aDestAlpha = dest >> 24;
+					int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+					a = 255 * a / aNewDestAlpha;
+					oma = 256 - a;
+					*(aDestPixels) = (aNewDestAlpha << 24) |
+							((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+							((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+							((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+				}
+				while (--dx)
+				{
+					anErrAcc += anErrAdj;
+					if (anErrAcc >= 0x10000)
+					{
+						anErrAcc &= 0xFFFF;
+							aDestPixels += STRIDE;
+							aY0++;
+					}
+					aDestPixels += aXinc;
+
+					uchar aWeight = 255 - (uchar)(anErrAcc >> 8);
+					uchar aWeight2 = (aWeight ^ 0xFF);
+
+					dest = *aDestPixels;
+						a = (aWeight);
+						oma = 256 - a;
+
+						{
+							int aDestAlpha = dest >> 24;
+							int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+							a = 255 * a / aNewDestAlpha;
+							oma = 256 - a;
+							*(aDestPixels) = (aNewDestAlpha << 24) |
+									((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+									((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+									((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+						}
+						if (aY0 < mHeight-1)
+						{
+							dest = *(aDestPixels+STRIDE);
+								a = (aWeight2);
+								oma = 256 - a;
+								{
+									int aDestAlpha = dest >> 24;
+									int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+									a = 255 * a / aNewDestAlpha;
+									oma = 256 - a;
+									*(aDestPixels+STRIDE) = (aNewDestAlpha << 24) |
+											((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+											((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+											((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+								}
+						}
+				}
+			}
+			else // mostly vertical
+			{
+				uint32_t anErrAdj = (uint32_t)(dxd / dyd * 0x10000);
+
+				uchar aWeight = 255 - (uchar)(anErrAcc >> 8);
+
+				int a = (aWeight);
+				int oma = 256 - a;
+				uint32_t dest = *aDestPixels;
+				{
+					int aDestAlpha = dest >> 24;
+					int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+					a = 255 * a / aNewDestAlpha;
+					oma = 256 - a;
+					*(aDestPixels) = (aNewDestAlpha << 24) |
+							((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+							((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+							((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+				}
+				while (--dy)
+				{
+					anErrAcc += anErrAdj;
+					if (anErrAcc >= 0x10000)
+					{
+						anErrAcc &= 0xFFFF;
+							aDestPixels += aXinc;
+							aX0 += aXinc;
+					}
+					aDestPixels += STRIDE;
+
+					uchar aWeight = 255 - (uchar)(anErrAcc >> 8);
+					uchar aWeight2 = (aWeight ^ 0xFF);
+
+					dest = *aDestPixels;
+						a = (aWeight);
+						oma = 256 - a;
+
+						{
+							int aDestAlpha = dest >> 24;
+							int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+							a = 255 * a / aNewDestAlpha;
+							oma = 256 - a;
+							*(aDestPixels) = (aNewDestAlpha << 24) |
+									((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+									((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+									((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+						}
+						if (aX0 < STRIDE-1)
+						{
+							a = (aWeight2);
+								oma = 256 - a;
+								dest = *(aDestPixels+aXinc);
+								{
+									int aDestAlpha = dest >> 24;
+									int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+									a = 255 * a / aNewDestAlpha;
+									oma = 256 - a;
+									*(aDestPixels+aXinc) = (aNewDestAlpha << 24) |
+											((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+											((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+											((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+								}
+						}
+				}
+			}
+			aDestPixels = &aBits[aY1*STRIDE + aX1];
+			uchar aWeight = 255 - (uchar)(anErrAcc >> 8);
+
+			int a = (aWeight);
+			int oma = 256 - a;
+			uint32_t dest = *aDestPixels;
+			{
+				int aDestAlpha = dest >> 24;
+				int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+				a = 255 * a / aNewDestAlpha;
+				oma = 256 - a;
+				*(aDestPixels) = (aNewDestAlpha << 24) |
+						((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+						((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+						((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+			}
+		}
 	}
 
 
 	BitsChanged();
 }
 
-/*
 void MemoryImage::AdditiveDrawLineAA(double theStartX, double theStartY, double theEndX, double theEndY, const Color& theColor)
 {
+	uint32_t* aBits = GetBits();
+	uint32_t color = theColor.ToInt();
+
+	int aX0 = (int)theStartX, aX1 = (int)theEndX;
+	int aY0 = (int)theStartY, aY1 = (int)theEndY;
+	int aXinc = 1;
+	if (aY0 > aY1)
+	{
+		int aTempX = aX0, aTempY = aY0;
+		aX0 = aX1; aY0 = aY1;
+		aX1 = aTempX; aY1 = aTempY;
+		double aTempXd = theStartX, aTempYd = theStartY;
+		theStartX = theEndX; theStartY = theEndY;
+		theEndX = aTempXd; theEndY = aTempYd;
+	}
+
+	int dx = aX1 - aX0;
+	int dy = aY1 - aY0;
+	double dxd = theEndX - theStartX;
+	double dyd = theEndY - theStartY;
+	if (dx < 0)
+	{
+		dx = -dx;
+		aXinc = -1;
+		dxd = -dxd;
+	}
+
+	const int STRIDE = mWidth;
+
+	{
+		uint32_t* aDestPixels = &aBits[aY0*STRIDE + aX0];
+		uint32_t anErrAcc = (uint32_t)(fabs(theStartX - aX0)*fabs(theStartY - aY0) * 0x10000);
+		if (dx >= dy) // mostly horizontal
+		{ 
+			uint32_t anErrAdj = (uint32_t)(dyd / dxd * 0x10000);
+
+			uchar aWeight = 255 - (uchar)(anErrAcc >> 8);
+
+			int a = aWeight;
+			int oma = 256 - a;
+			uint32_t dest = *aDestPixels;
+			{
+				int aDestAlpha = dest >> 24;
+				int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+				a = 255 * a / aNewDestAlpha;
+				oma = 256 - a;
+				*(aDestPixels) = (aNewDestAlpha << 24) |
+						((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+						((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+						((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+			}
+			while (--dx)
+			{
+				anErrAcc += anErrAdj;
+				if (anErrAcc >= 0x10000)
+				{
+					anErrAcc &= 0xFFFF;
+						aDestPixels += STRIDE;
+						aY0++;
+				}
+				aDestPixels += aXinc;
+
+				uchar aWeight = 255 - (uchar)(anErrAcc >> 8);
+				uchar aWeight2 = (aWeight ^ 0xFF);
+
+				dest = *aDestPixels;
+					a = aWeight;
+					oma = 256 - a;
+
+					{
+						int aDestAlpha = dest >> 24;
+						int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+						a = 255 * a / aNewDestAlpha;
+						oma = 256 - a;
+						*(aDestPixels) = (aNewDestAlpha << 24) |
+								((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+								((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+								((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+					}
+					if (aY0 < mHeight-1)
+					{
+						dest = *(aDestPixels+STRIDE);
+							a = aWeight2;
+								oma = 256 - a;
+								{
+									int aDestAlpha = dest >> 24;
+									int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+									a = 255 * a / aNewDestAlpha;
+									oma = 256 - a;
+									*(aDestPixels+STRIDE) = (aNewDestAlpha << 24) |
+											((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+											((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+											((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+								}
+					}
+			}
+		}
+		else // mostly vertical
+		{
+			uint32_t anErrAdj = (uint32_t)(dxd / dyd * 0x10000);
+
+			uchar aWeight = 255 - (uchar)(anErrAcc >> 8);
+
+			int a = aWeight;
+			int oma = 256 - a;
+			uint32_t dest = *aDestPixels;
+			{
+				int aDestAlpha = dest >> 24;
+				int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+				a = 255 * a / aNewDestAlpha;
+				oma = 256 - a;
+				*(aDestPixels) = (aNewDestAlpha << 24) |
+						((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+						((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+						((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+			}
+			while (--dy)
+			{
+				anErrAcc += anErrAdj;
+				if (anErrAcc >= 0x10000)
+				{
+					anErrAcc &= 0xFFFF;
+						aDestPixels += aXinc;
+						aX0 += aXinc;
+				}
+				aDestPixels += STRIDE;
+
+				uchar aWeight = 255 - (uchar)(anErrAcc >> 8);
+				uchar aWeight2 = (aWeight ^ 0xFF);
+
+				dest = *aDestPixels;
+					a = aWeight;
+					oma = 256 - a;
+
+					{
+						int aDestAlpha = dest >> 24;
+						int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+						a = 255 * a / aNewDestAlpha;
+						oma = 256 - a;
+						*(aDestPixels) = (aNewDestAlpha << 24) |
+								((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+								((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+								((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+					}
+					if (aX0 < STRIDE-1)
+					{
+						a = aWeight2;
+							oma = 256 - a;
+							dest = *(aDestPixels+aXinc);
+							{
+								int aDestAlpha = dest >> 24;
+								int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+								a = 255 * a / aNewDestAlpha;
+								oma = 256 - a;
+								*(aDestPixels+aXinc) = (aNewDestAlpha << 24) |
+										((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+										((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+										((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+							}
+					}
+			}
+		}
+		aDestPixels = &aBits[aY1*STRIDE + aX1];
+		uchar aWeight = 255 - (uchar)(anErrAcc >> 8);
+
+		int a = aWeight;
+		int oma = 256 - a;
+		uint32_t dest = *aDestPixels;
+		{
+			int aDestAlpha = dest >> 24;
+			int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+			a = 255 * a / aNewDestAlpha;
+			oma = 256 - a;
+			*(aDestPixels) = (aNewDestAlpha << 24) |
+					((((color & 0xFF0000) * a + (dest & 0xFF0000) * oma) >> 8) & 0xFF0000) |
+					((((color & 0x00FF00) * a + (dest & 0x00FF00) * oma) >> 8) & 0x00FF00) |
+					((((color & 0x0000FF) * a + (dest & 0x0000FF) * oma) >> 8) & 0x0000FF);
+		}
+	}
+
+	BitsChanged();
 }
-*/
 
 void MemoryImage::DrawLineAA(double theStartX, double theStartY, double theEndX, double theEndY, const Color& theColor, int theDrawMode)
 {
@@ -800,7 +1243,14 @@ void MemoryImage::DrawLineAA(double theStartX, double theStartY, double theEndX,
 		return;
 	}
 
-	NormalDrawLineAA(theStartX, theStartY, theEndX, theEndY, theColor);
+	if (theDrawMode == Graphics::DRAWMODE_ADDITIVE)
+	{
+		AdditiveDrawLineAA(theStartX, theStartY, theEndX, theEndY, theColor);
+	}
+	else
+	{
+		NormalDrawLineAA(theStartX, theStartY, theEndX, theEndY, theColor);
+	}
 
 	BitsChanged();
 }
@@ -957,7 +1407,7 @@ uchar* MemoryImage::GetRLAlphaData()
 	CommitBits();
 
 	if (mRLAlphaData == NULL)
-	{		
+	{
 		mRLAlphaData = new uchar[mWidth*mHeight];
 
 		if (mColorTable == NULL)
@@ -968,26 +1418,76 @@ uchar* MemoryImage::GetRLAlphaData()
 			else
 				aSrcPtr = GetBits();
 
-			#define NEXT_SRC_COLOR (*(aSrcPtr++))
-
-			#include "inc_routines/MI_GetRLAlphaData.inc"
-
-			#undef NEXT_SRC_COLOR
+			GenerateRLAlphaData(aSrcPtr, NULL, mWidth, mHeight);
 		}
 		else
 		{
 			uchar* aSrcPtr = mColorIndices;
 			uint32_t* aColorTable = mColorTable;
 
-			#define NEXT_SRC_COLOR (aColorTable[*(aSrcPtr++)])
-
-			#include "inc_routines/MI_GetRLAlphaData.inc"
-
-			#undef NEXT_SRC_COLOR
+			GenerateRLAlphaData(aSrcPtr, aColorTable, mWidth, mHeight);
 		}
 	}
 
 	return mRLAlphaData;
+}
+
+void MemoryImage::GenerateRLAlphaData(void* aSrcPtr, uint32_t* aColorTable, int theWidth, int theHeight)
+{		
+	if (theWidth==1)
+	{
+		memset(mRLAlphaData,1,theHeight);
+	}
+	else
+	{
+		for (int aRow = 0; aRow < theHeight; aRow++)			
+		{
+			int aRCount = 1;
+			int aRLCount = 1;
+
+			int anAVal;
+			if (aColorTable == NULL)
+				anAVal = ((uint32_t*)aSrcPtr)[aRow * theWidth] >> 24;
+			else
+				anAVal = aColorTable[((uchar*)aSrcPtr)[aRow * theWidth]] >> 24;
+
+			int aLastAClass = (anAVal == 0) ? 0 : (anAVal == 255) ? 1 : 2;
+
+			while (aRCount < theWidth)
+			{				
+				if (aColorTable == NULL)
+					anAVal = ((uint32_t*)aSrcPtr)[aRow * theWidth + aRCount] >> 24;
+				else
+					anAVal = aColorTable[((uchar*)aSrcPtr)[aRow * theWidth + aRCount]] >> 24;
+
+				int aThisAClass = (anAVal == 0) ? 0 : (anAVal == 255) ? 1 : 2;
+
+				if ((aThisAClass != aLastAClass) || (aRCount == theWidth))
+				{
+					if (aThisAClass == aLastAClass)
+						aRLCount++;
+
+					for (int i = aRLCount; i > 0; i--)
+					{
+						if (i >= 255)
+							*(mRLAlphaData + aRow * theWidth + aRCount++) = 255;
+						else
+							*(mRLAlphaData + aRow * theWidth + aRCount++) = i;					
+					}
+
+					if ((aRCount == theWidth) && (aThisAClass != aLastAClass))
+						*(mRLAlphaData + aRow * theWidth + aRCount++) = 1;
+
+					aLastAClass = aThisAClass;
+					aRLCount = 1;
+				}
+				else
+				{
+					aRLCount++;
+				}
+			}
+		}
+	}
 }
 
 uchar* MemoryImage::GetRLAdditiveData(NativeDisplay *theNative)
@@ -1396,31 +1896,202 @@ void MemoryImage::AdditiveBlt(Image* theImage, int theX, int theY, const Rect& t
 
 	if (aSrcMemoryImage != NULL)
 	{
-		if (aSrcMemoryImage->mColorTable == NULL)
-		{			
-			uint32_t* aSrcBits = aSrcMemoryImage->GetBits();
+		if (aSrcMemoryImage->mColorTable == NULL) {
+            uint32_t *aSrcBits = aSrcMemoryImage->GetBits();
 
-			#define NEXT_SRC_COLOR		(*(aSrcPtr++))
-			#define SRC_TYPE			uint32_t			
+            {
+                uint32_t *aDestPixelsRow = ((uint32_t *) GetBits()) + (theY * mWidth) + theX;
+                uint32_t *aSrcPixelsRow = aSrcBits + (theSrcRect.mY * theImage->mWidth) + theSrcRect.mX;
 
-			#include "inc_routines/MI_AdditiveBlt.inc"
+                if (theColor == Color::White) {
+                    if (aSrcMemoryImage->mHasAlpha) {
+                        for (int y = 0; y < theSrcRect.mHeight; y++) {
+                            uint32_t *aDestPixels = aDestPixelsRow;
+                            uint32_t *aSrcPtr = aSrcPixelsRow;
 
-			#undef NEXT_SRC_COLOR
-			#undef SRC_TYPE		
-		}
-		else
-		{			
-			uint32_t* aColorTable = aSrcMemoryImage->mColorTable;
-			uchar* aSrcBits = aSrcMemoryImage->mColorIndices;
+                            for (int x = 0; x < theSrcRect.mWidth; x++) {
+                                uint32_t src = *(aSrcPtr++);
+                                uint32_t dest = *aDestPixels;
 
-			#define NEXT_SRC_COLOR		(aColorTable[*(aSrcPtr++)])
-			#define SRC_TYPE uchar
+                                int a = (src & 0xFF000000) >> 24;
+                                int r = aMaxTable[((dest & 0xFF0000) + (((src & 0xFF0000) * a) >> 8)) >> 16];
+                                int g = aMaxTable[((dest & 0x00FF00) + (((src & 0x00FF00) * a) >> 8)) >> 8];
+                                int b = aMaxTable[((dest & 0x0000FF) + (((src & 0x0000FF) * a) >> 8))];
 
-			#include "inc_routines/MI_AdditiveBlt.inc"
+                                *(aDestPixels++) = (dest & 0xFF000000) | (r << 16) | (g << 8) | (b);
+                            }
 
-			#undef NEXT_SRC_COLOR
-			#undef SRC_TYPE		
-		}
+                            aDestPixelsRow += mWidth;
+                            aSrcPixelsRow += theImage->mWidth;
+                        }
+                    } else {
+                        for (int y = 0; y < theSrcRect.mHeight; y++) {
+                            uint32_t *aDestPixels = aDestPixelsRow;
+                            uint32_t *aSrcPtr = aSrcPixelsRow;
+
+                            for (int x = 0; x < theSrcRect.mWidth; x++) {
+                                uint32_t src = *(aSrcPtr++);
+                                uint32_t dest = *aDestPixels;
+
+                                int r = aMaxTable[((dest & 0xFF0000) + (src & 0xFF0000)) >> 16];
+                                int g = aMaxTable[((dest & 0x00FF00) + (src & 0x00FF00)) >> 8];
+                                int b = aMaxTable[((dest & 0x0000FF) + (src & 0x0000FF))];
+
+                                *(aDestPixels++) = (dest & 0xFF000000) | (r << 16) | (g << 8) | (b);
+                            }
+
+                            aDestPixelsRow += mWidth;
+                            aSrcPixelsRow += theImage->mWidth;
+                        }
+                    }
+                } else {
+                    int ca = theColor.mAlpha;
+                    int cr = (theColor.mRed * ca) / 255;
+                    int cg = (theColor.mGreen * ca) / 255;
+                    int cb = (theColor.mBlue * ca) / 255;
+
+                    if (aSrcMemoryImage->mHasAlpha) {
+                        for (int y = 0; y < theSrcRect.mHeight; y++) {
+                            uint32_t *aDestPixels = aDestPixelsRow;
+                            uint32_t *aSrcPtr = aSrcPixelsRow;
+
+                            for (int x = 0; x < theSrcRect.mWidth; x++) {
+                                uint32_t src = *(aSrcPtr++);
+                                uint32_t dest = *aDestPixels;
+
+                                int a = (src & 0xFF000000) >> 24;
+                                int r = aMaxTable[((dest & 0xFF0000) + (((((src & 0xFF0000) * cr) >> 8) * a) >> 8))
+                                        >> 16];
+                                int g = aMaxTable[((dest & 0x00FF00) + (((((src & 0x00FF00) * cg) >> 8) * a) >> 8))
+                                        >> 8];
+                                int b = aMaxTable[((dest & 0x0000FF) + (((((src & 0x0000FF) * cb) >> 8) * a) >> 8))];
+
+                                *(aDestPixels++) = (dest & 0xFF000000) | (r << 16) | (g << 8) | (b);
+                            }
+
+                            aDestPixelsRow += mWidth;
+                            aSrcPixelsRow += theImage->mWidth;
+                        }
+                    } else {
+                        for (int y = 0; y < theSrcRect.mHeight; y++) {
+                            uint32_t *aDestPixels = aDestPixelsRow;
+                            uint32_t *aSrcPtr = aSrcPixelsRow;
+
+                            for (int x = 0; x < theSrcRect.mWidth; x++) {
+                                uint32_t src = *(aSrcPtr++);
+                                uint32_t dest = *aDestPixels;
+
+                                int r = aMaxTable[((dest & 0xFF0000) + (((src & 0xFF0000) * cr) >> 8)) >> 16];
+                                int g = aMaxTable[((dest & 0x00FF00) + (((src & 0x00FF00) * cg) >> 8)) >> 8];
+                                int b = aMaxTable[((dest & 0x0000FF) + (((src & 0x0000FF) * cb) >> 8))];
+
+                                *(aDestPixels++) = (dest & 0xFF000000) | (r << 16) | (g << 8) | (b);
+                            }
+
+                            aDestPixelsRow += mWidth;
+                            aSrcPixelsRow += theImage->mWidth;
+                        }
+                    }
+                }
+            }
+        }else{
+		uint32_t* aColorTable = aSrcMemoryImage->mColorTable;
+		uchar* aSrcBits = aSrcMemoryImage->mColorIndices;
+
+        {
+            uint32_t *aDestPixelsRow = ((uint32_t *) GetBits()) + (theY * mWidth) + theX;
+            uchar *aSrcPixelsRow = aSrcBits + (theSrcRect.mY * theImage->mWidth) + theSrcRect.mX;
+
+            if (theColor == Color::White) {
+                if (aSrcMemoryImage->mHasAlpha) {
+                    for (int y = 0; y < theSrcRect.mHeight; y++) {
+                        uint32_t *aDestPixels = aDestPixelsRow;
+                        uchar *aSrcPtr = aSrcPixelsRow;
+
+                        for (int x = 0; x < theSrcRect.mWidth; x++) {
+                            uint32_t src = aColorTable[*(aSrcPtr++)];
+                            uint32_t dest = *aDestPixels;
+
+                            int a = (src & 0xFF000000) >> 24;
+                            int r = aMaxTable[((dest & 0xFF0000) + (((src & 0xFF0000) * a) >> 8)) >> 16];
+                            int g = aMaxTable[((dest & 0x00FF00) + (((src & 0x00FF00) * a) >> 8)) >> 8];
+                            int b = aMaxTable[((dest & 0x0000FF) + (((src & 0x0000FF) * a) >> 8))];
+
+                            *(aDestPixels++) = (dest & 0xFF000000) | (r << 16) | (g << 8) | (b);
+                        }
+
+                        aDestPixelsRow += mWidth;
+                        aSrcPixelsRow += theImage->mWidth;
+                    }
+                } else {
+                    for (int y = 0; y < theSrcRect.mHeight; y++) {
+                        uint32_t *aDestPixels = aDestPixelsRow;
+                        uchar *aSrcPtr = aSrcPixelsRow;
+
+                        for (int x = 0; x < theSrcRect.mWidth; x++) {
+                            uint32_t src = aColorTable[*(aSrcPtr++)];
+                            uint32_t dest = *aDestPixels;
+
+                            int r = aMaxTable[((dest & 0xFF0000) + (src & 0xFF0000)) >> 16];
+                            int g = aMaxTable[((dest & 0x00FF00) + (src & 0x00FF00)) >> 8];
+                            int b = aMaxTable[((dest & 0x0000FF) + (src & 0x0000FF))];
+
+                            *(aDestPixels++) = (dest & 0xFF000000) | (r << 16) | (g << 8) | (b);
+                        }
+
+                        aDestPixelsRow += mWidth;
+                        aSrcPixelsRow += theImage->mWidth;
+                    }
+                }
+            } else {
+                int ca = theColor.mAlpha;
+                int cr = (theColor.mRed * ca) / 255;
+                int cg = (theColor.mGreen * ca) / 255;
+                int cb = (theColor.mBlue * ca) / 255;
+
+                if (aSrcMemoryImage->mHasAlpha) {
+                    for (int y = 0; y < theSrcRect.mHeight; y++) {
+                        uint32_t *aDestPixels = aDestPixelsRow;
+                        uchar *aSrcPtr = aSrcPixelsRow;
+
+                        for (int x = 0; x < theSrcRect.mWidth; x++) {
+                            uint32_t src = aColorTable[*(aSrcPtr++)];
+                            uint32_t dest = *aDestPixels;
+
+                            int a = (src & 0xFF000000) >> 24;
+                            int r = aMaxTable[((dest & 0xFF0000) + (((((src & 0xFF0000) * cr) >> 8) * a) >> 8)) >> 16];
+                            int g = aMaxTable[((dest & 0x00FF00) + (((((src & 0x00FF00) * cg) >> 8) * a) >> 8)) >> 8];
+                            int b = aMaxTable[((dest & 0x0000FF) + (((((src & 0x0000FF) * cb) >> 8) * a) >> 8))];
+
+                            *(aDestPixels++) = (dest & 0xFF000000) | (r << 16) | (g << 8) | (b);
+                        }
+
+                        aDestPixelsRow += mWidth;
+                        aSrcPixelsRow += theImage->mWidth;
+                    }
+                } else {
+                    for (int y = 0; y < theSrcRect.mHeight; y++) {
+                        uint32_t *aDestPixels = aDestPixelsRow;
+                        uchar *aSrcPtr = aSrcPixelsRow;
+
+                        for (int x = 0; x < theSrcRect.mWidth; x++) {
+                            uint32_t src = aColorTable[*(aSrcPtr++)];
+                            uint32_t dest = *aDestPixels;
+
+                            int r = aMaxTable[((dest & 0xFF0000) + (((src & 0xFF0000) * cr) >> 8)) >> 16];
+                            int g = aMaxTable[((dest & 0x00FF00) + (((src & 0x00FF00) * cg) >> 8)) >> 8];
+                            int b = aMaxTable[((dest & 0x0000FF) + (((src & 0x0000FF) * cb) >> 8))];
+
+                            *(aDestPixels++) = (dest & 0xFF000000) | (r << 16) | (g << 8) | (b);
+                        }
+
+                        aDestPixelsRow += mWidth;
+                        aSrcPixelsRow += theImage->mWidth;
+                    }
+                }
+            }
+        }
+    }
 
 		BitsChanged();
 	}	
@@ -1428,45 +2099,329 @@ void MemoryImage::AdditiveBlt(Image* theImage, int theX, int theY, const Rect& t
 
 void MemoryImage::NormalBlt(Image* theImage, int theX, int theY, const Rect& theSrcRect, const Color& theColor)
 {
-	theImage->mDrawn = true;
+    theImage->mDrawn = true;
 
-	MemoryImage* aSrcMemoryImage = dynamic_cast<MemoryImage*>(theImage);
+    MemoryImage* aSrcMemoryImage = dynamic_cast<MemoryImage*>(theImage);
+    if (aSrcMemoryImage == NULL) return;
 
-	if (aSrcMemoryImage != NULL)
-	{
-		if (aSrcMemoryImage->mColorTable == NULL)
-		{			
-			uint32_t* aSrcPixelsRow = ((uint32_t*) aSrcMemoryImage->GetBits()) + (theSrcRect.mY * theImage->mWidth) + theSrcRect.mX;
+    bool hasColorTable = (aSrcMemoryImage->mColorTable != NULL);
+    uint32_t* aColorTable = hasColorTable ? aSrcMemoryImage->mColorTable : NULL;
+    void* aSrcPixelsRow = NULL;
 
-			#define NEXT_SRC_COLOR		(*(aSrcPtr++))
-			#define READ_SRC_COLOR		(*(aSrcPtr))
-			#undef EACH_ROW
-			#define EACH_ROW			uint32_t* aSrcPtr = aSrcPixelsRow
+    if (hasColorTable) {
+        aSrcPixelsRow = (void*)(aSrcMemoryImage->mColorIndices + (theSrcRect.mY * theImage->mWidth) + theSrcRect.mX);
+    } else {
+        aSrcPixelsRow = (void*)(((uint32_t*)aSrcMemoryImage->GetBits()) + (theSrcRect.mY * theImage->mWidth) + theSrcRect.mX);
+    }
 
-			#include "inc_routines/MI_NormalBlt.inc"
+    uint32_t* aDestPixelsRow = ((uint32_t*)GetBits()) + (theY * mWidth) + theX;
 
-			#undef NEXT_SRC_COLOR	
-			#undef READ_SRC_COLOR	
-			#undef EACH_ROW			
-		}
-		else
-		{			
-			uint32_t* aColorTable = aSrcMemoryImage->mColorTable;
-			uchar* aSrcPixelsRow = aSrcMemoryImage->mColorIndices + (theSrcRect.mY * theImage->mWidth) + theSrcRect.mX;
+    if ((mHasAlpha) || (mHasTrans) || (theColor != Color::White))
+    {
+        if (theColor == Color::White)
+        {
+            for (int y = 0; y < theSrcRect.mHeight; y++)
+            {
+                uint32_t* aDestPixels = aDestPixelsRow;
+                void* aSrcPtr_void = aSrcPixelsRow;
 
-			#define NEXT_SRC_COLOR		(aColorTable[*(aSrcPtr++)])
-			#define READ_SRC_COLOR		(aColorTable[*(aSrcPtr)])
-			#define EACH_ROW			uchar* aSrcPtr = aSrcPixelsRow
+                for (int x = 0; x < theSrcRect.mWidth; x++)
+                {
+                    uint32_t src;
+                    if (hasColorTable) {
+                        uchar* aSrcPtr = (uchar*)aSrcPtr_void;
+                        src = aColorTable[*aSrcPtr++];
+                        aSrcPtr_void = aSrcPtr;
+                    } else {
+                        uint32_t* aSrcPtr = (uint32_t*)aSrcPtr_void;
+                        src = *aSrcPtr++;
+                        aSrcPtr_void = aSrcPtr;
+                    }
 
-			#include "inc_routines/MI_NormalBlt.inc"
+                    uint32_t dest = *aDestPixels;
+                    int a = src >> 24;
 
-			#undef NEXT_SRC_COLOR	
-			#undef READ_SRC_COLOR	
-			#undef EACH_ROW			
-		}
+                    if (a != 0)
+                    {
+                        int aDestAlpha = dest >> 24;
+                        int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+                        a = 255 * a / aNewDestAlpha;
+                        int oma = 256 - a;
 
-		BitsChanged();
-	}
+                        *(aDestPixels++) = (aNewDestAlpha << 24) |
+                                           #ifdef OPTIMIZE_SOFTWARE_DRAWING
+                                           ((((dest & 0xFF00FF) * oma >> 8) + ((src & 0xFF00FF) * a >> 8)) & 0xFF00FF) |
+                                           ((((dest & 0x00FF00) * oma >> 8) + ((src & 0x00FF00) * a >> 8)) & 0x00FF00);
+#else
+                        ((((dest & 0x0000FF) * oma) >> 8) + (((src & 0x0000FF) * a) >> 8) & 0x0000FF) |
+                            ((((dest & 0x00FF00) * oma) >> 8) + (((src & 0x00FF00) * a) >> 8) & 0x00FF00) |
+                            ((((dest & 0xFF0000) * oma) >> 8) + (((src & 0xFF0000) * a) >> 8) & 0xFF0000);
+#endif
+                    }
+                    else
+                        aDestPixels++;
+                }
+
+                aDestPixelsRow += mWidth;
+                if (hasColorTable) {
+                    ((uchar*&)aSrcPixelsRow) += theImage->mWidth;
+                } else {
+                    ((uint32_t*&)aSrcPixelsRow) += theImage->mWidth;
+                }
+            }
+        }
+        else
+        {
+            int ca = theColor.mAlpha;
+            int cr = theColor.mRed;
+            int cg = theColor.mGreen;
+            int cb = theColor.mBlue;
+
+#ifdef OPTIMIZE_SOFTWARE_DRAWING
+            bool performNormalBlit = true;
+            if (cr == cg && cg == cb)
+            {
+                performNormalBlit = false;
+                for (int y = 0; y < theSrcRect.mHeight; y++)
+                {
+                    uint32_t* aDestPixels = aDestPixelsRow;
+                    void* aSrcPtr_void = aSrcPixelsRow;
+
+                    for (int x = 0; x < theSrcRect.mWidth; x++)
+                    {
+                        uint32_t src;
+                        if (hasColorTable) {
+                            uchar* aSrcPtr = (uchar*)aSrcPtr_void;
+                            src = aColorTable[*aSrcPtr++];
+                            aSrcPtr_void = aSrcPtr;
+                        } else {
+                            uint32_t* aSrcPtr = (uint32_t*)aSrcPtr_void;
+                            src = *aSrcPtr++;
+                            aSrcPtr_void = aSrcPtr;
+                        }
+
+                        uint32_t dest = *aDestPixels;
+                        int a = ((src >> 24) * ca) / 255;
+
+                        if (a != 0)
+                        {
+                            int aDestAlpha = dest >> 24;
+                            int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+                            a = 255 * a / aNewDestAlpha;
+                            int oma = 256 - a;
+
+                            *(aDestPixels++) = (aNewDestAlpha << 24) |
+                                               ((((dest & 0xFF00FF) * oma >> 8) + ((((src & 0xFF00FF) * cr >> 8) & 0xFF00FF) * a >> 8)) & 0xFF00FF) |
+                                               ((((dest & 0x00FF00) * oma >> 8) + ((src & 0x00FF00) * cr * a >> 16)) & 0x00FF00);
+                        }
+                        else
+                            aDestPixels++;
+                    }
+
+                    aDestPixelsRow += mWidth;
+                    if (hasColorTable) {
+                        ((uchar*&)aSrcPixelsRow) += theImage->mWidth;
+                    } else {
+                        ((uint32_t*&)aSrcPixelsRow) += theImage->mWidth;
+                    }
+                }
+            }
+            if (performNormalBlit)
+#endif
+            {
+                for (int y = 0; y < theSrcRect.mHeight; y++)
+                {
+                    uint32_t* aDestPixels = aDestPixelsRow;
+                    void* aSrcPtr_void = aSrcPixelsRow;
+
+                    for (int x = 0; x < theSrcRect.mWidth; x++)
+                    {
+                        uint32_t src;
+                        if (hasColorTable) {
+                            uchar* aSrcPtr = (uchar*)aSrcPtr_void;
+                            src = aColorTable[*aSrcPtr++];
+                            aSrcPtr_void = aSrcPtr;
+                        } else {
+                            uint32_t* aSrcPtr = (uint32_t*)aSrcPtr_void;
+                            src = *aSrcPtr++;
+                            aSrcPtr_void = aSrcPtr;
+                        }
+
+                        uint32_t dest = *aDestPixels;
+                        int a = ((src >> 24) * ca) / 255;
+
+                        if (a != 0)
+                        {
+                            int aDestAlpha = dest >> 24;
+                            int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+                            a = 255 * a / aNewDestAlpha;
+                            int oma = 256 - a;
+
+                            *(aDestPixels++) = (aNewDestAlpha << 24) |
+                                               ((((dest & 0x0000FF) * oma) >> 8) + (((src & 0x0000FF) * a * cb) >> 16) & 0x0000FF) |
+                                               ((((dest & 0x00FF00) * oma) >> 8) + (((src & 0x00FF00) * a * cg) >> 16) & 0x00FF00) |
+                                               ((((dest & 0xFF0000) * oma) >> 8) + (((((src & 0xFF0000) * a) >> 8) * cr) >> 8) & 0xFF0000);
+                        }
+                        else
+                            aDestPixels++;
+                    }
+
+                    aDestPixelsRow += mWidth;
+                    if (hasColorTable) {
+                        ((uchar*&)aSrcPixelsRow) += theImage->mWidth;
+                    } else {
+                        ((uint32_t*&)aSrcPixelsRow) += theImage->mWidth;
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        uchar* aSrcRLAlphaData = aSrcMemoryImage->GetRLAlphaData();
+        uchar* aRLAlphaDataRow = aSrcRLAlphaData + (theSrcRect.mY * theImage->mWidth) + theSrcRect.mX;
+
+        for (int y = 0; y < theSrcRect.mHeight; y++)
+        {
+            uint32_t* aDestPixels = aDestPixelsRow;
+            void* aSrcPtr_void = aSrcPixelsRow;
+            uchar* aRLAlphaData = aRLAlphaDataRow;
+
+            for (int aSpanLeft = theSrcRect.mWidth; aSpanLeft > 0;)
+            {
+                uint32_t src;
+                if (hasColorTable) {
+                    uchar* aSrcPtr = (uchar*)aSrcPtr_void;
+                    src = aColorTable[*aSrcPtr];
+                } else {
+                    uint32_t* aSrcPtr = (uint32_t*)aSrcPtr_void;
+                    src = *aSrcPtr;
+                }
+
+                uchar rl = *aRLAlphaData;
+                if (rl > aSpanLeft)
+                    rl = aSpanLeft;
+
+                int oma = 256 - (src >> 24);
+
+                if (oma == 1)
+                {
+                    for (int i = 0; i < rl; i++)
+                    {
+                        uint32_t pixel;
+                        if (hasColorTable) {
+                            uchar* aSrcPtr = (uchar*)aSrcPtr_void;
+                            pixel = aColorTable[*aSrcPtr++];
+                            aSrcPtr_void = aSrcPtr;
+                        } else {
+                            uint32_t* aSrcPtr = (uint32_t*)aSrcPtr_void;
+                            pixel = *aSrcPtr++;
+                            aSrcPtr_void = aSrcPtr;
+                        }
+                        *aDestPixels++ = pixel;
+                    }
+                }
+                else if (oma == 256)
+                {
+                    aDestPixels += rl;
+                    if (hasColorTable) {
+                        ((uchar*&)aSrcPtr_void) += rl;
+                    } else {
+                        ((uint32_t*&)aSrcPtr_void) += rl;
+                    }
+                }
+                else
+                {
+#ifdef OPTIMIZE_SOFTWARE_DRAWING
+                    int a = 256 - oma;
+
+                    if (hasColorTable) {
+                        ((uchar*&)aSrcPtr_void)++;
+                    } else {
+                        ((uint32_t*&)aSrcPtr_void)++;
+                    }
+
+                    uint32_t dest = *aDestPixels;
+                    *(aDestPixels++) = (0xFF000000) |
+                                       ((((dest & 0xFF00FF) * oma >> 8) + ((src & 0xFF00FF) * a >> 8)) & 0xFF00FF) |
+                                       ((((dest & 0x00FF00) * oma >> 8) + ((src & 0x00FF00) * a >> 8)) & 0x00FF00);
+
+                    for (int i = 1; i < rl; i++)
+                    {
+                        uint32_t src_i;
+                        if (hasColorTable) {
+                            uchar* aSrcPtr = (uchar*)aSrcPtr_void;
+                            src_i = aColorTable[*aSrcPtr++];
+                            aSrcPtr_void = aSrcPtr;
+                        } else {
+                            uint32_t* aSrcPtr = (uint32_t*)aSrcPtr_void;
+                            src_i = *aSrcPtr++;
+                            aSrcPtr_void = aSrcPtr;
+                        }
+
+                        int a_i = (src_i >> 24);
+                        int oma_i = 256 - a_i;
+                        uint32_t dest_i = *aDestPixels;
+
+                        *(aDestPixels++) = (0xFF000000) |
+                                           ((((dest_i & 0xFF00FF) * oma_i >> 8) + ((src_i & 0xFF00FF) * a_i >> 8)) & 0xFF00FF) |
+                                           ((((dest_i & 0x00FF00) * oma_i >> 8) + ((src_i & 0x00FF00) * a_i >> 8)) & 0x00FF00);
+                    }
+#else
+                    int a = 256 - oma;
+
+                    if (hasColorTable) {
+                        ((uchar*&)aSrcPtr_void)++;
+                    } else {
+                        ((uint32_t*&)aSrcPtr_void)++;
+                    }
+
+                    uint32_t dest = *aDestPixels;
+                    *(aDestPixels++) = (0xFF000000) |
+                        ((((dest & 0x0000FF) * oma) >> 8) + (((src & 0x0000FF) * a) >> 8) & 0x0000FF) |
+                        ((((dest & 0x00FF00) * oma) >> 8) + (((src & 0x00FF00) * a) >> 8) & 0x00FF00) |
+                        ((((dest & 0xFF0000) * oma) >> 8) + (((src & 0xFF0000) * a) >> 8) & 0xFF0000);
+
+                    for (int i = 1; i < rl; i++)
+                    {
+                        uint32_t src_i;
+                        if (hasColorTable) {
+                            uchar* aSrcPtr = (uchar*)aSrcPtr_void;
+                            src_i = aColorTable[*aSrcPtr++];
+                            aSrcPtr_void = aSrcPtr;
+                        } else {
+                            uint32_t* aSrcPtr = (uint32_t*)aSrcPtr_void;
+                            src_i = *aSrcPtr++;
+                            aSrcPtr_void = aSrcPtr;
+                        }
+
+                        int a_i = (src_i >> 24);
+                        int oma_i = 256 - a_i;
+                        uint32_t dest_i = *aDestPixels;
+
+                        *(aDestPixels++) = (0xFF000000) |
+                            ((((dest_i & 0x0000FF) * oma_i) >> 8) + (((src_i & 0x0000FF) * a_i) >> 8) & 0x0000FF) |
+                            ((((dest_i & 0x00FF00) * oma_i) >> 8) + (((src_i & 0x00FF00) * a_i) >> 8) & 0x00FF00) |
+                            ((((dest_i & 0xFF0000) * oma_i) >> 8) + (((src_i & 0xFF0000) * a_i) >> 8) & 0xFF0000);
+                    }
+#endif
+                }
+
+                aRLAlphaData += rl;
+                aSpanLeft -= rl;
+            }
+
+            aDestPixelsRow += mWidth;
+            if (hasColorTable) {
+                ((uchar*&)aSrcPixelsRow) += theImage->mWidth;
+            } else {
+                ((uint32_t*&)aSrcPixelsRow) += theImage->mWidth;
+            }
+            aRLAlphaDataRow += theImage->mWidth;
+        }
+    }
+
+    BitsChanged();
 }
 
 void MemoryImage::Blt(Image* theImage, int theX, int theY, const Rect& theSrcRect, const Color& theColor, int theDrawMode)
@@ -1600,91 +2555,284 @@ void MemoryImage::BltRotated(Image* theImage, float theX, float theY, const Rect
 	{	
 		if (aMemoryImage->mColorTable == NULL)
 		{			
-			uint32_t* aSrcBits = aMemoryImage->GetBits() + theSrcRect.mX + theSrcRect.mY*theSrcRect.mWidth;			
-
-			#define SRC_TYPE uint32_t
-			#define READ_COLOR(ptr) (*(ptr))
-
 			if (theDrawMode == Graphics::DRAWMODE_NORMAL)
 			{
-				#include "inc_routines/MI_BltRotated.inc"
+				mApp->mGLInterface->BltRotated(theImage, theX, theY, &theClipRect, theColor, Graphics::DRAWMODE_NORMAL, theRot, theRotCenterX, theRotCenterY, theSrcRect);
 			}
 			else
 			{
-				#include "inc_routines/MI_BltRotated_Additive.inc"
+				mApp->mGLInterface->BltRotatedAdditive(theImage, theX, theY, &theClipRect, theColor, theRot, theRotCenterX, theRotCenterY, theSrcRect);
 			}
-
-			#undef SRC_TYPE
-			#undef READ_COLOR
 		}
 		else
 		{			
-			uint32_t* aColorTable = aMemoryImage->mColorTable;
-			uchar* aSrcBits = aMemoryImage->mColorIndices + theSrcRect.mX + theSrcRect.mY*theSrcRect.mWidth;
-
-			#define SRC_TYPE uchar
-			#define READ_COLOR(ptr) (aColorTable[*(ptr)])
-
 			if (theDrawMode == Graphics::DRAWMODE_NORMAL)
 			{
-				#include "inc_routines/MI_BltRotated.inc"
+				mApp->mGLInterface->BltRotated(theImage, theX, theY, &theClipRect, theColor, Graphics::DRAWMODE_NORMAL, theRot, theRotCenterX, theRotCenterY, theSrcRect);
 			}
 			else
 			{
-				#include "inc_routines/MI_BltRotated_Additive.inc"
+				mApp->mGLInterface->BltRotatedAdditive(theImage, theX, theY, &theClipRect, theColor, theRot, theRotCenterX, theRotCenterY, theSrcRect);
 			}
-
-			#undef SRC_TYPE
-			#undef READ_COLOR
 		}
 
 		BitsChanged();
 	}
 }
-
 void MemoryImage::SlowStretchBlt(Image* theImage, const Rect& theDestRect, const FRect& theSrcRect, const Color& theColor, int theDrawMode)
 {
-	(void)theColor;(void)theDrawMode;
-	theImage->mDrawn = true;
+    (void)theColor;(void)theDrawMode;
+    theImage->mDrawn = true;
 
-	// This thing was a pain to write.  I bet i could have gotten something just as good
-	// from some Graphics Gems book.	
-	
-	uint32_t* aDestEnd = GetBits() + (mWidth * mHeight);
-	(void)aDestEnd; // Unused in Release mode
+    uint32_t* aDestEnd = GetBits() + (mWidth * mHeight);
+    (void)aDestEnd;
 
-	MemoryImage* aSrcMemoryImage = dynamic_cast<MemoryImage*>(theImage);
+    MemoryImage* aSrcMemoryImage = dynamic_cast<MemoryImage*>(theImage);
+    if (aSrcMemoryImage == NULL) return;
 
-	if (aSrcMemoryImage != NULL)
-	{
-		if (aSrcMemoryImage->mColorTable == NULL)
-		{			
-			uint32_t* aSrcBits = aSrcMemoryImage->GetBits();
+    bool hasColorTable = (aSrcMemoryImage->mColorTable != NULL);
+    uint32_t* aColorTable = NULL;
+    void* aSrcBits = NULL;
+    if (hasColorTable) {
+        aColorTable = aSrcMemoryImage->mColorTable;
+        aSrcBits = (void*)aSrcMemoryImage->mColorIndices;
+    } else {
+        aSrcBits = (void*)aSrcMemoryImage->GetBits();
+    }
 
-			#define SRC_TYPE uint32_t
-			#define READ_COLOR(ptr) (*(ptr))
+    uint32_t *aDestBits = GetBits();
+    int aSrcRowWidth = aSrcMemoryImage->GetWidth();
+    int aSrcXI = (int) floor(theSrcRect.mX);
+    int aSrcYI = (int) floor(theSrcRect.mY);
+    int aSrcWidthI = (int) ceil(theSrcRect.mWidth + (theSrcRect.mX - aSrcXI));
+    int aSrcHeightI = (int) ceil(theSrcRect.mHeight + (theSrcRect.mY - aSrcYI));
 
-			#include "inc_routines/MI_SlowStretchBlt.inc"
+    if (aSrcXI < 0) aSrcXI = 0;
+    if (aSrcYI < 0) aSrcYI = 0;
+    if (aSrcXI + aSrcWidthI > theImage->mWidth) aSrcWidthI = theImage->mWidth - aSrcXI;
+    if (aSrcYI + aSrcHeightI > theImage->mHeight) aSrcHeightI = theImage->mHeight - aSrcYI;
+    if (aSrcWidthI <= 0 || aSrcHeightI <= 0) return;
 
-			#undef SRC_TYPE
-			#undef READ_COLOR
-		}
-		else
-		{
-			uint32_t* aColorTable = aSrcMemoryImage->mColorTable;
-			uchar* aSrcBits = aSrcMemoryImage->mColorIndices;
+    int aTempDestWidth = theDestRect.mWidth + 4;
+    int aTempDestHeight = theDestRect.mHeight + 4;
 
-			#define SRC_TYPE uchar
-			#define READ_COLOR(ptr) (aColorTable[*(ptr)])
+    uint32_t *aNewHorzPixels = new uint32_t[aTempDestWidth * aSrcHeightI * 4];
+    uint32_t *aNewHorzPixelsEnd = aNewHorzPixels + (aTempDestWidth * aSrcHeightI * 4);
+    (void) aNewHorzPixelsEnd;
+    memset(aNewHorzPixels, 0, aTempDestWidth * aSrcHeightI * 4 * 4);
 
-			#include "inc_routines/MI_SlowStretchBlt.inc"
+    int aSrcImageWidth = theImage->GetWidth();
+    (void) aSrcImageWidth;
 
-			#undef SRC_TYPE
-			#undef READ_COLOR
-		}
+    if (theSrcRect.mWidth >= theDestRect.mWidth) {
+        double aDestXFactor = theDestRect.mWidth / theSrcRect.mWidth;
+        double aDestXOffset = 1.0 + (aSrcXI - theSrcRect.mX) * aDestXFactor;
 
-		BitsChanged();
-	}	
+        for (int aSrcX = 0; aSrcX < aSrcWidthI; aSrcX++) {
+            double aDestX1 = aDestXFactor * aSrcX + aDestXOffset;
+            double aDestX2 = aDestX1 + aDestXFactor;
+            int aDestXI1 = (int) aDestX1;
+            int aDestXI2 = (int) aDestX2;
+
+            void* s1_void = hasColorTable ?
+                            (void*)&((uchar*)aSrcBits)[aSrcYI * aSrcRowWidth + aSrcXI + aSrcX] :
+                            (void*)&((uint32_t*)aSrcBits)[aSrcYI * aSrcRowWidth + aSrcXI + aSrcX];
+
+            if (aDestXI1 == aDestXI2) {
+                uint32_t *d = &aNewHorzPixels[aDestXI1 * 4];
+                int aFactor = (int) (257 * aDestXFactor);
+
+                for (int aSrcY = 0; aSrcY < aSrcHeightI; aSrcY++) {
+                    uint32_t pixel = hasColorTable ?
+                                     aColorTable[*((uchar*)s1_void)] :
+                                     *((uint32_t*)s1_void);
+
+                    *d++ += aFactor * ((pixel) & 0xFF);
+                    *d++ += aFactor * ((pixel >> 8) & 0xFF);
+                    *d++ += aFactor * ((pixel >> 16) & 0xFF);
+                    *d++ += aFactor * ((pixel >> 24) & 0xFF);
+
+                    TOD_ASSERT(d <= aNewHorzPixelsEnd);
+                    d += aTempDestWidth * 4 - 4;
+
+                    if (hasColorTable) ((uchar*&)s1_void) += aSrcRowWidth;
+                    else ((uint32_t*&)s1_void) += aSrcRowWidth;
+                }
+            } else {
+                int aFactor1 = (int) (257 * (aDestXI2 - aDestX1));
+                int aFactor2 = (int) (257 * (aDestX2 - aDestXI2));
+                uint32_t *d = &aNewHorzPixels[aDestXI1 * 4];
+
+                for (int aSrcY = 0; aSrcY < aSrcHeightI; aSrcY++) {
+                    uint32_t pixel = hasColorTable ?
+                                     aColorTable[*((uchar*)s1_void)] :
+                                     *((uint32_t*)s1_void);
+
+                    *d++ += aFactor1 * ((pixel) & 0xFF);
+                    *d++ += aFactor1 * ((pixel >> 8) & 0xFF);
+                    *d++ += aFactor1 * ((pixel >> 16) & 0xFF);
+                    *d++ += aFactor1 * ((pixel >> 24) & 0xFF);
+
+                    *d++ += aFactor2 * ((pixel) & 0xFF);
+                    *d++ += aFactor2 * ((pixel >> 8) & 0xFF);
+                    *d++ += aFactor2 * ((pixel >> 16) & 0xFF);
+                    *d++ += aFactor2 * ((pixel >> 24) & 0xFF);
+
+                    TOD_ASSERT(d <= aNewHorzPixelsEnd);
+                    d += aTempDestWidth * 4 - 8;
+
+                    if (hasColorTable) ((uchar*&)s1_void) += aSrcRowWidth;
+                    else ((uint32_t*&)s1_void) += aSrcRowWidth;
+                }
+            }
+        }
+    } else {
+        double aSrcXFactor;
+        if (theDestRect.mWidth != 1)
+            aSrcXFactor = (theSrcRect.mWidth - 1) / (theDestRect.mWidth - 1);
+        else
+            aSrcXFactor = (theSrcRect.mWidth) / (theDestRect.mWidth);
+
+        for (int aDestX = 1; aDestX < aTempDestWidth - 1; aDestX++) {
+            uint32_t *d = &aNewHorzPixels[aDestX * 4];
+            double aSrcX = (aDestX - 1) * aSrcXFactor + theSrcRect.mX;
+            int aSrcXI = (int) aSrcX;
+            int aFactor1 = (int) (257 * (1.0 - (aSrcX - aSrcXI)));
+            int aFactor2 = (int) (257 - aFactor1);
+
+            void* s_void = hasColorTable ?
+                           (void*)&((uchar*)aSrcBits)[aSrcYI * aSrcRowWidth + aSrcXI] :
+                           (void*)&((uint32_t*)aSrcBits)[aSrcYI * aSrcRowWidth + aSrcXI];
+
+            for (int aDestY = 0; aDestY < aSrcHeightI; aDestY++) {
+                uint32_t pixel1, pixel2;
+                if (hasColorTable) {
+                    uchar* s_uchar = (uchar*)s_void;
+                    pixel1 = aColorTable[*s_uchar++];
+                    pixel2 = aColorTable[*s_uchar];
+                    s_void = s_uchar;
+                } else {
+                    uint32_t* s_uint32 = (uint32_t*)s_void;
+                    pixel1 = *s_uint32++;
+                    pixel2 = *s_uint32;
+                    s_void = s_uint32;
+                }
+
+                *d++ = (aFactor1 * ((pixel1) & 0xFF)) + (aFactor2 * ((pixel2) & 0xFF));
+                *d++ = (aFactor1 * ((pixel1 >> 8) & 0xFF)) + (aFactor2 * ((pixel2 >> 8) & 0xFF));
+                *d++ = (aFactor1 * ((pixel1 >> 16) & 0xFF)) + (aFactor2 * ((pixel2 >> 16) & 0xFF));
+                *d++ = (aFactor1 * ((pixel1 >> 24) & 0xFF)) + (aFactor2 * ((pixel2 >> 24) & 0xFF));
+
+                TOD_ASSERT(d <= aNewHorzPixelsEnd);
+                d += aTempDestWidth * 4 - 4;
+
+                if (hasColorTable) ((uchar*&)s_void) += aSrcRowWidth - 1;
+                else ((uint32_t*&)s_void) += aSrcRowWidth - 1;
+            }
+        }
+    }
+
+    uint32_t *aNewPixels = new uint32_t[aTempDestWidth * aTempDestHeight * 4];
+    uint32_t *aNewPixelsEnd = aNewPixels + (aTempDestWidth * aTempDestHeight * 4);
+    (void) aNewPixelsEnd;
+    memset(aNewPixels, 0, aTempDestWidth * aTempDestHeight * 4 * 4);
+
+    if (theSrcRect.mHeight >= theDestRect.mHeight) {
+        double aDestYFactor = theDestRect.mHeight / theSrcRect.mHeight;
+        double aDestYOffset = 1.0 + (aSrcYI - theSrcRect.mY) * aDestYFactor;
+
+        for (int aSrcY = 0; aSrcY < aSrcHeightI; aSrcY++) {
+            double aDestY1 = aDestYFactor * aSrcY + aDestYOffset;
+            double aDestY2 = aDestY1 + aDestYFactor;
+            int aDestYI1 = (int) floor(aDestY1);
+            int aDestYI2 = (int) floor(aDestY2);
+            uint32_t *s = &aNewHorzPixels[aSrcY * aTempDestWidth * 4];
+
+            if (aDestYI1 == aDestYI2) {
+                uint32_t *d = &aNewPixels[aDestYI1 * aTempDestWidth * 4];
+                int aFactor = (int) (256 * aDestYFactor);
+
+                for (int aSrcX = 0; aSrcX < aTempDestWidth; aSrcX++) {
+                    *d++ += aFactor * *s++;
+                    *d++ += aFactor * *s++;
+                    *d++ += aFactor * *s++;
+                    *d++ += aFactor * *s++;
+                }
+                TOD_ASSERT(d <= aNewPixelsEnd);
+            } else {
+                int aFactor1 = (int) (256 * (aDestYI2 - aDestY1));
+                int aFactor2 = (int) (256 * (aDestY2 - aDestYI2));
+                uint32_t *d1 = &aNewPixels[aDestYI1 * aTempDestWidth * 4];
+                uint32_t *d2 = &aNewPixels[aDestYI2 * aTempDestWidth * 4];
+
+                for (int aSrcX = 0; aSrcX < aTempDestWidth; aSrcX++) {
+                    *d1++ += aFactor1 * *s;
+                    *d2++ += aFactor2 * *s++;
+                    *d1++ += aFactor1 * *s;
+                    *d2++ += aFactor2 * *s++;
+                    *d1++ += aFactor1 * *s;
+                    *d2++ += aFactor2 * *s++;
+                    *d1++ += aFactor1 * *s;
+                    *d2++ += aFactor2 * *s++;
+                }
+                TOD_ASSERT(d1 <= aNewPixelsEnd);
+                TOD_ASSERT(d2 <= aNewPixelsEnd);
+            }
+        }
+    } else {
+        double aSrcYFactor;
+        if (theDestRect.mHeight != 1)
+            aSrcYFactor = (theSrcRect.mHeight - 1) / (theDestRect.mHeight - 1);
+        else
+            aSrcYFactor = (theSrcRect.mHeight) / (theDestRect.mHeight);
+
+        for (int aDestY = 1; aDestY < theDestRect.mHeight + 1; aDestY++) {
+            uint32_t *d = &aNewPixels[(aDestY * aTempDestWidth + 1) * 4];
+            double aSrcY = (aDestY - 1) * aSrcYFactor + (theSrcRect.mY - ((int) theSrcRect.mY));
+            int aSrcYI = (int) aSrcY;
+            int aFactor1 = (int) (256 * (1.0 - (aSrcY - aSrcYI)));
+            int aFactor2 = 256 - aFactor1;
+
+            uint32_t *s1 = &aNewHorzPixels[(aSrcYI * aTempDestWidth + 1) * 4];
+            uint32_t *s2 = (aSrcYI == aSrcHeightI - 1) ? s1 : &aNewHorzPixels[((aSrcYI + 1) * aTempDestWidth + 1) * 4];
+
+            for (int aDestX = 1; aDestX < aTempDestWidth - 1; aDestX++) {
+                *d++ = (aFactor1 * *s1++) + (aFactor2 * *s2++);
+                *d++ = (aFactor1 * *s1++) + (aFactor2 * *s2++);
+                *d++ = (aFactor1 * *s1++) + (aFactor2 * *s2++);
+                *d++ = (aFactor1 * *s1++) + (aFactor2 * *s2++);
+            }
+        }
+    }
+
+    for (int y = 0; y < theDestRect.mHeight; y++) {
+        uint32_t *aDestPixels = &aDestBits[(theDestRect.mY + y) * mWidth + theDestRect.mX];
+        for (int x = 0; x < theDestRect.mWidth; x++) {
+            uint32_t *p = &aNewPixels[((y + 1) * aTempDestWidth + x + 1) * 4];
+            int b = (*p++) >> 16;
+            int g = (*p++) >> 16;
+            int r = (*p++) >> 16;
+            int a = (*p++) >> 16;
+
+            if (a != 0) {
+                uint32_t dest = *aDestPixels;
+                int aDestAlpha = dest >> 24;
+                int aNewDestAlpha = aDestAlpha + ((255 - aDestAlpha) * a) / 255;
+                int oma = 256 - a;
+
+                TOD_ASSERT(aDestPixels < aDestEnd);
+                *(aDestPixels++) = (aNewDestAlpha << 24) |
+                                   (((((dest & 0x0000FF) * oma) >> 8) & 0x0000FF) + (((b * a) >> 8))) |
+                                   (((((dest & 0x00FF00) * oma) >> 8) & 0x00FF00) + (((g * a) >> 8) << 8)) |
+                                   (((((dest & 0xFF0000) * oma) >> 8) & 0xFF0000) + (((r * a) >> 8) << 16));
+            } else
+                aDestPixels++;
+        }
+    }
+
+    delete[] aNewPixels;
+    delete[] aNewHorzPixels;
+    BitsChanged();
 }
 
 //TODO: Make the special version
