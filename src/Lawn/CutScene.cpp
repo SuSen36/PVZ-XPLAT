@@ -1,4 +1,4 @@
-#include "Board.h"
+﻿#include "Board.h"
 #include "Plant.h"
 #include "Zombie.h"
 #include "GridItem.h"
@@ -501,7 +501,7 @@ void CutScene::PlaceStreetZombies()
 	// 以下统计出怪列表中各种可预览的僵尸的数量
 	// int aZombieValueTotal = 0;
 	int aTotalZombieCount = 0;
-	int aZombieTypeCount[(int)ZombieType::NUM_ZOMBIE_TYPES] = { 0 };
+	int aZombieTypeCount[(int)ZombieType::NUM_ZOMBIE_TYPES]  = {0};
 	TOD_ASSERT(mBoard->mNumWaves <= MAX_ZOMBIE_WAVES);
 
 	for (int aWave = 0; aWave < mBoard->mNumWaves; aWave++)
@@ -557,7 +557,7 @@ void CutScene::PlaceStreetZombies()
 		aZombieTypeCount[(int)ZombieType::ZOMBIE_DUCKY_TUBE] = 1;  // 泳池关卡，必定出现鸭子僵尸预览
 	}
 	
-	bool aZombieGrid[5][5] = {{ false }};
+	bool aZombieGrid[5][5] = {{false}};
 	int aPreviewCapacity = 10;
 	if (mApp->IsLittleTroubleLevel())
 	{
@@ -2389,3 +2389,4 @@ bool CutScene::ShowZombieWalking()
 {
 	return mCutsceneTime > LostTimePanRightStart;
 }
+

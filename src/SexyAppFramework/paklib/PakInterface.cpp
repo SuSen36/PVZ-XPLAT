@@ -1,4 +1,4 @@
-#include <unistd.h>
+﻿#include <unistd.h>
 #include <vector>
 #include <SDL.h>
 #include "../Common.h"
@@ -194,7 +194,7 @@ bool PakInterface::AddPakFile(const std::string& theFileName, int thePriority) {
         if ((FRead(&aFlags, 1, 1, aFP) != 1) || (aFlags & FILEFLAGS_END)) break;
 
         uchar aNameWidth = 0;
-        char aName[256] = {0};
+        char aName[256]  = {0};
         FRead(&aNameWidth, 1, 1, aFP);
         FRead(aName, 1, aNameWidth, aFP);
         aName[aNameWidth] = 0;
@@ -431,4 +431,5 @@ int PakInterface::FEof(PFILE* theFile)
 	else
 		return feof(theFile->mFP);
 }
+
 

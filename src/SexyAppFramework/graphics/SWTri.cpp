@@ -1,4 +1,4 @@
-#pragma warning(disable:4244 4305 4309)
+﻿#pragma warning(disable:4244 4305 4309)
 
 #include "SWTri.h"
 
@@ -486,7 +486,7 @@ void SWHelper::SWDrawShape(XYZStruct *theVerts, int theNumVerts, MemoryImage *th
 }
 
 
-static DrawTriFunc gDrawTriFunc[128] = {0};
+static DrawTriFunc gDrawTriFunc[128]  = {0};
 void Sexy::SWTri_AddDrawTriFunc(bool textured, bool talpha, bool mod_argb, bool global_argb, int thePixelFormat, bool blend, DrawTriFunc theFunc)
 {
 	int aType = (blend?1:0) | (global_argb?2:0) | (mod_argb?4:0) | (talpha?8:0) | (textured?16:0);
@@ -654,5 +654,6 @@ void	SWHelper::SWDrawTriangle(bool textured, bool talpha, bool mod_argb, bool gl
 
 //	#include "SWTri_DrawTriangleInc2.cpp"
 }
+
 
 

@@ -1,4 +1,4 @@
-#include <ctime>
+﻿#include <ctime>
 #include <SDL.h>
 #include "ZenGarden.h"
 #include "Lawn/system/Music.h"
@@ -525,7 +525,7 @@ void Board::AddGraveStones(int theGridX, int theCount, MTRand& theLevelRNG)
 	// 这里姑且加一个原版没有的、对于本列能否生成墓碑的判断
 	// 如果没有这个判断，当本列不存在足够多的格子可以放置墓碑时，游戏会卡死
 	//GridItem* aGridItem = nullptr;
-	//bool aAllowGraveStone[MAX_GRID_SIZE_Y] = { false };
+	//bool aAllowGraveStone[MAX_GRID_SIZE_Y]  = {false};
 	int aGridAllowGraveStonesCount = 0;
 	for (int y = 0; y < MAX_GRID_SIZE_Y; y++)
 	{
@@ -1226,7 +1226,7 @@ bool Board::IsZombieWaveDistributionOk()
 	if (!mApp->IsAdventureMode())
 		return true;
 
-	int aZombieTypeCount[(int)ZombieType::NUM_ZOMBIE_TYPES] = { 0 };
+	int aZombieTypeCount[(int)ZombieType::NUM_ZOMBIE_TYPES]  = {0};
 	for (int aWave = 0; aWave < mNumWaves; aWave++)
 	{
 		for (int aIndex = 0; aIndex < MAX_ZOMBIES_IN_WAVE; aIndex++)

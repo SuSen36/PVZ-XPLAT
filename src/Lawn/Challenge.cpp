@@ -1,4 +1,4 @@
-																																																																																																																																												#include "Coin.h"
+﻿																																																																																																																																												#include "Coin.h"
 #include "Board.h"
 #include "Plant.h"
 #include "Zombie.h"
@@ -129,7 +129,7 @@ ZombieAllowedLevels gZombieAllowedLevels[NUM_ZOMBIE_TYPES] = {  //0x6A35B0
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 		}
 	},
-	{ ZOMBIE_DUCKY_TUBE, { 0 } },
+	{ ZOMBIE_DUCKY_TUBE, {0} },
 	{ ZOMBIE_SNORKEL,
 		{
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -5768,3 +5768,4 @@ int Challenge::TreeOfWisdomCanFeed()
 
 	return true;
 }
+

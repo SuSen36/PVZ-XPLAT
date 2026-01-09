@@ -1,4 +1,4 @@
-#include "../Board.h"
+﻿#include "../Board.h"
 #include "../Plant.h"
 #include "../Zombie.h"
 #include "GameButton.h"
@@ -14,7 +14,7 @@
 #include "Sexy.TodLib/TodStringFile.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
 
-bool gZombieDefeated[NUM_ZOMBIE_TYPES] = { false };
+bool gZombieDefeated[NUM_ZOMBIE_TYPES]  = {false};
 
 //0x401010
 AlmanacDialog::AlmanacDialog(LawnApp* theApp) : LawnDialog(theApp, DIALOG_ALMANAC, true, __S("Almanac"), __S(""), __S(""), BUTTONS_NONE)
