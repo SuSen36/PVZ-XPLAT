@@ -116,30 +116,6 @@ void TitleScreen::Draw(Graphics* g)
 		return;
 	}
 
-	if (mTitleState == TitleState::TITLESTATE_PARTNER_LOGO)
-	{
-		g->SetColor(Color::Black);
-		g->FillRect(0, 0, mWidth, mHeight);
-
-		g->SetColorizeImages(true);
-		int anAlpha = 255;
-		if (mTitleStateCounter >= mTitleStateDuration - 35)
-		{
-			anAlpha = TodAnimateCurve(mTitleStateDuration, mTitleStateDuration - 35, mTitleStateCounter, 0, 255, TodCurves::CURVE_LINEAR);
-			g->SetColor(Color(255, 255, 255, 255 - anAlpha));
-			g->DrawImage(IMAGE_POPCAP_LOGO, (mWidth - IMAGE_POPCAP_LOGO->mWidth) / 2, (mHeight - IMAGE_POPCAP_LOGO->mHeight) / 2);
-		}
-		else
-		{
-			anAlpha = TodAnimateCurve(35, 0, mTitleStateCounter, 255, 0, TodCurves::CURVE_LINEAR);
-		}
-		g->SetColor(Color(255, 255, 255, anAlpha));
-		g->DrawImage(IMAGE_PARTNER_LOGO, (mWidth - IMAGE_PARTNER_LOGO->mWidth) / 2, (mHeight - IMAGE_PARTNER_LOGO->mHeight) / 2);
-		g->SetColorizeImages(false);
-
-		return;
-	}
-
 	if (!mLoaderScreenIsLoaded)
 	{
 		g->SetColor(Color::Black);
@@ -262,17 +238,6 @@ void TitleScreen::Update()
 				mTitleStateDuration = 100;
 				mTitleStateCounter = 100;
 			}
-		}
-
-		return;
-	}
-	else if (mTitleState == TitleState::TITLESTATE_PARTNER_LOGO)
-	{
-		if (mTitleStateCounter == 0)
-		{
-			mTitleState = TitleState::TITLESTATE_SCREEN;
-			mTitleStateDuration = 100;
-			mTitleStateCounter = 100;
 		}
 
 		return;

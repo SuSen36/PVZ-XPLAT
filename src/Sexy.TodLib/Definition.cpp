@@ -1286,8 +1286,7 @@ bool DefinitionCompileAndLoad(const SexyString& theXMLFilePath, DefMap* theDefMa
         TodHesitationTrace(__S("loaded %s"), aCompiledFilePath.c_str());
         return true;
     }
-    else if(!IsFileInPakFile(aCompiledFilePath))
-    {
+    else{
         bool aResult = DefinitionCompileFile(theXMLFilePath, aCompiledFilePath, theDefMap, theDefinition);
         TodHesitationTrace(__S("compiled %s"), aCompiledFilePath.c_str());
         return aResult;

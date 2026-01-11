@@ -190,3 +190,23 @@ elseif (EMSCRIPTEN)
 else()
 	target_link_libraries(xp-plants-vs-zombies GL)
 endif()
+
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
+set(PAK_OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/PAK)
+file(MAKE_DIRECTORY ${PAK_OUTPUT_DIR})
+
+set(PAK_SCRIPT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/tools/create_pak.py)
+
+# 添加自定义目标来创建 PAK 文件
+add_custom_target(create_resources_pak
+    COMMAND ${CMAKE_COMMAND} -E echo "正在创建资源 PAK 文件..."
+    COMMAND ${Python3_EXECUTABLE} ${PAK_SCRIPT_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/Resources ${PAK_OUTPUT_DIR}/main.pak
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Resources ${PAK_SCRIPT_PATH}
+    COMMENT "正在将 Resources 文件夹打包为 PAK 文件"
+    VERBATIM
+)
+
+# 将 PAK 创建目标添加为主目标的依赖
+add_dependencies(xp-plants-vs-zombies create_resources_pak)
+
+install(FILES ${PAK_OUTPUT_DIR}/main.pak DESTINATION . OPTIONAL)

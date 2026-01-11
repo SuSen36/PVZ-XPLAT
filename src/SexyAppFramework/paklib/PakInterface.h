@@ -38,11 +38,13 @@ class PakCollection
 {
 public:
     void* mDataPtr;                     // 资源包中的所有数据
+    size_t mDataSize;                   // 资源包数据大小
     std::string mFileName;               //
     int mPriority;                       // 资源包的优先级
 
-    PakCollection(size_t size,std::string fileName,int priority) {
+    PakCollection(size_t size, std::string fileName, int priority) {
         mDataPtr = malloc(size);
+        mDataSize = size;
         mFileName = std::move(fileName);
         mPriority = priority;
     }

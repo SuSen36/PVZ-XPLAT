@@ -15,7 +15,6 @@ namespace Sexy
     {
 		IMAGE_BLANK_ID,
 		IMAGE_POPCAP_LOGO_ID,
-		IMAGE_PARTNER_LOGO_ID,
 		IMAGE_TITLESCREEN_ID,
 		IMAGE_LOADBAR_DIRT_ID,
 		IMAGE_LOADBAR_GRASS_ID,
@@ -1267,7 +1266,6 @@ namespace Sexy
 
 	// Init Resources
 	extern Image* IMAGE_BLANK;
-	extern Image* IMAGE_PARTNER_LOGO;
 	extern Image* IMAGE_POPCAP_LOGO;
 
 	// LoaderBar Resources

@@ -357,18 +357,49 @@ size_t PakInterface::FRead(void* thePtr, int theElemSize, int theCount, PFILE* t
 	{
 		// 实际读取的字节数不能超过当前资源文件剩余可读取的字节数
 		int aSizeBytes = std::min(theElemSize*theCount, theFile->mRecord->mSize - theFile->mPos);
-
+		
+		// 边界检查：确保读取不会超出PAK文件数据范围
+		if (aSizeBytes <= 0 || theFile->mPos < 0 || theFile->mPos > theFile->mRecord->mSize) {
+			return 0;
+		}
+		
+		// 验证集合和数据指针的有效性
+		if (!theFile->mRecord->mCollection || !theFile->mRecord->mCollection->mDataPtr) {
+			return 0;
+		}
+		
+		// 计算源指针位置并验证边界
+		uchar* collectionData = (uchar*)theFile->mRecord->mCollection->mDataPtr;
+		int collectionSize = theFile->mRecord->mCollection->mDataSize;
+		int readStartPos = theFile->mRecord->mStartPos + theFile->mPos;
+		int readEndPos = readStartPos + aSizeBytes;
+		
+		// 确保读取范围在集合数据范围内
+		if (readStartPos < 0 || readEndPos > collectionSize) {
+			// 如果超出范围，调整读取大小
+			if (readStartPos >= collectionSize) {
+				return 0; // 开始位置已超出范围
+			}
+			aSizeBytes = std::min(aSizeBytes, collectionSize - readStartPos);
+		}
+		
 		// 取得在整个 pak 中开始读取的位置的指针
-		uchar* src = (uchar*) theFile->mRecord->mCollection->mDataPtr + theFile->mRecord->mStartPos + theFile->mPos;
-		uchar* dest = (uchar*) thePtr;
-		memcpy(dest, src, aSizeBytes);
-		theFile->mPos += aSizeBytes;  // 读取完成后，移动当前读取位置的指针
+		uchar* src = collectionData + readStartPos;
+		uchar* dest = (uchar*)thePtr;
+		
+		// 执行内存复制
+		if (aSizeBytes > 0) {
+			memcpy(dest, src, aSizeBytes);
+			theFile->mPos += aSizeBytes;  // 读取完成后，移动当前读取位置的指针
+		}
+		
 		return aSizeBytes / theElemSize;  // 返回实际读取的项数
 	}
 	
 	return fread(thePtr, theElemSize, theCount, theFile->mFP);	
 }
 
+// ...
 int PakInterface::FGetC(PFILE* theFile)
 {
 	if (theFile->mRecord != NULL)
