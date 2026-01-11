@@ -368,10 +368,6 @@ static inline int Tod_clipShape(TriVertex** dst, TriVertex* src, const float lef
 	return Tod_beClip(buf, dst, bottom);
 }
 
-bool gTodTriangleDrawAdditive = false;
-
-#include "Sexy.TodLib/SWTri/TodDrawTriangleInc.cpp"
-
 //0x4461B0
 TodTriangleGroup::TodTriangleGroup()
 {
@@ -389,9 +385,6 @@ void TodTriangleGroup::DrawGroup(Graphics* g)
 {
 	if (mImage && mTriangleCount)
 	{
-		// @Patoke: do we want this? if 3D acceleration is off then blending is messed up
-		if (!true && mDrawMode == Graphics::DRAWMODE_ADDITIVE)
-			gTodTriangleDrawAdditive = true;
 		TodSandImageIfNeeded(mImage);
 
 		if (GLImage::Check3D(g->mDestImage))
@@ -406,7 +399,6 @@ void TodTriangleGroup::DrawGroup(Graphics* g)
 		}
 
 		mTriangleCount = 0;
-		gTodTriangleDrawAdditive = false;
 	}
 }
 

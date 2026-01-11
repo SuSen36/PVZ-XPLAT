@@ -131,7 +131,6 @@ LawnApp::LawnApp()
 	mFirstTimeGameSelector = true;
 	mGameMode = GameMode::GAMEMODE_ADVENTURE;
 	mEasyPlantingCheat = false;
-	Tod_SWTri_AddAllDrawTriFuncs();
 	mLoadingZombiesThreadCompleted = true;
 	mGamesPlayed = 0;
 	mMaxExecutions = 0;
