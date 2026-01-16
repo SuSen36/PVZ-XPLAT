@@ -1,0 +1,21 @@
+# ninja log v6
+5	565	7709217679366308	bass-populate-prefix/src/bass-populate-stamp/bass-populate-mkdir	b633499729d1f39d
+14402	14587	7709217820147192	C:/Users/Administrator/Desktop/REPVZ-main/cmake-build-debug/_deps/bass-subbuild/bass-populate-prefix/src/bass-populate-stamp/bass-populate-update	c75833c4fad9ffea
+5	565	7709217679366308	C:/Users/Administrator/Desktop/REPVZ-main/cmake-build-debug/_deps/bass-subbuild/bass-populate-prefix/src/bass-populate-stamp/bass-populate-mkdir	b633499729d1f39d
+566	14402	7709217817827738	C:/Users/Administrator/Desktop/REPVZ-main/cmake-build-debug/_deps/bass-subbuild/bass-populate-prefix/src/bass-populate-stamp/bass-populate-download	94af5ffc4b13887e
+566	14402	7709217817827738	bass-populate-prefix/src/bass-populate-stamp/bass-populate-download	94af5ffc4b13887e
+14402	14587	7709217820147192	bass-populate-prefix/src/bass-populate-stamp/bass-populate-update	c75833c4fad9ffea
+14873	14996	7709217824269097	C:/Users/Administrator/Desktop/REPVZ-main/cmake-build-debug/_deps/bass-subbuild/bass-populate-prefix/src/bass-populate-stamp/bass-populate-build	ce7c4184de0545cb
+14588	14739	7709217821680908	bass-populate-prefix/src/bass-populate-stamp/bass-populate-patch	e416e7dbb8a16438
+14588	14739	7709217821680908	C:/Users/Administrator/Desktop/REPVZ-main/cmake-build-debug/_deps/bass-subbuild/bass-populate-prefix/src/bass-populate-stamp/bass-populate-patch	e416e7dbb8a16438
+14739	14873	7709217823029922	bass-populate-prefix/src/bass-populate-stamp/bass-populate-configure	2c21313a7a654c5a
+14739	14873	7709217823029922	C:/Users/Administrator/Desktop/REPVZ-main/cmake-build-debug/_deps/bass-subbuild/bass-populate-prefix/src/bass-populate-stamp/bass-populate-configure	2c21313a7a654c5a
+14873	14996	7709217824269097	bass-populate-prefix/src/bass-populate-stamp/bass-populate-build	ce7c4184de0545cb
+14996	15132	7709217825617265	bass-populate-prefix/src/bass-populate-stamp/bass-populate-install	cfe0b92cb61f1b69
+14996	15132	7709217825617265	C:/Users/Administrator/Desktop/REPVZ-main/cmake-build-debug/_deps/bass-subbuild/bass-populate-prefix/src/bass-populate-stamp/bass-populate-install	cfe0b92cb61f1b69
+15132	15396	7709217827741178	bass-populate-prefix/src/bass-populate-stamp/bass-populate-test	c020235fc6566993
+15132	15396	7709217827741178	C:/Users/Administrator/Desktop/REPVZ-main/cmake-build-debug/_deps/bass-subbuild/bass-populate-prefix/src/bass-populate-stamp/bass-populate-test	c020235fc6566993
+15396	15791	7709217832197030	CMakeFiles/bass-populate-complete	8c270932a0fb6077
+15396	15791	7709217832197030	bass-populate-prefix/src/bass-populate-stamp/bass-populate-done	8c270932a0fb6077
+15396	15791	7709217832197030	C:/Users/Administrator/Desktop/REPVZ-main/cmake-build-debug/_deps/bass-subbuild/CMakeFiles/bass-populate-complete	8c270932a0fb6077
+15396	15791	7709217832197030	C:/Users/Administrator/Desktop/REPVZ-main/cmake-build-debug/_deps/bass-subbuild/bass-populate-prefix/src/bass-populate-stamp/bass-populate-done	8c270932a0fb6077

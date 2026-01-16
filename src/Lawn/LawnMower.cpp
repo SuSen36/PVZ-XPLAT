@@ -11,7 +11,7 @@ void LawnMower::LawnMowerInitialize(int theRow)
 {
     mApp = (LawnApp*)gSexyAppBase;
     mRow = theRow;
-    mPosX = -160.0f;
+    mPosX = -160.0+133;
     mBoard = mApp->mBoard;
     mRenderOrder = Board::MakeRenderOrder(RenderLayer::RENDER_LAYER_LAWN_MOWER, theRow, 0);
     mPosY = mBoard->GetPosYBasedOnRow(mPosX + 40.0f, theRow) + 23.0f;
@@ -68,7 +68,7 @@ void LawnMower::LawnMowerInitialize(int theRow)
 void LawnMower::UpdatePool()
 {
     bool isPoolRange = false;
-    if (mPosX > 26.0f && mPosX < 660.0f)
+    if (mPosX > 26.0f && mPosX < 660.0f+133+67)
     {
         isPoolRange = true;
     }

@@ -1,0 +1,515 @@
+Started 2026-01-11 22:04:54
+session id: 1768140286
+Started 2026-01-11 22:07:08
+session id: 1768140422
+Started 2026-01-11 22:09:06
+session id: 1768140545
+Started 2026-01-11 22:09:40
+session id: 1768140574
+Started 2026-01-11 22:11:07
+session id: 1768140659
+Started 2026-01-11 22:16:14
+session id: 1768140964
+Started 2026-01-11 22:24:52
+session id: 1768141484
+Started 2026-01-11 22:26:03
+session id: 1768141554
+Started 2026-01-11 22:27:49
+session id: 1768141661
+Started 2026-01-11 22:28:27
+session id: 1768141700
+Started 2026-01-11 22:29:07
+session id: 1768141740
+Started 2026-01-11 22:30:20
+session id: 1768141812
+Started 2026-01-11 22:31:07
+session id: 1768141860
+Started 2026-01-11 22:31:56
+session id: 1768141908
+Started 2026-01-11 22:32:43
+session id: 1768141956
+Started 2026-01-11 22:33:22
+session id: 1768141994
+Started 2026-01-11 22:36:04
+session id: 1768142154
+First Draw Time: 10131 ms
+Started 2026-01-11 22:38:26
+session id: 1768142299
+First Draw Time: 7087 ms
+Started 2026-01-11 22:40:04
+session id: 1768142397
+First Draw Time: 6803 ms
+Started 2026-01-11 22:46:47
+session id: 1768142797
+First Draw Time: 9923 ms
+Started 2026-01-11 22:49:34
+session id: 1768142967
+First Draw Time: 7752 ms
+Started 2026-01-11 22:51:04
+session id: 1768143057
+First Draw Time: 7149 ms
+Started 2026-01-11 22:58:56
+session id: 1768143528
+First Draw Time: 8049 ms
+Started 2026-01-11 23:01:03
+session id: 1768143657
+First Draw Time: 6293 ms
+Started 2026-01-11 23:02:18
+session id: 1768143728
+First Draw Time: 9198 ms
+Started 2026-01-11 23:03:39
+session id: 1768143806
+First Draw Time: 12592 ms
+Started 2026-01-12 12:35:51
+session id: 1768192544
+First Draw Time: 6590 ms
+Started 2026-01-12 13:25:47
+session id: 1768195534
+First Draw Time: 12402 ms
+Started 2026-01-12 13:52:18
+session id: 1768197122
+First Draw Time: 15738 ms
+Started 2026-01-12 19:42:01
+session id: 1768218114
+First Draw Time: 7144 ms
+Started 2026-01-12 19:43:00
+session id: 1768218172
+First Draw Time: 7626 ms
+Started 2026-01-12 19:44:06
+session id: 1768218240
+First Draw Time: 5985 ms
+Started 2026-01-12 19:44:48
+session id: 1768218282
+First Draw Time: 6591 ms
+Started 2026-01-12 19:48:40
+session id: 1768218518
+First Draw Time: 2097 ms
+Started 2026-01-12 19:49:47
+session id: 1768218580
+First Draw Time: 7171 ms
+Started 2026-01-12 19:53:19
+session id: 1768218792
+First Draw Time: 7434 ms
+Started 2026-01-12 19:59:52
+session id: 1768219184
+First Draw Time: 7778 ms
+Started 2026-01-12 20:03:36
+session id: 1768219409
+First Draw Time: 7277 ms
+Started 2026-01-12 20:07:01
+session id: 1768219614
+First Draw Time: 7585 ms
+Started 2026-01-12 20:10:32
+session id: 1768219825
+First Draw Time: 7060 ms
+Started 2026-01-12 20:12:52
+session id: 1768219966
+First Draw Time: 5840 ms
+Started 2026-01-12 20:16:01
+session id: 1768220152
+First Draw Time: 8752 ms
+Started 2026-01-12 20:18:27
+session id: 1768220300
+First Draw Time: 6725 ms
+Started 2026-01-12 20:21:54
+session id: 1768220507
+First Draw Time: 7137 ms
+Started 2026-01-12 20:24:55
+session id: 1768220688
+First Draw Time: 6856 ms
+Started 2026-01-12 20:28:18
+session id: 1768220889
+First Draw Time: 9204 ms
+Started 2026-01-12 20:31:20
+session id: 1768221069
+First Draw Time: 11249 ms
+Started 2026-01-12 20:33:52
+session id: 1768221225
+First Draw Time: 7219 ms
+Started 2026-01-12 20:36:48
+session id: 1768221399
+First Draw Time: 9355 ms
+Started 2026-01-12 20:39:36
+session id: 1768221564
+First Draw Time: 12325 ms
+Started 2026-01-12 20:43:12
+session id: 1768221782
+First Draw Time: 9791 ms
+Started 2026-01-12 20:47:04
+session id: 1768222017
+First Draw Time: 6762 ms
+Started 2026-01-12 20:51:24
+session id: 1768222274
+First Draw Time: 9995 ms
+Started 2026-01-12 20:56:46
+session id: 1768222596
+First Draw Time: 9793 ms
+Started 2026-01-12 21:03:14
+session id: 1768222982
+First Draw Time: 12060 ms
+Started 2026-01-12 21:08:41
+session id: 1768223311
+First Draw Time: 10130 ms
+Started 2026-01-12 21:14:44
+session id: 1768223674
+First Draw Time: 10841 ms
+Started 2026-01-12 21:18:23
+session id: 1768223891
+First Draw Time: 12051 ms
+Started 2026-01-12 21:21:50
+session id: 1768224100
+First Draw Time: 10582 ms
+Started 2026-01-12 21:26:02
+session id: 1768224346
+First Draw Time: 16131 ms
+Started 2026-01-12 21:30:16
+session id: 1768224602
+First Draw Time: 14501 ms
+Started 2026-01-12 21:35:18
+session id: 1768224902
+First Draw Time: 16376 ms
+Started 2026-01-12 21:38:43
+session id: 1768225108
+First Draw Time: 15620 ms
+Started 2026-01-12 21:44:07
+session id: 1768225436
+First Draw Time: 11906 ms
+Started 2026-01-12 21:49:24
+session id: 1768225753
+First Draw Time: 11601 ms
+Started 2026-01-12 21:55:23
+session id: 1768226109
+First Draw Time: 14386 ms
+Started 2026-01-12 22:01:57
+session id: 1768226499
+First Draw Time: 17195 ms
+Started 2026-01-12 22:11:48
+session id: 1768227100
+First Draw Time: 8482 ms
+Started 2026-01-12 22:13:29
+session id: 1768227201
+First Draw Time: 8569 ms
+Started 2026-01-12 22:22:59
+session id: 1768227765
+First Draw Time: 14307 ms
+Started 2026-01-12 22:30:22
+session id: 1768228202
+First Draw Time: 19261 ms
+Started 2026-01-12 22:39:37
+session id: 1768228763
+First Draw Time: 13904 ms
+Started 2026-01-12 22:45:40
+session id: 1768229125
+First Draw Time: 15645 ms
+Started 2026-01-12 22:57:03
+session id: 1768229815
+First Draw Time: 8098 ms
+Started 2026-01-12 23:02:16
+session id: 1768230127
+First Draw Time: 9268 ms
+Started 2026-01-12 23:04:24
+session id: 1768230253
+First Draw Time: 11840 ms
+Started 2026-01-12 23:17:44
+session id: 1768231045
+First Draw Time: 19615 ms
+Started 2026-01-12 23:30:21
+session id: 1768231808
+First Draw Time: 12426 ms
+Started 2026-01-12 23:39:21
+session id: 1768232348
+First Draw Time: 12780 ms
+Started 2026-01-14 18:20:11
+session id: 1768386000
+First Draw Time: 11439 ms
+Started 2026-01-14 18:33:43
+session id: 1768386814
+First Draw Time: 9049 ms
+Started 2026-01-14 18:49:49
+session id: 1768387780
+First Draw Time: 9080 ms
+Started 2026-01-14 18:50:33
+session id: 1768387825
+First Draw Time: 8287 ms
+Started 2026-01-14 18:51:57
+session id: 1768387910
+First Draw Time: 7233 ms
+Started 2026-01-14 18:58:56
+session id: 1768388335
+First Draw Time: 1374 ms
+Started 2026-01-14 19:08:10
+session id: 1768388879
+First Draw Time: 10935 ms
+Started 2026-01-14 19:19:30
+session id: 1768389560
+First Draw Time: 10297 ms
+Started 2026-01-14 19:37:11
+session id: 1768390622
+First Draw Time: 9019 ms
+Started 2026-01-14 19:52:33
+session id: 1768391547
+First Draw Time: 6354 ms
+Started 2026-01-14 20:07:01
+session id: 1768392415
+First Draw Time: 5303 ms
+Started 2026-01-14 20:33:58
+session id: 1768394032
+First Draw Time: 5448 ms
+Started 2026-01-14 20:35:29
+session id: 1768394125
+First Draw Time: 4688 ms
+Started 2026-01-14 20:37:23
+session id: 1768394238
+First Draw Time: 5055 ms
+Started 2026-01-14 20:39:07
+session id: 1768394341
+First Draw Time: 5928 ms
+Started 2026-01-14 20:47:13
+session id: 1768394828
+First Draw Time: 4984 ms
+Started 2026-01-14 20:49:05
+session id: 1768394939
+First Draw Time: 6019 ms
+Started 2026-01-14 20:55:54
+session id: 1768395345
+First Draw Time: 9064 ms
+Started 2026-01-14 20:56:25
+session id: 1768395377
+First Draw Time: 8203 ms
+Started 2026-01-14 22:28:49
+session id: 1768400920
+First Draw Time: 9375 ms
+Started 2026-01-15 13:34:42
+session id: 1768455276
+First Draw Time: 6695 ms
+Started 2026-01-15 13:46:07
+session id: 1768455961
+First Draw Time: 6101 ms
+Started 2026-01-15 13:54:01
+session id: 1768456435
+First Draw Time: 6145 ms
+Started 2026-01-15 13:58:03
+session id: 1768456677
+First Draw Time: 6400 ms
+Started 2026-01-15 14:12:11
+session id: 1768457523
+First Draw Time: 8173 ms
+Started 2026-01-15 14:12:53
+session id: 1768457566
+First Draw Time: 6669 ms
+Started 2026-01-15 14:24:42
+session id: 1768458275
+First Draw Time: 7614 ms
+Started 2026-01-15 14:26:14
+session id: 1768458367
+First Draw Time: 7378 ms
+Started 2026-01-15 14:39:25
+session id: 1768459157
+First Draw Time: 7951 ms
+Started 2026-01-15 14:54:47
+session id: 1768460081
+First Draw Time: 6140 ms
+Started 2026-01-15 19:39:32
+session id: 1768477163
+First Draw Time: 8220 ms
+Started 2026-01-15 19:43:33
+session id: 1768477405
+First Draw Time: 8116 ms
+Started 2026-01-15 20:44:51
+session id: 1768481081
+First Draw Time: 9761 ms
+Started 2026-01-15 20:53:02
+session id: 1768481572
+First Draw Time: 10282 ms
+Started 2026-01-15 21:08:16
+session id: 1768482485
+First Draw Time: 11083 ms
+Started 2026-01-15 21:20:29
+session id: 1768483218
+First Draw Time: 11778 ms
+Started 2026-01-15 22:02:29
+session id: 1768485742
+First Draw Time: 7726 ms
+Started 2026-01-15 22:04:05
+session id: 1768485838
+First Draw Time: 6205 ms
+Started 2026-01-15 22:05:39
+session id: 1768485932
+First Draw Time: 6440 ms
+Started 2026-01-15 22:11:01
+session id: 1768486249
+First Draw Time: 12621 ms
+Started 2026-01-15 22:14:03
+session id: 1768486437
+First Draw Time: 5909 ms
+Started 2026-01-15 22:15:35
+session id: 1768486530
+First Draw Time: 5063 ms
+Started 2026-01-15 22:16:39
+session id: 1768486593
+First Draw Time: 6517 ms
+Started 2026-01-15 22:18:44
+session id: 1768486716
+First Draw Time: 7789 ms
+Started 2026-01-15 22:20:41
+session id: 1768486835
+First Draw Time: 6728 ms
+Started 2026-01-15 22:28:38
+session id: 1768487311
+First Draw Time: 6968 ms
+Started 2026-01-15 22:32:08
+session id: 1768487521
+First Draw Time: 7015 ms
+Started 2026-01-15 22:37:54
+session id: 1768487868
+First Draw Time: 6926 ms
+Started 2026-01-15 22:39:08
+session id: 1768487941
+First Draw Time: 6914 ms
+Started 2026-01-15 22:42:26
+session id: 1768488139
+First Draw Time: 6974 ms
+Started 2026-01-15 22:55:50
+session id: 1768488944
+First Draw Time: 6261 ms
+Started 2026-01-15 22:57:37
+session id: 1768489049
+First Draw Time: 8150 ms
+Started 2026-01-15 23:00:49
+session id: 1768489244
+First Draw Time: 5734 ms
+Started 2026-01-15 23:02:41
+session id: 1768489355
+First Draw Time: 6029 ms
+Started 2026-01-15 23:07:21
+session id: 1768489631
+First Draw Time: 10392 ms
+Started 2026-01-15 23:16:44
+session id: 1768490193
+First Draw Time: 10673 ms
+Started 2026-01-15 23:19:40
+session id: 1768490367
+First Draw Time: 13032 ms
+Started 2026-01-15 23:25:04
+session id: 1768490692
+First Draw Time: 12224 ms
+Started 2026-01-15 23:27:12
+session id: 1768490823
+First Draw Time: 9524 ms
+Started 2026-01-15 23:37:54
+session id: 1768491466
+First Draw Time: 8143 ms
+Started 2026-01-15 23:52:57
+session id: 1768492365
+First Draw Time: 11923 ms
+Started 2026-01-15 23:58:28
+session id: 1768492699
+First Draw Time: 9105 ms
+Started 2026-01-16 00:01:34
+session id: 1768492884
+First Draw Time: 10085 ms
+Started 2026-01-16 00:09:53
+session id: 1768493382
+First Draw Time: 11205 ms
+Started 2026-01-16 00:14:41
+session id: 1768493673
+First Draw Time: 8227 ms
+Started 2026-01-16 00:37:48
+session id: 1768495057
+First Draw Time: 10592 ms
+Started 2026-01-16 00:56:21
+session id: 1768496174
+First Draw Time: 6972 ms
+Started 2026-01-16 01:04:35
+session id: 1768496669
+First Draw Time: 5958 ms
+Started 2026-01-16 01:07:56
+session id: 1768496870
+First Draw Time: 5970 ms
+Started 2026-01-16 01:12:56
+session id: 1768497170
+First Draw Time: 6368 ms
+Started 2026-01-16 01:13:57
+session id: 1768497230
+First Draw Time: 6203 ms
+Started 2026-01-16 01:26:26
+session id: 1768497978
+First Draw Time: 7409 ms
+Started 2026-01-16 01:30:17
+session id: 1768498210
+First Draw Time: 6600 ms
+Started 2026-01-16 01:44:55
+session id: 1768499089
+First Draw Time: 5968 ms
+Started 2026-01-16 01:47:22
+session id: 1768499237
+First Draw Time: 5524 ms
+Started 2026-01-16 01:48:04
+session id: 1768499277
+First Draw Time: 6470 ms
+Started 2026-01-16 02:25:50
+session id: 1768501541
+First Draw Time: 8560 ms
+Started 2026-01-16 02:34:03
+session id: 1768502035
+First Draw Time: 7877 ms
+Started 2026-01-16 13:31:05
+session id: 1768541459
+First Draw Time: 5833 ms
+Started 2026-01-16 13:35:04
+session id: 1768541697
+First Draw Time: 6475 ms
+Started 2026-01-16 13:53:06
+session id: 1768542780
+First Draw Time: 5938 ms
+Started 2026-01-16 13:55:49
+session id: 1768542944
+First Draw Time: 5798 ms
+Started 2026-01-16 14:02:30
+session id: 1768543340
+First Draw Time: 10119 ms
+Started 2026-01-16 14:23:44
+session id: 1768544618
+First Draw Time: 6338 ms
+Started 2026-01-16 14:27:43
+session id: 1768544856
+First Draw Time: 6804 ms
+Started 2026-01-16 14:30:35
+session id: 1768545029
+First Draw Time: 5611 ms
+Started 2026-01-16 14:44:02
+session id: 1768545833
+First Draw Time: 9781 ms
+Started 2026-01-16 14:48:43
+session id: 1768546112
+First Draw Time: 11148 ms
+Started 2026-01-16 15:03:50
+session id: 1768547015
+First Draw Time: 14991 ms
+Started 2026-01-16 15:14:34
+session id: 1768547667
+First Draw Time: 7059 ms
+Started 2026-01-16 15:15:22
+session id: 1768547715
+First Draw Time: 6957 ms
+Started 2026-01-16 15:21:46
+session id: 1768548098
+First Draw Time: 8477 ms
+Started 2026-01-16 15:36:07
+session id: 1768548959
+First Draw Time: 7597 ms
+Started 2026-01-16 16:09:24
+session id: 1768550957
+First Draw Time: 7331 ms
+Started 2026-01-16 16:12:14
+session id: 1768551128
+First Draw Time: 6494 ms
+Started 2026-01-16 16:36:55
+session id: 1768552607
+First Draw Time: 8108 ms
+Started 2026-01-16 16:43:40
+session id: 1768553011
+First Draw Time: 9764 ms
+Started 2026-01-16 23:00:31
+session id: 1768575619
+First Draw Time: 12218 ms

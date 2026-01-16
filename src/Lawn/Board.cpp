@@ -460,7 +460,7 @@ GridItem* Board::GetZenToolAt(int theGridX, int theGridY)
 //0x408ED0
 bool Board::CanAddGraveStoneAt(int theGridX, int theGridY)
 {
-	if (mGridSquareType[theGridX][theGridY] != GridSquareType::GRIDSQUARE_GRASS && mGridSquareType[theGridX][theGridY] != GridSquareType::GRIDSQUARE_HIGH_GROUND)
+	if (mGridSquareType[theGridX][theGridY] != GridSquareType::GRIDSQUARE_GRASS)
 	{
 		return false;
 	}
@@ -1106,11 +1106,11 @@ void Board::PickBackground()
 	}
 	else if (mBackground == BackgroundType::BACKGROUND_5_ROOF || mBackground == BackgroundType::BACKGROUND_6_BOSS)
 	{
-		mPlantRow[0] = PlantRowType::PLANTROW_NORMAL;
-		mPlantRow[1] = PlantRowType::PLANTROW_NORMAL;
-		mPlantRow[2] = PlantRowType::PLANTROW_NORMAL;
-		mPlantRow[3] = PlantRowType::PLANTROW_NORMAL;
-		mPlantRow[4] = PlantRowType::PLANTROW_NORMAL;
+		mPlantRow[0] = PlantRowType::PLANTROW_HIGH_GROUND;
+		mPlantRow[1] = PlantRowType::PLANTROW_HIGH_GROUND;
+		mPlantRow[2] = PlantRowType::PLANTROW_HIGH_GROUND;
+		mPlantRow[3] = PlantRowType::PLANTROW_HIGH_GROUND;
+		mPlantRow[4] = PlantRowType::PLANTROW_HIGH_GROUND;
 		mPlantRow[5] = PlantRowType::PLANTROW_DIRT;
 	}
 	else
@@ -7822,44 +7822,44 @@ void Board::UpdateFog()
 //0x41A730
 void Board::DrawFog(Graphics* g)
 {
-	Image* aImageFog = Sexy::IMAGE_FOG;
-	for (int x = 0; x < MAX_GRID_SIZE_X; x++)
-	{
-		for (int y = 0; y < MAX_GRID_SIZE_Y + 1; y++)
-		{
-			int aFadeAmount = mGridCelFog[x][y];
-			if (aFadeAmount == 0)
-				continue;
+    Image* aImageFog = Sexy::IMAGE_FOG;
+    for (int x = 0; x < MAX_GRID_SIZE_X; x++)
+    {
+        for (int y = 0; y < MAX_GRID_SIZE_Y + 1; y++)
+        {
+            int aFadeAmount = mGridCelFog[x][y];
+            if (aFadeAmount == 0)
+                continue;
 
-			// 取得格子内的雾的形状（第 6 行的雾的形状采用与第 0 行相同）
-			// { sub eax,edx } 向前 [y / 6] 列，但 y 超出上限 y - 5 行，故相当于列不变，行 = y % 6；
-			int aCelLook = mGridCelLook[x][y % MAX_GRID_SIZE_Y];
-			int aCelCol = aCelLook % 8;
-			// 本格浓雾横坐标 = 列 * 80 + 浓雾偏移 - 15，纵坐标 = 行 * 85 + 20
-			float aPosX = x * 80 + mFogOffset - 15;
-			float aPosY = y * 85 + 20;
-			// 开始计算周期变化的颜色，aTime 为根据主计时计算的时间
-			float aTime = mMainCounter * PI * 2;
-			// 与行、列有关的初始相位
-			float aPhaseX = 6 * PI * x / MAX_GRID_SIZE_X;
-			float aPhaseY = 6 * PI * y / (MAX_GRID_SIZE_Y + 1);
-			// 根据初相和时间计算当前相位
-			float aMotion = 13 + 4 * sin(aTime / 900 + aPhaseY) + 8 * sin(aTime / 500 + aPhaseX);
+            // 取得格子内的雾的形状（第 6 行的雾的形状采用与第 0 行相同）
+            int aCelLook = mGridCelLook[x][y % MAX_GRID_SIZE_Y];
+            int aCelCol = aCelLook % 8;
+            // 本格浓雾横坐标 = 列 * 80 + 浓雾偏移 - 15 + 200，纵坐标 = 行 * 85 + 20
+            float aPosX = x * 80 + mFogOffset - 15 + 200.0f;
+            float aPosY = y * 85 + 20;
 
-			int aColorVariant = 255 - aCelLook * 1.5 - aMotion * 1.5;
-			int aLightnessVariant = 255 - aCelLook - aMotion;
+            // 开始计算周期变化的颜色，aTime 为根据主计时计算的时间
+            float aTime = mMainCounter * PI * 2;
+            // 与行、列有关的初始相位
+            float aPhaseX = 6 * PI * x / MAX_GRID_SIZE_X;
+            float aPhaseY = 6 * PI * y / (MAX_GRID_SIZE_Y + 1);
+            // 根据初相和时间计算当前相位
+            float aMotion = 13 + 4 * sin(aTime / 900 + aPhaseY) + 8 * sin(aTime / 500 + aPhaseX);
 
-			g->SetColorizeImages(true);
-			g->SetColor(Color(aColorVariant, aColorVariant, aLightnessVariant, aFadeAmount));
-			g->DrawImageCel(aImageFog, aPosX, aPosY, aCelCol, 0);
+            int aColorVariant = 255 - aCelLook * 1.5 - aMotion * 1.5;
+            int aLightnessVariant = 255 - aCelLook - aMotion;
 
-			if (x == MAX_GRID_SIZE_X - 1)
-			{
-				g->DrawImageCel(aImageFog, aPosX + 80, aPosY, aCelCol, 0);
-			}
-			g->SetColorizeImages(false);
-		}
-	}
+            g->SetColorizeImages(true);
+            g->SetColor(Color(aColorVariant, aColorVariant, aLightnessVariant, aFadeAmount));
+            g->DrawImageCel(aImageFog, aPosX, aPosY, aCelCol, 0);
+
+            if (x == MAX_GRID_SIZE_X - 1)
+            {
+                g->DrawImageCel(aImageFog, aPosX + 80, aPosY, aCelCol, 0);
+            }
+            g->SetColorizeImages(false);
+        }
+    }
 }
 
 //0x41AA00
@@ -9461,18 +9461,18 @@ int Board::GridToPixelX(int theGridX, int theGridY)
 //0x41C6C0
 float Board::GetPosYBasedOnRow(float thePosX, int theRow)
 {
-	if (StageHasRoof())
-	{
-		float aSlopeOffset = 0.0f;
-		if (thePosX < 440.0f)
-		{
-			aSlopeOffset = (440.0f - thePosX) * 0.25f;
-		}
+    if (StageHasRoof())
+    {
+        float aSlopeOffset = 0.0f;
+        if (thePosX < 640.0f)
+        {
+            aSlopeOffset = (640.0f - thePosX) * 0.25f;
+        }
 
-		return GridToPixelY(8, theRow) + aSlopeOffset;
-	}
-	
-	return GridToPixelY(0, theRow);
+        return GridToPixelY(8, theRow) + aSlopeOffset;
+    }
+
+    return GridToPixelY(0, theRow);
 }
 
 //0x41C740
@@ -9494,11 +9494,15 @@ int Board::GridToPixelY(int theGridX, int theGridY)
 	if (StageHasRoof())
 	{
 		int aSlopeOffset;
-		if (theGridX < 5)
+        if (theGridX > 9 && theGridX < 14)
+        {
+            aSlopeOffset = -(5 - theGridX) * 20;
+        }
+        else if (theGridX < 5)
 		{
 			aSlopeOffset = (5 - theGridX) * 20;
 		}
-		else
+        else
 		{
 			aSlopeOffset = 0;
 		}

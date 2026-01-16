@@ -89,8 +89,8 @@ SexyAppBase::SexyAppBase()
 	mTitle = __S("SexyApp");
 	mShutdown = false;
 	mExitToTop = false;
-    mWidth = 640;
-    mHeight = 480;
+    mWidth = 800;
+    mHeight = 600;
 	mFullscreenBits = 16;
 	mIsWindowed = true;
 	mIsPhysWindowed = true;

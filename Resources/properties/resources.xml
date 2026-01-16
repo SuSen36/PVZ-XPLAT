@@ -10,7 +10,6 @@
 <Resources id="LoaderBar">
   <SetDefaults path="images" idprefix="IMAGE_" />
   <Image id="TITLESCREEN" path="titlescreen" a8r8g8b8="" />
-  <Image id="TITLESCREEN_NEW" path="titlescreen_new" />
   <Image id="LOADBAR_DIRT" path="LoadBar_dirt" />
   <Image id="LOADBAR_GRASS" path="LoadBar_grass" />
   <Image id="PVZ_LOGO" path="PvZ_Logo" />

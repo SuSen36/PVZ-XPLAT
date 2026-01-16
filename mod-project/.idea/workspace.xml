@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="CMakePresetLoader">{
+  &quot;useNewFormat&quot;: true
+}</component>
+  <component name="CMakeReloadState">
+    <option name="reloaded" value="true" />
+  </component>
+  <component name="CMakeRunConfigurationManager">
+    <generated />
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="a0a02eae-0b5b-42ae-b31b-dc20c5e76c0c" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/mod-project.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../src/Sexy.TodLib/TodLib.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../src/Sexy.TodLib/TodLib.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../src/VectorList.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/android-prefab.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/androidbuild.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/androidbuildlibs.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/build-release.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/checker-buildbot.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/clang++-fat.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/clang-fat.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/clang-format-src.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/cmake-toolchain-mingw64-i686.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/cmake-toolchain-mingw64-x86_64.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/codechecker-buildbot.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/config.guess" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/config.sub" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/create-release.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/emscripten-buildbot.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/fnsince.pl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/gen_audio_channel_conversion.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/gen_audio_resampler_filter.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/git-pre-push-hook.pl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/install-sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/ltmain.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/mkinstalldirs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/nacl-buildbot.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/naclbuild.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/raspberrypi-buildbot.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/setup-gdk-desktop.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/showrev.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/strip_fPIC.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/test-versioning.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/update-copyright.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/update-version.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/updaterev.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/wikiheaders.pl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Libs/SDL/build-scripts/windows-buildbot-zipper.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../src/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/ConstEnums.h" beforeDir="false" afterPath="$PROJECT_DIR$/../src/ConstEnums.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/GameConstants.h" beforeDir="false" afterPath="$PROJECT_DIR$/../src/GameConstants.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/Lawn/Board.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../src/Lawn/Board.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/Lawn/Plant.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../src/Lawn/Plant.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/Lawn/Plant.h" beforeDir="false" afterPath="$PROJECT_DIR$/../src/Lawn/Plant.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/Lawn/Widget/ImitaterDialog.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../src/Lawn/Widget/ImitaterDialog.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/Lawn/Widget/SeedChooserScreen.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../src/Lawn/Widget/SeedChooserScreen.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/Lawn/Widget/SeedChooserScreen.h" beforeDir="false" afterPath="$PROJECT_DIR$/../src/Lawn/Widget/SeedChooserScreen.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/LawnApp.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../src/LawnApp.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/SexyAppFramework/SexyAppBase.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../src/SexyAppFramework/SexyAppBase.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/SexyAppFramework/SexyAppBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/../src/SexyAppFramework/SexyAppBase.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/SexyAppFramework/misc/ResourceManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../src/SexyAppFramework/misc/ResourceManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/SexyAppFramework/misc/ResourceManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/../src/SexyAppFramework/misc/ResourceManager.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/SexyAppFramework/modlib/ModLib.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../src/SexyAppFramework/modlib/ModLib.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/SexyAppFramework/modlib/ModLib.h" beforeDir="false" afterPath="$PROJECT_DIR$/../src/SexyAppFramework/modlib/ModLib.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/SexyAppFramework/paklib/PakInterface.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../src/SexyAppFramework/paklib/PakInterface.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/SexyAppFramework/paklib/PakInterface.h" beforeDir="false" afterPath="$PROJECT_DIR$/../src/SexyAppFramework/paklib/PakInterface.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../src/main.cpp" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectApplicationVersion">
+    <option name="ide" value="CLion" />
+    <option name="majorVersion" value="2023" />
+    <option name="minorVersion" value="2.5" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="2q7TA4mXv5rMm3dOU2UIrx2d4NP" />
+  <component name="ProjectViewState">
+    <option name="autoscrollToSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Administrator/Desktop/REPVZ-main/mod-project&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="a0a02eae-0b5b-42ae-b31b-dc20c5e76c0c" name="更改" comment="" />
+      <created>1734012466453</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1734012466453</updated>
+      <workItem from="1734012479019" duration="1801000" />
+      <workItem from="1735309506553" duration="217000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VCPKGProject">
+    <isAutomaticEditVcpkgJson value="false" />
+    <isAutomaticCheckingOnLaunch value="false" />
+    <isAutomaticFoundErrors value="true" />
+    <isAutomaticFoundErrors value="true" />
+  </component>
+</project>

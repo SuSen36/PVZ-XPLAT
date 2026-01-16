@@ -1281,7 +1281,7 @@ void CutScene::AnimateBoard()
 				if (aLawnMower)
 				{
 					aLawnMower->mVisible = true;
-					aLawnMower->mPosX = CalcPosition(aTimeLawnMowerStart, aTimeLawnMowerStart + TimeLawnMowerDuration, -80, -21);
+					aLawnMower->mPosX = CalcPosition(aTimeLawnMowerStart, aTimeLawnMowerStart + TimeLawnMowerDuration, -60+67+133, -21+67+133);
 				}
 			}
 		}
@@ -2033,11 +2033,11 @@ void CutScene::LoadUpsellBoardRoof()
 
 	mBoard->mBackground = BackgroundType::BACKGROUND_5_ROOF;
 	mBoard->LoadBackgroundImages();
-	mBoard->mPlantRow[0] = PlantRowType::PLANTROW_NORMAL;
-	mBoard->mPlantRow[1] = PlantRowType::PLANTROW_NORMAL;
-	mBoard->mPlantRow[2] = PlantRowType::PLANTROW_NORMAL;
-	mBoard->mPlantRow[3] = PlantRowType::PLANTROW_NORMAL;
-	mBoard->mPlantRow[4] = PlantRowType::PLANTROW_NORMAL;
+	mBoard->mPlantRow[0] = PlantRowType::PLANTROW_HIGH_GROUND;
+	mBoard->mPlantRow[1] = PlantRowType::PLANTROW_HIGH_GROUND;
+	mBoard->mPlantRow[2] = PlantRowType::PLANTROW_HIGH_GROUND;
+	mBoard->mPlantRow[3] = PlantRowType::PLANTROW_HIGH_GROUND;
+	mBoard->mPlantRow[4] = PlantRowType::PLANTROW_HIGH_GROUND;
 	mBoard->mPlantRow[5] = PlantRowType::PLANTROW_DIRT;
 	for (int x = 0; x < MAX_GRID_SIZE_X; x++)
 	{

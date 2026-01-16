@@ -92,7 +92,8 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
 
     mFromWave = theFromWave;
     mRow = theRow;
-    mPosX = 780 + Rand(ZOMBIE_START_RANDOM_OFFSET);
+    ////TODO:无尽模式的刷怪线保持原样
+    mPosX = 860+133 + Rand(ZOMBIE_START_RANDOM_OFFSET);
     mPosY = GetPosYBasedOnRow(theRow);
     mVelX = 0.0f;
     mVelZ = 0.0f;
@@ -332,7 +333,7 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
         mZombiePhase = ZombiePhase::PHASE_POLEVAULTER_PRE_VAULT;
         mHasObject = true;
         mVariant = false;
-        mPosX = WIDE_BOARD_WIDTH + 70 + Rand(10);
+        mPosX = 860 + 40 + Rand(10);
         if (IsOnBoard())
         {
             PlayZombieReanim("anim_run", ReanimLoopType::REANIM_LOOP, 0, 0.0f);
@@ -370,7 +371,7 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
         mBodyHealth = 3000;
         mAnimFrames = 24;
         mAnimTicksPerFrame = 8;
-        mPosX = WIDE_BOARD_WIDTH + 45 + Rand(10);
+        mPosX = 800 + 133 + 65 + Rand(10);
         mZombieRect = Rect(-17, -38, 125, 154);
         mZombieAttackRect = Rect(-30, -38, 89, 154);
         mVariant = false;
@@ -4472,7 +4473,7 @@ void Zombie::UpdateActions()
     }
     if (mZombieHeight == ZombieHeight::HEIGHT_UP_TO_HIGH_GROUND || mZombieHeight == ZombieHeight::HEIGHT_DOWN_OFF_HIGH_GROUND)
     {
-        UpdateZombieHighGround();
+        //UpdateZombieHighGround();
     }
     if (mZombieHeight == ZombieHeight::HEIGHT_FALLING)
     {
@@ -7022,7 +7023,7 @@ void Zombie::CheckForPool()
     bool aIsPoolSquare = 
         mBoard->IsPoolSquare(mBoard->PixelToGridX(mX + 75, mY), mRow) && 
         mBoard->IsPoolSquare(mBoard->PixelToGridX(mX + 45, mY), mRow) && 
-        mX < 680;
+        mX < 680 +133 + 67;
 
     if (!mInPool && aIsPoolSquare)
     {

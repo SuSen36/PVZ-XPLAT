@@ -109,10 +109,9 @@ void PoolEffect::UpdateWaterEffect()
 //0x469DE0
 void PoolEffect::PoolEffectDraw(Sexy::Graphics* g, bool theIsNight)
 {
-
     float aGridSquareX = IMAGE_POOL->GetWidth() / 15.0f;
     float aGridSquareY = IMAGE_POOL->GetHeight() / 5.0f;
-    float aOffsetArray[3][16][6][2] = {{{{0}}}};
+    float aOffsetArray[3][16][6][2] = {{{{ 0 }}}};
     for (int x = 0; x <= 15; x++)
     {
         for (int y = 0; y <= 5; y++)
@@ -164,7 +163,7 @@ void PoolEffect::PoolEffectDraw(Sexy::Graphics* g, bool theIsNight)
                     int aIndexY = y + aIndexOffsetY[aVertIndex];
                     if (aLayer == 2)
                     {
-                        pVert->x = (704.0f / 15.0f) * aIndexX + 45.0f;
+                        pVert->x = (704.0f / 15.0f) * aIndexX + 245.0f;
                         pVert->y = 30.0f * aIndexY + 288.0f;
                         pVert->u = aOffsetArray[2][aIndexX][aIndexY][0] + aIndexX / 15.0f;
                         pVert->v = aOffsetArray[2][aIndexX][aIndexY][1] + aIndexY / 5.0f;
@@ -189,7 +188,7 @@ void PoolEffect::PoolEffectDraw(Sexy::Graphics* g, bool theIsNight)
                     else
                     {
                         pVert->color = 0xFFFFFFFFUL;
-                        pVert->x = aIndexX * aGridSquareX + 35.0f;
+                        pVert->x = aIndexX * aGridSquareX + 235.0f;
                         pVert->y = aIndexY * aGridSquareY + 279.0f;
                         pVert->u = aOffsetArray[aLayer][aIndexX][aIndexY][0] + aIndexX / 15.0f;
                         pVert->v = aOffsetArray[aLayer][aIndexX][aIndexY][1] + aIndexY / 5.0f;
@@ -216,11 +215,7 @@ void PoolEffect::PoolEffectDraw(Sexy::Graphics* g, bool theIsNight)
 
     UpdateWaterEffect();
     GLInterface* anInterface = ((GLImage*)g->mDestImage)->mGLInterface;
-    //anInterface->CheckDXError(anInterface->mD3DDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_ADDRESSU, D3DTEXTUREADDRESS::D3DTADDRESS_WRAP), "DrawPool");
-    //anInterface->CheckDXError(anInterface->mD3DDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_ADDRESSV, D3DTEXTUREADDRESS::D3DTADDRESS_WRAP), "DrawPool");
     g->DrawTrianglesTex(mCausticImage, aVertArray[2], 150);
-    //anInterface->CheckDXError(anInterface->mD3DDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_ADDRESSU, D3DTEXTUREADDRESS::D3DTADDRESS_CLAMP), "DrawPool");
-    //anInterface->CheckDXError(anInterface->mD3DDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_ADDRESSV, D3DTEXTUREADDRESS::D3DTADDRESS_CLAMP), "DrawPool");
 }
 
 void PoolEffect::PoolEffectUpdate()

@@ -1,0 +1,90 @@
+Started 1748839979
+session id: 1748839973
+First Draw Time: 6001 ms
+LOADED: 'LoaderBar' 187 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie.reanim' 279 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_paper.reanim' 122 ms on Game Loading
+LOADING:Long reanim 'reanim/SelectorScreen.reanim' 245 ms on Game Loading
+LOADED: 'DelayLoad_Zombatar' 362 ms on Game Selector
+LOADING:Long reanim 'reanim/Zombie_polevaulter.reanim' 127 ms on Game Selector
+LOADING:Long reanim 'reanim/Zombie_disco.reanim' 116 ms on Game Selector
+LOADING:Long reanim 'reanim/Zombie_backup.reanim' 151 ms on Game Selector
+LOADING:Long reanim 'reanim/Zombie_snorkle.reanim' 127 ms on Game Selector
+LOADING:Long reanim 'reanim/Zombie_bobsled.reanim' 103 ms on Game Selector
+LOADING:Long reanim 'reanim/Zombie_dolphinrider.reanim' 192 ms on Game Selector
+LOADING:Long reanim 'reanim/Zombie_pogo.reanim' 103 ms on Game Selector
+LOADING:Long reanim 'reanim/Zombie_ladder.reanim' 124 ms on Game Selector
+LOADING:Long reanim 'reanim/Zombie_gargantuar.reanim' 175 ms on Game Selector
+LOADED: 'DelayLoad_ChallengeScreen' 75 ms on Challenge Screen
+Started 1748840232
+session id: 1748840226
+LOADING:Long reanim 'reanim/Zombie_pogo.reanim' 147 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_bobsled.reanim' 103 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_bungi.reanim' 124 ms on Game Loading
+LOADING:Long reanim 'reanim/SelectorScreen.reanim' 162 ms on Game Loading
+First Draw Time: 7175 ms
+LOADED: 'LoaderBar' 188 ms on Game Loading
+LOADING:Long reanim 'reanim/GoldMagnet.reanim' 113 ms on Game Loading
+LOADED: 'DelayLoad_Zombatar' 394 ms on Game Selector
+LOADED: 'DelayLoad_ChallengeScreen' 101 ms on Challenge Screen
+LOADED: 'DelayLoad_Background1' 40 ms on Challenge Screen
+Started 1748841399
+session id: 1748841393
+LOADING:Long reanim 'reanim/Tanglekelp.reanim' 105 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_pogo.reanim' 190 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_bungi.reanim' 114 ms on Game Loading
+LOADING:Long reanim 'reanim/SelectorScreen.reanim' 149 ms on Game Loading
+First Draw Time: 9712 ms
+LOADED: 'LoaderBar' 74 ms on Game Loading
+LOADED: 'DelayLoad_Zombatar' 530 ms on Game Selector
+LOADED: 'DelayLoad_ChallengeScreen' 107 ms on Challenge Screen
+LOADED: 'DelayLoad_Background1' 49 ms on [WAR_AND_PEAS]
+Started 1748841851
+session id: 1748841845
+LOADING:Long reanim 'reanim/Tanglekelp.reanim' 106 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_pogo.reanim' 120 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_bungi.reanim' 116 ms on Game Loading
+LOADING:Long reanim 'reanim/SelectorScreen.reanim' 154 ms on Game Loading
+First Draw Time: 9440 ms
+LOADED: 'LoaderBar' 72 ms on Game Loading
+LOADED: 'DelayLoad_Zombatar' 445 ms on Game Selector
+LOADED: 'DelayLoad_ChallengeScreen' 73 ms on Challenge Screen
+LOADED: 'DelayLoad_GreenHouseGarden' 27 ms on Game Selector
+Non-cheater failed to preload 'reanim/Stinky.reanim' on Game Selector
+LOADED: 'DelayLoad_Background1' 76 ms on [WAR_AND_PEAS]
+Started 1748846292
+session id: 1748846281
+LOADING:Long reanim 'reanim/Zombie.reanim' 119 ms on Game Loading
+LOADING:Long reanim 'reanim/Tanglekelp.reanim' 123 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_balloon.reanim' 101 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_gargantuar.reanim' 180 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_pogo.reanim' 239 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_bobsled.reanim' 110 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_bungi.reanim' 139 ms on Game Loading
+LOADING:Long reanim 'reanim/SelectorScreen.reanim' 154 ms on Game Loading
+First Draw Time: 14587 ms
+LOADED: 'LoaderBar' 72 ms on Game Loading
+LOADED: 'DelayLoad_Zombatar' 514 ms on Game Selector
+LOADED: 'DelayLoad_ChallengeScreen' 88 ms on Challenge Screen
+LOADED: 'DelayLoad_Background1' 50 ms on Challenge Screen
+Started 1748846929
+session id: 1748846918
+LOADING:Long reanim 'reanim/Chomper.reanim' 110 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie.reanim' 149 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_football.reanim' 119 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_disco.reanim' 142 ms on Game Loading
+LOADING:Long reanim 'reanim/Tanglekelp.reanim' 179 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_polevaulter.reanim' 110 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_balloon.reanim' 124 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_gargantuar.reanim' 166 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_dolphinrider.reanim' 121 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_pogo.reanim' 276 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_backup.reanim' 106 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_bobsled.reanim' 125 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_bungi.reanim' 199 ms on Game Loading
+LOADING:Long reanim 'reanim/Zombie_ladder.reanim' 101 ms on Game Loading
+LOADING:Long reanim 'reanim/Gravebuster.reanim' 149 ms on Game Loading
+LOADING:Long reanim 'reanim/SelectorScreen.reanim' 211 ms on Game Loading
+First Draw Time: 17272 ms
+LOADED: 'LoaderBar' 89 ms on Game Loading
+LOADED: 'DelayLoad_Zombatar' 573 ms on Game Selector

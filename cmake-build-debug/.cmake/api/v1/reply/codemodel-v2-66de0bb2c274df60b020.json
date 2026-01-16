@@ -1,0 +1,148 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-e5f61439dff6669a6090.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.2.2"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						3,
+						6
+					]
+				},
+				{
+					"build" : "Libs/SDL",
+					"jsonFile" : "directory-Libs.SDL-Debug-006ac7f6a1f90f8ac759.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.4"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "Libs/SDL",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						4,
+						5
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "xp-plants-vs-zombies",
+					"targetIndexes" : 
+					[
+						3,
+						6
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "SDL2",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						4,
+						5
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 1,
+					"id" : "SDL2::@89929f249baea00132a7",
+					"jsonFile" : "target-SDL2-Debug-527d1938a3b490c02c40.json",
+					"name" : "SDL2",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "SDL2_test::@89929f249baea00132a7",
+					"jsonFile" : "target-SDL2_test-Debug-315cb6f0d061871c2393.json",
+					"name" : "SDL2_test",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "SDL2main::@89929f249baea00132a7",
+					"jsonFile" : "target-SDL2main-Debug-031f67b9bb9a8ec8cb7c.json",
+					"name" : "SDL2main",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "create_resources_pak::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-create_resources_pak-Debug-671f956579c0e99977ce.json",
+					"name" : "create_resources_pak",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "sdl_headers_copy::@89929f249baea00132a7",
+					"jsonFile" : "target-sdl_headers_copy-Debug-518bba1347818d8d997b.json",
+					"name" : "sdl_headers_copy",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "uninstall::@89929f249baea00132a7",
+					"jsonFile" : "target-uninstall-Debug-450300443d91ae213b92.json",
+					"name" : "uninstall",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "xp-plants-vs-zombies::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-xp-plants-vs-zombies-Debug-34a2e6dba64500a05f04.json",
+					"name" : "xp-plants-vs-zombies",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/Administrator/Desktop/REPVZ-main/cmake-build-debug",
+		"source" : "C:/Users/Administrator/Desktop/REPVZ-main"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 5
+	}
+}
