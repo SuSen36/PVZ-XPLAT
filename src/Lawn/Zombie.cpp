@@ -92,7 +92,7 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
 
     mFromWave = theFromWave;
     mRow = theRow;
-    mPosX = 780 + Rand(ZOMBIE_START_RANDOM_OFFSET);
+    mPosX = 780+200 + Rand(ZOMBIE_START_RANDOM_OFFSET);
     mPosY = GetPosYBasedOnRow(theRow);
     mVelX = 0.0f;
     mVelZ = 0.0f;
@@ -332,7 +332,7 @@ void Zombie::ZombieInitialize(int theRow, ZombieType theType, bool theVariant, Z
         mZombiePhase = ZombiePhase::PHASE_POLEVAULTER_PRE_VAULT;
         mHasObject = true;
         mVariant = false;
-        mPosX = WIDE_BOARD_WIDTH + 70 + Rand(10);
+        mPosX = 780+200 + 80 + Rand(10);
         if (IsOnBoard())
         {
             PlayZombieReanim("anim_run", ReanimLoopType::REANIM_LOOP, 0, 0.0f);
@@ -4562,6 +4562,14 @@ void Zombie::UpdateActions()
     if (mZombieType == ZombieType::ZOMBIE_SQUASH_HEAD)
     {
         UpdateZombieSquashHead();
+    }
+
+    if (mPosX <= 80.0*9.0f+40+LAWN_XMIN && mPosX > 80.0*9.0f+10+LAWN_XMIN - (5 - mRow) * 2)
+    {
+        if (mVelX < 0.5f)
+        {
+            mPosX -= 0.75f;  // TODO:水平移动速度限制
+        }
     }
 }
 

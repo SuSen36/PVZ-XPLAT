@@ -16,7 +16,7 @@
 #include "SexyAppBase.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
 #include "SexyAppFramework/widget/Widget.h"
-#include "../Sexy.TodLib/TodDebug.h"
+#include "Sexy.TodLib/TodDebug.h"
 #include "SexyAppFramework/graphics/GLImage.h"
 #include "SexyAppFramework/graphics/MemoryImage.h"
 #include "SexyAppFramework/graphics/GLInterface.h"

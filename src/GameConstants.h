@@ -6,14 +6,14 @@ constexpr const double PI = 3.141592653589793;
 // ============================================================
 // ■ 常数
 // ============================================================
-const int			BOARD_WIDTH = 800;
+const int			BOARD_WIDTH = 1066;
 const int			BOARD_HEIGHT = 600;
-const int			WIDE_BOARD_WIDTH = 800;
-const int			BOARD_OFFSET = 220;
-const int			BOARD_EDGE = -100;
-const int			BOARD_IMAGE_WIDTH_OFFSET = 1180;
+const int			WIDE_BOARD_WIDTH = 1066;
+const int			BOARD_OFFSET = 200;
+const int			BOARD_EDGE = 133;
+const int			BOARD_IMAGE_WIDTH_OFFSET = 1180+133+133;
 const int           BOARD_ICE_START = 800;
-const int           LAWN_XMIN = 40;
+const int           LAWN_XMIN = -40 +133+100;
 const int           LAWN_YMIN = 80;
 const int           HIGH_GROUND_HEIGHT = 30;
 

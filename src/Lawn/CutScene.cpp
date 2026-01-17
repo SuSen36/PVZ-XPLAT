@@ -68,7 +68,7 @@ static const int	TimeIntro_PanRightEnd			= 11890;	//[0x6AA29C]
 static const int	TimeIntro_FadeOut				= 10890;	//[0x6AA2A0]
 static const int	TimeIntro_FadeOutEnd			= 11890;	//[0x6AA2A4]
 static const int	TimeIntro_End					= 13890;	//[0x6AA2A8]
-static const int	TimeLawnMowerDuration			= 250;
+static const int	TimeLawnMowerDuration			= 150;
 static const int	TimeLawnMowerStart[6]			= { 6300, 6250, 6200, 6150, 6100, 6050 };	//[0x6AA2AC]
 
 //0x4390E0
@@ -1281,7 +1281,7 @@ void CutScene::AnimateBoard()
 				if (aLawnMower)
 				{
 					aLawnMower->mVisible = true;
-					aLawnMower->mPosX = CalcPosition(aTimeLawnMowerStart, aTimeLawnMowerStart + TimeLawnMowerDuration, -80, -21);
+					aLawnMower->mPosX = CalcPosition(aTimeLawnMowerStart, aTimeLawnMowerStart + TimeLawnMowerDuration, -40+200, -11+200);
 				}
 			}
 		}

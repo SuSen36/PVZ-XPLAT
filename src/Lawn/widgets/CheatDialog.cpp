@@ -148,7 +148,7 @@ bool CheatDialog::ApplyCheat()
 	if (mApp->mPlayerInfo)
 	{
 		mApp->mPlayerInfo->SetLevel(aLevel);
-		mApp->mPlayerInfo->mFinishedAdventure = aFinishedAdventure;
+		//mApp->mPlayerInfo->mFinishedAdventure = aFinishedAdventure;
 		mApp->WriteCurrentUserConfig();
 	}
 	return true;

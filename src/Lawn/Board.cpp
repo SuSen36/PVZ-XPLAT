@@ -1132,10 +1132,25 @@ void Board::PickBackground()
 			}
 			else if (mPlantRow[y] == PlantRowType::PLANTROW_HIGH_GROUND && x >= 4 && x <= 8)
 			{
+                //TODO:屋顶关卡的PlantRowType始终为PLANTROW_GRASS，以后会清理
 				mGridSquareType[x][y] = GridSquareType::GRIDSQUARE_HIGH_GROUND;
 			}
 		}
 	}
+
+    for (int y = 0; y < MAX_GRID_SIZE_Y; y++)
+    {
+        if (!StageHasRoof() && StageHasPool())
+        {
+            mGridSquareType[9][y] = GridSquareType::GRIDSQUARE_NONE;   // 第10列 - 泳池关卡设为NONE
+            mGridSquareType[10][y] = GridSquareType::GRIDSQUARE_NONE;  // 第11列 - 泳池关卡设为NONE
+        }
+        else if(!StageHasRoof())
+        {
+            mGridSquareType[9][y] = GridSquareType::GRIDSQUARE_DIRT;   // 第10列 - 其他关卡设为DIRT
+            mGridSquareType[10][y] = GridSquareType::GRIDSQUARE_DIRT;  // 第11列 - 其他关卡设为DIRT
+        }
+    }
 
 	MTRand aLevelRNG(GetLevelRandSeed());
 	if (StageHasGraveStones())
@@ -9464,14 +9479,33 @@ float Board::GetPosYBasedOnRow(float thePosX, int theRow)
 	if (StageHasRoof())
 	{
 		float aSlopeOffset = 0.0f;
-		if (thePosX < 440.0f)
+        //80.0*5.0f+LAWN_XMIN
+		if (thePosX < 80.0*5.0f+LAWN_XMIN)
 		{
-			aSlopeOffset = (440.0f - thePosX) * 0.25f;
+			aSlopeOffset = (80.0*5.0f+LAWN_XMIN - thePosX) * 0.25f;
 		}
+        else if (thePosX >= 80.0*9.0f+LAWN_XMIN)  // Fixed: changed from 720.0f+200
+        {
+            // 当X坐标大于640像素时，计算向上的斜坡偏移
+            aSlopeOffset = (thePosX - (80.0*9.0f+LAWN_XMIN)) * 0.25f;  // Also fixed: changed from 720.0f
+        }
 
-		return GridToPixelY(8, theRow) + aSlopeOffset;
+        return GridToPixelY(10, theRow) + aSlopeOffset;
 	}
-	
+    else if (StageHasPool())
+    {
+        float aSlopeOffset = 0.0f;
+        //80.0*5.0f+LAWN_XMIN
+        if (thePosX <= 80.0*11.0f+LAWN_XMIN && thePosX > 80.0*10.0f+LAWN_XMIN)  // Fixed: changed from 720.0f+200
+        {
+            // 当X坐标大于640像素时，计算向上的斜坡偏移
+            aSlopeOffset = (thePosX - (80.0*11.0f+LAWN_XMIN)) * 0.45f;  // Also fixed: changed from 720.0f
+        }else if (thePosX <= 80.0*10.0f+LAWN_XMIN && thePosX > 80.0*9.0f+10+LAWN_XMIN + 30 - (5 - theRow) * 2)
+        {
+            aSlopeOffset = ((80.0*9.0f+10+LAWN_XMIN + 30 - (5 - theRow) * 2)-thePosX) * 0.45f;
+        }
+        return GridToPixelY(10, theRow) + aSlopeOffset;
+    }
 	return GridToPixelY(0, theRow);
 }
 
@@ -9491,19 +9525,23 @@ int Board::GridToPixelY(int theGridX, int theGridY)
 	}
 
 	int aY;
-	if (StageHasRoof())
-	{
-		int aSlopeOffset;
-		if (theGridX < 5)
-		{
-			aSlopeOffset = (5 - theGridX) * 20;
-		}
-		else
-		{
-			aSlopeOffset = 0;
-		}
-		aY = theGridY * 85 + aSlopeOffset + LAWN_YMIN - 10;
-	}
+    if (StageHasRoof())
+    {
+        int aSlopeOffset;
+        if (theGridX > 9 && theGridX < 12)  // 第10-11列：右坡度
+        {
+            aSlopeOffset = (11 - theGridX) * 20;
+        }
+        else if (theGridX < 5)  // 第0-4列：左坡度
+        {
+            aSlopeOffset = (5 - theGridX) * 20;
+        }
+        else  // 第5-9列和14+列：平地
+        {
+            aSlopeOffset = 0;
+        }
+        aY = theGridY * 85 + aSlopeOffset + LAWN_YMIN - 10;
+    }
 	else if (StageHasPool())
 	{
 		aY = theGridY * 85 + LAWN_YMIN;

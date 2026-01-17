@@ -15,7 +15,8 @@
 
 using namespace Sexy;
 
-#define MAX_GRID_SIZE_X 9
+#define GRID_SIZE_X 9
+#define MAX_GRID_SIZE_X 11
 #define MAX_GRID_SIZE_Y 6
 #define MAX_ZOMBIES_IN_WAVE 50
 #define MAX_ZOMBIE_WAVES 100
