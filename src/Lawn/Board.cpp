@@ -7851,8 +7851,8 @@ void Board::DrawFog(Graphics* g)
 			int aCelLook = mGridCelLook[x][y % MAX_GRID_SIZE_Y];
 			int aCelCol = aCelLook % 8;
 			// 本格浓雾横坐标 = 列 * 80 + 浓雾偏移 - 15，纵坐标 = 行 * 85 + 20
-			float aPosX = x * 80 + mFogOffset - 15;
-			float aPosY = y * 85 + 20;
+			float aPosX = x * 80 + mFogOffset + 165;
+			float aPosY = y * 85;
 			// 开始计算周期变化的颜色，aTime 为根据主计时计算的时间
 			float aTime = mMainCounter * PI * 2;
 			// 与行、列有关的初始相位

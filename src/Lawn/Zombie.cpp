@@ -1826,16 +1826,10 @@ void Zombie::UpdateZombieDolphinRider()
     bool aBackwards = IsWalkingBackwards();
     if (mZombiePhase == ZombiePhase::PHASE_DOLPHIN_WALKING && !aBackwards)
     {
-        //TODO：安卓端海豚僵尸的进行移动，可能是动画问题
-        int x1 = mX;
-        if (static_cast<float>(mX) > 700.0f)
+        if (mX > 900.0f)
         {
             mZombiePhase = ZombiePhase::PHASE_DOLPHIN_INTO_POOL;
             PlayZombieReanim("anim_jumpinpool", ReanimLoopType::REANIM_PLAY_ONCE_AND_HOLD, 20, 16.0f);
-        }
-        else
-        {
-            TodLog("条件不满足: mX = %d, 应在 700 到 725 之间", mX);  // 使用 %d 输出整数
         }
     }
     else if (mZombiePhase == ZombiePhase::PHASE_DOLPHIN_INTO_POOL)
@@ -1860,7 +1854,7 @@ void Zombie::UpdateZombieDolphinRider()
     }
     else if (mZombiePhase == ZombiePhase::PHASE_DOLPHIN_RIDING)
     {
-        if (mX <= 10)
+        if (mX <= 210)
         {
             mAltitude = -40.0f;
             mZombieHeight = ZombieHeight::HEIGHT_OUT_OF_POOL;
@@ -1932,7 +1926,7 @@ void Zombie::UpdateZombieDolphinRider()
     }
     else if (mZombiePhase == ZombiePhase::PHASE_DOLPHIN_WALKING_IN_POOL)
     {
-        if ((mX <= 10 && !aBackwards) || (mX > 680 && aBackwards))
+        if ((mX <= 210 && !aBackwards) || (mX > 880 && aBackwards))
         {
             mAltitude = -40.0f;
             mZombieHeight = ZombieHeight::HEIGHT_OUT_OF_POOL;
@@ -1951,7 +1945,7 @@ void Zombie::UpdateZombieSnorkel()
     bool aBackwards = IsWalkingBackwards();
     if (mZombiePhase == ZombiePhase::PHASE_SNORKEL_WALKING && !aBackwards)
     {
-        if (mX > 700 && mX <= 720)
+        if (mX > 900 && mX <= 920)
         {
             mVelX = 0.2f;
             mZombiePhase = ZombiePhase::PHASE_SNORKEL_INTO_POOL;
@@ -1984,7 +1978,7 @@ void Zombie::UpdateZombieSnorkel()
         {
             TakeDamage(1800, 9U);
         }
-        else if (mX <= 25 && !aBackwards)
+        else if (mX <= 225 && !aBackwards)
         {
             mAltitude = -90.0f;
             mPosX -= 15.0f;
@@ -1994,7 +1988,7 @@ void Zombie::UpdateZombieSnorkel()
             PoolSplash(false);
             StartWalkAnim(0);
         }
-        else if (mX > 640 && aBackwards)
+        else if (mX > 840 && aBackwards)
         {
             mAltitude = -90.0f;
             mPosX += 15.0f;
@@ -4564,7 +4558,7 @@ void Zombie::UpdateActions()
         UpdateZombieSquashHead();
     }
 
-    if (mPosX <= 80.0*9.0f+40+LAWN_XMIN && mPosX > 80.0*9.0f+10+LAWN_XMIN - (5 - mRow) * 2)
+    if (mBoard->StageHasPool() && mPosX <= 80.0*9.0f+40+LAWN_XMIN && mPosX > 80.0*9.0f+10+LAWN_XMIN - (5 - mRow) * 2)
     {
         if (mVelX < 0.5f)
         {
@@ -7030,7 +7024,7 @@ void Zombie::CheckForPool()
     bool aIsPoolSquare = 
         mBoard->IsPoolSquare(mBoard->PixelToGridX(mX + 75, mY), mRow) && 
         mBoard->IsPoolSquare(mBoard->PixelToGridX(mX + 45, mY), mRow) && 
-        mX < 680;
+        mX < 680 + 200 && mX > -80 +133+100;
 
     if (!mInPool && aIsPoolSquare)
     {
