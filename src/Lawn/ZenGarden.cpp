@@ -1045,6 +1045,7 @@ void ZenGarden::DoFeedingTool(int x, int y, GridItemState theToolType)
                 mApp->mBoard->DisplayAdvice(__S("[ADVICE_ZEN_GARDEN_CONTINUE_ADVENTURE]"), MessageStyle::MESSAGE_STYLE_HINT_TALL_FAST, AdviceType::ADVICE_NONE);
                 mBoard->mMenuButton->mDisabled = false;
                 mBoard->mMenuButton->mBtnNoDraw = false;
+                mBoard->mSpeedupButton->mBtnNoDraw = false;
             }
             else if (mApp->mPlayerInfo->mPurchases[(int)StoreItem::STORE_ITEM_FERTILIZER] == PURCHASE_COUNT_OFFSET)
             {
@@ -2436,6 +2437,7 @@ void ZenGarden::SetupForZenTutorial()
     mBoard->mStoreButton->mBtnNoDraw = true;
     mBoard->mMenuButton->mDisabled = true;
     mBoard->mMenuButton->mBtnNoDraw = true;
+    if (mBoard->mSpeedupButton) mBoard->mSpeedupButton->mBtnNoDraw = true;
 
     mApp->CrazyDaveEnter();
     mApp->CrazyDaveTalkIndex(2100);

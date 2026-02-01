@@ -464,6 +464,7 @@ GameOverDialog::GameOverDialog(const SexyString& theMessage, bool theShowChallen
 
     gLawnApp->mBoard->mShowShovel = false;
     gLawnApp->mBoard->mMenuButton->mBtnNoDraw = true;
+    gLawnApp->mBoard->mSpeedupButton->mBtnNoDraw = true;
 }
 
 GameOverDialog::~GameOverDialog()

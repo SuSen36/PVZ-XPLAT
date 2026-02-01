@@ -1,4 +1,4 @@
-﻿#include "Board.h"
+#include "Board.h"
 #include "Plant.h"
 #include "Zombie.h"
 #include "GridItem.h"
@@ -681,8 +681,9 @@ bool CutScene::CanGetPacketUpgrade(int theUpgradeIndex)
 void CutScene::StartLevelIntro()
 {
 	mCutsceneTime = 0;
-	mBoard->mSeedBank->Move(SEED_BANK_OFFSET_X, -IMAGE_SEEDBANK->GetHeight());
-	mBoard->mMenuButton->mBtnNoDraw = true;
+    mBoard->mSeedBank->Move(SEED_BANK_OFFSET_X, -IMAGE_SEEDBANK->GetHeight());
+    mBoard->mMenuButton->mBtnNoDraw = true;
+    if (mBoard->mSpeedupButton) mBoard->mSpeedupButton->mBtnNoDraw = true;
 	mApp->mSeedChooserScreen->mMouseVisible = false;
 	mApp->mSeedChooserScreen->Move(0, SEED_CHOOSER_OFFSET_Y);
 	mApp->mSeedChooserScreen->mMenuButton->mBtnNoDraw = true;
@@ -825,7 +826,8 @@ void CutScene::StartLevelIntro()
 	{
 		mCrazyDaveDialogStart = 3300;
 		mUpsellHideBoard = true;
-		mBoard->mMenuButton->mBtnNoDraw = false;
+        mBoard->mMenuButton->mBtnNoDraw = false;
+        if (mBoard->mSpeedupButton) mBoard->mSpeedupButton->mBtnNoDraw = false;
 	}
 	else if (mApp->mGameMode == GameMode::GAMEMODE_SCARY_POTTER_1 && !mApp->HasBeatenChallenge(GameMode::GAMEMODE_SCARY_POTTER_1))
 	{
@@ -1033,7 +1035,8 @@ void CutScene::CancelIntro()
 
 		if (mBoard->mTutorialState != TutorialState::TUTORIAL_ZEN_GARDEN_PICKUP_WATER)
 		{
-			mBoard->mMenuButton->mBtnNoDraw = false;
+            mBoard->mMenuButton->mBtnNoDraw = false;
+            if (mBoard->mSpeedupButton) mBoard->mSpeedupButton->mBtnNoDraw = false;
 		}
 		mApp->mSoundSystem->StopFoley(FoleyType::FOLEY_DIGGER);
 	}
@@ -1160,6 +1163,7 @@ void CutScene::AnimateBoard()
 			aSeedChoser->Move(0, CalcPosition(aTimeSeedChoserSlideOnStart, aTimeSeedChoserSlideOnEnd, SEED_CHOOSER_OFFSET_Y, 0));
 			aSeedChoser->mMenuButton->mY = CalcPosition(aTimeSeedChoserSlideOnStart, aTimeSeedChoserSlideOnEnd, -50, -10);
 			aSeedChoser->mMenuButton->mBtnNoDraw = false;
+            mBoard->mSpeedupButton->mBtnNoDraw = false;
 		}
 		// ====================================================================================================
 		// △ 选卡界面滑落
@@ -1485,7 +1489,8 @@ void CutScene::Update()
 		mBoard->RemoveCutsceneZombies();
 		if (mBoard->mTutorialState != TutorialState::TUTORIAL_ZEN_GARDEN_PICKUP_WATER)
 		{
-			mBoard->mMenuButton->mBtnNoDraw = false;
+            mBoard->mMenuButton->mBtnNoDraw = false;
+            if (mBoard->mSpeedupButton) mBoard->mSpeedupButton->mBtnNoDraw = false;
 		}
 
 		ShowShovel();
@@ -1499,8 +1504,9 @@ void CutScene::Update()
 //0x43C3C0
 void CutScene::StartZombiesWon()
 {
-	mCutsceneTime = 0;
-	mBoard->mMenuButton->mBtnNoDraw = true;
+    mCutsceneTime = 0;
+    mBoard->mMenuButton->mBtnNoDraw = true;
+    if (mBoard->mSpeedupButton) mBoard->mSpeedupButton->mBtnNoDraw = true;
 	mBoard->mShowShovel = false;
 	mApp->mMusic->StopAllMusic();
 	mBoard->StopAllZombieSounds();
@@ -1603,8 +1609,9 @@ void CutScene::AdvanceCrazyDaveDialog(bool theJustSkipping)
 	if (mApp->mCrazyDaveMessageIndex == 3200)
 	{
 		mApp->mPlayerInfo->mPurchases[29] = PURCHASE_COUNT_OFFSET + 5;
-		mBoard->mMenuButton->mBtnNoDraw = false;
-		mBoard->mStoreButton->mBtnNoDraw = false;
+        mBoard->mMenuButton->mBtnNoDraw = false;
+        mBoard->mStoreButton->mBtnNoDraw = false;
+        if (mBoard->mSpeedupButton) mBoard->mSpeedupButton->mBtnNoDraw = false;
 	}
 
 	// 推进戴夫对话，若不存在下一句则令戴夫退出
@@ -2157,8 +2164,9 @@ void CutScene::UpdateUpsell()
 		{
 			mBoard->mStoreButton->Resize(510, 420, 210, 46);
 			mBoard->mMenuButton->Resize(510, 480, 210, 46);
-			mBoard->mMenuButton->mBtnNoDraw = false;
-			mBoard->mStoreButton->mBtnNoDraw = false;
+            mBoard->mMenuButton->mBtnNoDraw = false;
+            mBoard->mStoreButton->mBtnNoDraw = false;
+            if (mBoard->mSpeedupButton) mBoard->mSpeedupButton->mBtnNoDraw = false;
 		}
 		return;
 	}
@@ -2265,8 +2273,9 @@ void CutScene::UpdateUpsell()
 		break;
 
 	case 3317:  // “呃，你还等什么呢？”
-		ClearUpsellBoard();
-		mBoard->mMenuButton->mBtnNoDraw = true;
+        ClearUpsellBoard();
+        mBoard->mMenuButton->mBtnNoDraw = true;
+        if (mBoard->mSpeedupButton) mBoard->mSpeedupButton->mBtnNoDraw = true;
 		mUpsellHideBoard = true;
 		break;
 	}

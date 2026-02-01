@@ -40,10 +40,9 @@ private:
         GameSelector_Almanac = 108,
         GameSelector_ZenGarden = 109,
         GameSelector_Survival = 110,
-        GameSelector_Zombatar = 111, // @Patoke: add stuff after 110
-        GameSelector_AchievementsBack = 112,
-        GameSelector_Achievements = 113,
-        GameSelector_QuickPlay = 114
+        GameSelector_AchievementsBack = 111,
+        GameSelector_Achievements = 112,
+        GameSelector_QuickPlay = 113
     };
 
 public:
@@ -59,7 +58,6 @@ public:
     NewLawnButton*              mZenGardenButton;           //+0xB0
     NewLawnButton*              mSurvivalButton;            //+0xB4
     NewLawnButton*              mChangeUserButton;          //+0xB8
-    NewLawnButton*              mZombatarButton;             //+GOTY @Patoke: 0xC0
     NewLawnButton*              mAchievementsButton;        //+GOTY @Patoke: 0xC4
     NewLawnButton*              mQuickPlayButton;           //+GOTY @Patoke: 0xC8
     Widget*                     mOverlayWidget;             //+0xBC
@@ -88,7 +86,6 @@ public:
     int                         mStartY;                    //+GOTY @Patoke: 0x15C
     int                         mDestX;                     //+GOTY @Patoke: 0x160
     int                         mDestY;                     //+GOTY @Patoke: 0x164
-    //ZombatarWidget*           mZombatarWidget;            //+GOTY @Patoke: 0x168
     AchievementsWidget*       mAchievementsWidget;        //+GOTY @Patoke: 0x16C
 
 public:

@@ -1,4 +1,4 @@
-﻿#include <ctime>
+#include <ctime>
 #include <SDL.h>
 #include "ZenGarden.h"
 #include "Lawn/system/Music.h"
@@ -180,6 +180,10 @@ Board::Board(LawnApp* theApp)
 	mDebugTextMode = DebugTextMode::DEBUG_TEXT_NONE;
 	mMenuButton = new GameButton(0);
 	mMenuButton->mDrawStoneButton = true;
+
+	mSpeedupButton = new GameButton(2);
+	mSpeedupButton->Resize(740, 30, IMAGE_FASTBUTTON->mWidth, IMAGE_FASTBUTTON->mHeight);
+
 	mStoreButton = nullptr;
 	mIgnoreMouseUp = false;
 
@@ -219,6 +223,10 @@ Board::Board(LawnApp* theApp)
 		mStoreButton->mBtnNoDraw = true;
 		mStoreButton->SetLabel(__S("[GET_FULL_VERSION_BUTTON]"));
 	}
+
+	mPrevSpeedMod = SpeedMod::SPEED_NORMAL;
+	mSpeedMod = SpeedMod::SPEED_NORMAL;
+	mQECounter = 0;
 }
 
 //0x408670、0x408690
@@ -232,6 +240,12 @@ Board::~Board()
 	{
 		delete mMenuButton;
 	}
+
+	if (mSpeedupButton)
+	{
+		delete mSpeedupButton;
+	}
+
 	if (mStoreButton)
 	{
 		delete mStoreButton;
@@ -4792,6 +4806,10 @@ void Board::MouseDown(int x, int y, int theClickCount)
 			mApp->PlaySample(Sexy::SOUND_GRAVEBUTTON);
 		}
 	}
+	if (mSpeedupButton && mSpeedupButton->IsMouseOver() && CanInteractWithBoardButtons() && theClickCount > 0)
+	{
+		mApp->PlaySample(Sexy::SOUND_TAP);
+	}
 
 	if (mApp->mGameScene == GameScenes::SCENE_LEVEL_INTRO && mApp->mSeedChooserScreen)
 	{
@@ -5020,6 +5038,16 @@ void Board::MouseUp(int x, int y, int theClickCount)
 				mApp->mBoardResult = BoardResult::BOARDRESULT_QUIT;
 				mApp->DoBackToMain();
 			}
+		}
+		if (mSpeedupButton && mSpeedupButton->IsMouseOver() && !mApp->GetDialog(Dialogs::DIALOG_GAME_OVER) && !mApp->GetDialog(Dialogs::DIALOG_LEVEL_COMPLETE) && mBoardFadeOutCounter < 0)
+		{
+			mSpeedupButton->mIsOver = false;
+			mSpeedupButton->mIsDown = false;
+			UpdateCursor();
+			mPrevSpeedMod = mSpeedMod;
+			mSpeedMod = mSpeedMod == SpeedMod::SPEED_FAST ? SpeedMod::SPEED_NORMAL : SpeedMod::SPEED_FAST;
+			mQECounter = 35;
+			mApp->SetFastMod(mSpeedMod == SpeedMod::SPEED_FAST);
 		}
 		else if(mStoreButton && mStoreButton->IsMouseOver())
 		{
@@ -6137,6 +6165,21 @@ void Board::Update()
 	Widget::Update();
 	MarkDirty();
 
+	if (mPaused && mSpeedMod == SpeedMod::SPEED_FAST)
+	{
+		mPrevSpeedMod = mSpeedMod;
+		mSpeedMod = SpeedMod::SPEED_NORMAL;
+		mQECounter = 35;
+		mApp->SetFastMod(false);
+	}
+	if (mSpeedupButton && !mSpeedupButton->mBtnNoDraw)
+	{
+		bool isFast = mSpeedMod == SpeedMod::SPEED_FAST;
+		mSpeedupButton->mButtonImage = isFast ? IMAGE_FASTBUTTON_HIGHLIGHT : IMAGE_FASTBUTTON;
+		mSpeedupButton->mOverImage = isFast ? IMAGE_FASTBUTTON_HIGHLIGHT : IMAGE_FASTBUTTON;
+		mSpeedupButton->mDownImage = isFast ? IMAGE_FASTBUTTON : IMAGE_FASTBUTTON_HIGHLIGHT;
+	}
+
 	mCutScene->Update();
 	UpdateMousePosition();
 	if (mApp->mGameMode == GameMode::GAMEMODE_CHALLENGE_ZEN_GARDEN)
@@ -6162,6 +6205,11 @@ void Board::Update()
 		mMenuButton->mDisabled = aDisabled;
 	}
 	mMenuButton->Update();
+	if (mSpeedupButton && !mSpeedupButton->mBtnNoDraw)
+	{
+		mSpeedupButton->mDisabled = aDisabled;
+		mSpeedupButton->Update();
+	}
 	if (mStoreButton)
 	{
 		mStoreButton->mDisabled = aDisabled;
@@ -7600,6 +7648,15 @@ void Board::DrawDebugObjectRects(Graphics* g)
 	}
 }
 
+float Board::GetSpeedValue(SpeedMod theMod)
+{
+	switch (theMod)
+	{
+	case SpeedMod::SPEED_FAST:      return 1.75f;
+	default:              return 1.0f;
+	}
+}
+
 //0x419EB0
 void Board::DrawFadeOut(Graphics* g)
 {
@@ -7642,6 +7699,13 @@ void Board::DrawTopRightUI(Graphics* g)
 	}
 	mMenuButton->Draw(g);
 	g->SetColorizeImages(false);
+
+	if (mSpeedupButton && !mSpeedupButton->mBtnNoDraw)
+	{
+		mSpeedupButton->mX = mMenuButton->mX;
+		mSpeedupButton->mY = mMenuButton->mY + mMenuButton->mHeight + 4;
+		mSpeedupButton->Draw(g);
+	}
 
 	if (mStoreButton && mApp->mGameMode != GameMode::GAMEMODE_CHALLENGE_LAST_STAND)
 	{

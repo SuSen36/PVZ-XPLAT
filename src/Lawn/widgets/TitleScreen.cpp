@@ -169,7 +169,7 @@ void TitleScreen::Draw(Graphics* g)
 	}
 
 	Reanimation* aReanim = nullptr;
-	while (mApp->mEffectSystem->mReanimationHolder->mReanimations.IterateNext(aReanim))
+    //while (mApp->mEffectSystem->mReanimationHolder->mReanimations.IterateNext(aReanim))
 	{
 		aReanim->Draw(g);
 	}

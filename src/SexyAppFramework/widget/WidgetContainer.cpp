@@ -564,7 +564,7 @@ void WidgetContainer::DrawAll(ModalFlags* theFlags, Graphics* g)
 	if ((mClip) && (theFlags->GetFlags() & WIDGETFLAGS_CLIP))
 		g->ClipRect(0, 0, mWidth, mHeight);
 
-	if (mWidgets.size() == 0)
+	if (mWidgets.empty())
 	{
 		if (theFlags->GetFlags() & WIDGETFLAGS_DRAW)
 			Draw(g);

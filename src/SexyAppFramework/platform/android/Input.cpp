@@ -11,7 +11,6 @@
 
 using namespace Sexy;
 
-// 拖拽转滚轮的状态变量（文件作用域）
 static float gLastTouchY = -1.0f;
 static float gLastTouchX = -1.0f;
 

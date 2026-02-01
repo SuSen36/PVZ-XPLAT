@@ -217,6 +217,7 @@ public:
 	virtual void					ShowResourceError(bool doExit = false);
 	void							ToggleSlowMo();
 	void							ToggleFastMo();
+	void						    SetFastMod(bool theEnable);
 	void							PlayFoley(FoleyType theFoleyType);
 	void							PlayFoleyPitch(FoleyType theFoleyType, float thePitch);
 	void							PlaySample(int theSoundNum);

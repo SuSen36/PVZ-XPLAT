@@ -103,6 +103,12 @@ struct BungeeDropGrid
 
 class Board : public Widget, public ButtonListener
 {
+	enum SpeedMod
+	{
+		SPEED_NORMAL,
+		SPEED_FAST
+	};
+
 public:
 	LawnApp*						mApp;													//+0x8C
 	DataArray<Zombie>				mZombies;												//+0x90
@@ -113,10 +119,13 @@ public:
 	DataArray<GridItem>				mGridItems;												//+0x11C
 	CursorObject*					mCursorObject;											//+0x138
 	CursorPreview*					mCursorPreview;											//+0x13C
-	WidgetMessage*					mAdvice;												//+0x140
-	SeedBank*						mSeedBank;												//+0x144
-	GameButton*						mMenuButton;											//+0x148
-	GameButton*						mStoreButton;											//+0x14C
+	WidgetMessage*				    mAdvice;									//+0x140
+	SeedBank*					    mSeedBank;									//+0x144
+	GameButton*					    mMenuButton;								//+0x148
+    GameButton*				        mSpeedupButton;
+	GameButton*
+
+    mStoreButton;								//+0x14C
 	bool							mIgnoreMouseUp;											//+0x150
 	bool                            mIgnoreMouseDown;                                       //+0x151
     bool                            mMouseDragging;                                         //+0x152
@@ -230,6 +239,10 @@ public:
 	int								mDiamondsCollected;										//+0x57A4 GOTY @Patoke: 0x57CC
 	int								mPottedPlantsCollected;									//+0x57A8
 	int								mChocolateCollected;									//+0x57AC
+
+	SpeedMod					    mPrevSpeedMod;
+	SpeedMod					    mSpeedMod;
+	int							    mQECounter;
 
 public:
 	Board(LawnApp* theApp);
@@ -385,6 +398,9 @@ public:
 	void							NextWaveComing();
 	bool							BungeeIsTargetingCell(int theGridX, int theGridY);
 	/*inline*/ int					PlantingPixelToGridX(int theX, int theY, SeedType theSeedType);
+
+	float						    GetSpeedValue(SpeedMod theMod);
+
 	/*inline*/ int					PlantingPixelToGridY(int theX, int theY, SeedType theSeedType);
 	Plant*							FindUmbrellaPlant(int theGridX, int theGridY);
 	void							SetTutorialState(TutorialState theTutorialState);

@@ -1578,7 +1578,8 @@ void LawnApp::UpdateFrames()
 	UpdatePlayTimeStats();
 #endif
 
-	int aUpdateCount = 1;
+    static double sSpeedAcc = 0.0;
+    int aUpdateCount = 1;
 	if (gSlowMo)
 	{
 		++gSlowMoCounter;
@@ -1593,7 +1594,14 @@ void LawnApp::UpdateFrames()
 	}
 	else if (gFastMo)
 	{
-		aUpdateCount = 20;
+		sSpeedAcc += 0.75;
+		int extra = (int)sSpeedAcc;
+		sSpeedAcc -= extra;
+		aUpdateCount += extra;
+	}
+	else
+	{
+		sSpeedAcc = 0.0;
 	}
 
 	for (int i = 0; i < aUpdateCount; i++)
@@ -1630,6 +1638,12 @@ void LawnApp::ToggleFastMo()
 	gFastMo = !gFastMo;
 }
 
+void LawnApp::SetFastMod(bool theEnable)
+{
+	gSlowMo = false;
+	gFastMo = theEnable;
+}
+
 //0x452740
 void LawnApp::LoadGroup(const char* theGroupName, int theGroupAveMsToLoad)
 {
@@ -1647,7 +1661,6 @@ void LawnApp::LoadGroup(const char* theGroupName, int theGroupAveMsToLoad)
 		ShowResourceError();
 		mLoadingFailed = true;
 	}
-
 }
 
 //0x4528E0
@@ -1678,7 +1691,7 @@ void LawnApp::LoadingThreadProc()
 	TodHesitationTrace("loading thread start");
 
 	LoadGroup("LoadingImages", 9);
-	LoadGroup("LoadingFonts", 54);
+	//LoadGroup("LoadingFonts", 54);
 	if (mLoadingFailed || mShutdown || mCloseRequest)
 		return;
 
