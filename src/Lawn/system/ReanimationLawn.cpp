@@ -100,7 +100,7 @@ MemoryImage* ReanimatorCache::MakeBlankMemoryImage(int theWidth, int theHeight)
 	MemoryImage* aImage = new MemoryImage();
 
 	int aBitsCount = theWidth * theHeight;
-	aImage->mBits = new uint32_t[aBitsCount + 1];
+	aImage->mBits = new uint[aBitsCount + 1];
 	aImage->mWidth = theWidth;
 	aImage->mHeight = theHeight;
 	aImage->mHasTrans = true;
@@ -254,29 +254,29 @@ MemoryImage* ReanimatorCache::MakeCachedPlantFrame(SeedType theSeedType, DrawVar
 		DrawReanimatorFrame(&aReferenceGraphics, -aOffsetX, -aOffsetY, aPlantDef.mReanimationType, "anim_idle", DrawVariation::VARIATION_NORMAL);
 		
 		// 比较两个图像，只修复有差异的像素（花瓣部分）
-		uint32_t* aBits = aMemoryImage->GetBits();
-		uint32_t* aRefBits = aReferenceImage->GetBits();
+		uint* aBits = aMemoryImage->GetBits();
+		uint* aRefBits = aReferenceImage->GetBits();
 		int aPixelCount = aWidth * aHeight;
 		for (int i = 0; i < aPixelCount; i++)
 		{
-			uint32_t pixel = aBits[i];
-			uint32_t refPixel = aRefBits[i];
+			uint pixel = aBits[i];
+			uint refPixel = aRefBits[i];
 			
 			// 只处理有显著差异的像素（这些应该是花瓣部分）
 			// 提取 Alpha 通道，只处理非透明像素
-			uint32_t a = (pixel >> 24) & 0xFF;
-			uint32_t refA = (refPixel >> 24) & 0xFF;
+			uint a = (pixel >> 24) & 0xFF;
+			uint refA = (refPixel >> 24) & 0xFF;
 			
 			// 如果 Alpha 通道不同，或者像素值有明显差异（说明被 mTrackColor 修改过），则修复
 			if (a > 0 && (pixel != refPixel))
 			{
 				// 检查颜色差异是否显著（避免因抗锯齿导致的小差异）
-				uint32_t r = (pixel >> 0) & 0xFF;
-				uint32_t g = (pixel >> 8) & 0xFF;
-				uint32_t b = (pixel >> 16) & 0xFF;
-				uint32_t refR = (refPixel >> 0) & 0xFF;
-				uint32_t refG = (refPixel >> 8) & 0xFF;
-				uint32_t refB = (refPixel >> 16) & 0xFF;
+				uint r = (pixel >> 0) & 0xFF;
+				uint g = (pixel >> 8) & 0xFF;
+				uint b = (pixel >> 16) & 0xFF;
+				uint refR = (refPixel >> 0) & 0xFF;
+				uint refG = (refPixel >> 8) & 0xFF;
+				uint refB = (refPixel >> 16) & 0xFF;
 				
 				// 如果颜色差异超过阈值（说明被 mTrackColor 修改过），则修复
 				int rDiff = (r > refR) ? (r - refR) : (refR - r);

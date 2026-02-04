@@ -216,6 +216,8 @@ public:
 	float							mMinFPS;												//+0x5788
 	int								mPreloadTime;											//+0x578C
 	intptr_t						mGameID;												//+0x5790
+	int							mLocalPlayerIndex;
+	unsigned int					mSyncVersion;
 	int								mGravesCleared;											//+0x5794
 	int								mPlantsEaten;											//+0x5798
 	int								mPlantsShoveled;										//+0x579C

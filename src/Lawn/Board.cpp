@@ -1,4 +1,4 @@
-﻿#include <ctime>
+#include <ctime>
 #include <SDL.h>
 #include "ZenGarden.h"
 #include "Lawn/system/Music.h"
@@ -44,6 +44,7 @@
 #include "SexyAppFramework/widget/WidgetManager.h"
 #include "SexyAppFramework/sound/SoundInstance.h"
 #include "Lawn/widgets/AchievementsScreen.h"
+#include "Lawn/system/GameNetworkManager.h"
 
 //#define SEXY_MEMTRACE
 //#include "../SexyAppFramework/memmgr.h"
@@ -135,6 +136,8 @@ Board::Board(LawnApp* theApp)
 	mIntervalDrawCountStart = 0;
 	mPreloadTime = 0;
 	mGameID = time(0);
+	mLocalPlayerIndex = -1;
+	mSyncVersion = 0;
 	mMinFPS = 1000.0f;
 	mGravesCleared = 0;
 	mPlantsEaten = 0;
@@ -6054,6 +6057,8 @@ void Board::SetTutorialState(TutorialState theTutorialState)
 //0x415920
 void Board::UpdateGame()
 {
+    GameNetworkManager::GetInstance()->ApplyRemoteGameChanges(this);
+
 	UpdateGameObjects();
 	if (StageHasFog() && mFogBlownCountDown > 0)
 	{
@@ -6112,6 +6117,7 @@ void Board::UpdateGame()
 	}
 
 	UpdateProgressMeter();
+	GameNetworkManager::GetInstance()->UpdateGameState(this);
 }
 
 //0x415D40

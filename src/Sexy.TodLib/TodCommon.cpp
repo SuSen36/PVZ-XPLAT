@@ -792,7 +792,7 @@ void TodDrawImageCenterScaledF(Graphics* g, Image* theImage, float thePosX, floa
 }
 
 //0x512AC0
-uint32_t AverageNearByPixels(MemoryImage* theImage, uint32_t* thePixel, int x, int y)
+uint AverageNearByPixels(MemoryImage* theImage, uint* thePixel, int x, int y)
 {
 	int aRed = 0;
 	int aGreen = 0;
@@ -810,7 +810,7 @@ uint32_t AverageNearByPixels(MemoryImage* theImage, uint32_t* thePixel, int x, i
 		{
 			if ((x != 0 || j != -1) && (x != theImage->mWidth - 1 || j != 1) && (y != 0 || i != -1) && (y != theImage->mHeight - 1 || i != 1))
 			{
-				uint32_t aPixel = *(thePixel + i * theImage->mWidth + j);
+				uint aPixel = *(thePixel + i * theImage->mWidth + j);
 				if (aPixel & 0xFF000000UL)  // 如果不是透明像素
 				{
 					aRed += (aPixel >> 16) & 0x000000FFUL;
@@ -845,7 +845,7 @@ void FixPixelsOnAlphaEdgeForBlending(Image* theImage)
 	if (!aImage->mHasTrans)
 		return;
 
-	uint32_t* aBitsPtr = aImage->mBits;
+	uint* aBitsPtr = aImage->mBits;
 	for (int y = 0; y < theImage->mHeight; y++)
 	{
 		for (int x = 0; x < theImage->mWidth; x++)

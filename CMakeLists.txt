@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2.2)
+cmake_minimum_required(VERSION 3.5)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_STANDARD 17)  # 设置 C++ 标准为 C++17
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -73,6 +73,7 @@ set(SDL_SHARED ON CACHE BOOL "Build shared library of SDL" FORCE)
 # For Emscripten, SDL is usually handled by the toolchain itself
 if(NOT EMSCRIPTEN)
     add_subdirectory(Libs/SDL)
+    add_subdirectory(Libs/SDL_net)
 endif()
 
 include(FetchContent)
@@ -161,6 +162,7 @@ target_compile_definitions(xp-plants-vs-zombies PRIVATE $<$<CONFIG:Debug>:_DEBUG
 target_include_directories(xp-plants-vs-zombies PRIVATE
 	${PROJECT_SOURCE_DIR}/src
 	${PROJECT_SOURCE_DIR}/Libs/SDL/include
+	${PROJECT_SOURCE_DIR}/Libs/SDL_net/include
 	${PLAT_INCLUDES}
 	${bass_SOURCE_DIR}/${BASS_INCLUDE}
 )
@@ -169,14 +171,17 @@ target_include_directories(xp-plants-vs-zombies PRIVATE
 
 
 if (NOT EMSCRIPTEN)
-    target_link_libraries(xp-plants-vs-zombies SDL2::SDL2 bass)
+    target_link_libraries(xp-plants-vs-zombies SDL2 SDL2_net bass)
 else()
     target_link_libraries(xp-plants-vs-zombies SDL2) # Emscripten provides its own SDL2
 endif()
 
 if (WIN32)
+    file(COPY ${CMAKE_BINARY_DIR}/Libs/SDL/SDL2d.dll DESTINATION ${CMAKE_BINARY_DIR})
+	file(COPY ${CMAKE_BINARY_DIR}/Libs/SDL_net/SDL2_netd.dll DESTINATION ${CMAKE_BINARY_DIR})
+
 	target_link_options(xp-plants-vs-zombies PRIVATE -static -static-libgcc -static-libstdc++)
-	target_link_libraries(xp-plants-vs-zombies opengl32 ws2_32 ddraw dinput8 dxguid dxerr8 user32 gdi32 winmm imm32)
+	target_link_libraries(xp-plants-vs-zombies opengl32)
 	target_compile_definitions(xp-plants-vs-zombies PRIVATE WINDOWS)
 
 	if(NOT CONSOLE)

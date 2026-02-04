@@ -96,7 +96,6 @@ public:
 	int								mCrazyDaveMessageIndex;							//+0x850
 	SexyString						mCrazyDaveMessageText;							//+0x854
 	int								mAppRandSeed;									//+0x870
-	//HICON							mBigArrowCursor;								//+0x874
 	intptr_t						mSessionID;										//+0x87C
 	int								mPlayTimeActiveSession;							//+0x880
 	int								mPlayTimeInactiveSession;						//+0x884
@@ -180,11 +179,7 @@ public:
 	void							DoBackToMain(bool skipAnimation);
 	void							DoConfirmBackToMain();
 	void							DoNewOptions(bool theFromGameSelector);
-	void							DoRegister();
-	void							DoRegisterError();
-	bool							CanDoRegisterDialog();
 	/*inline*/ bool					WriteCurrentUserConfig();
-	void							DoNeedRegisterDialog();
 	void							DoContinueDialog();
 	void							DoPauseDialog();
 	void							FinishModelessDialogs();
@@ -199,7 +194,6 @@ public:
 	virtual void					ModalClose();
 	virtual void					PreDisplayHook();
 	virtual bool					ChangeDirHook(const char* theIntendedPath);
-	virtual bool					NeedRegister();
 	virtual void					UpdateRegisterInfo();
 	virtual void					ButtonPress(int theId);
 	virtual void					ButtonDepress(int theId);
@@ -246,7 +240,6 @@ public:
 	bool							HasSeedType(SeedType theSeedType);
 	/*inline*/ bool					SeedTypeAvailable(SeedType theSeedType);
 	/*inline*/ void					EndLevel();
-	inline bool						IsIceDemo() { return false; }
 	/*inline*/ bool					IsShovelLevel();
 	/*inline*/ bool					IsWallnutBowlingLevel();
 	/*inline*/ bool					IsMiniBossLevel();
@@ -287,7 +280,6 @@ public:
 	/*inline*/ bool					EarnedGoldTrophy();
 	inline bool						IsRegistered() { return false; }
 	inline bool						IsExpired() { return false; }
-	inline bool						IsDRMConnected() { return false; }
 	/*inline*/ bool					IsScaryPotterLevel();
 	static /*inline*/ bool			IsEndlessScaryPotter(GameMode theGameMode);
 	/*inline*/ bool					IsSquirrelLevel();

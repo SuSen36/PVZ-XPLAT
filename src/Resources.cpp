@@ -3234,7 +3234,7 @@ Sexy::ResourceId Sexy::GetIdBySound(intptr_t theSound)
 //0x47FBC0
 Sexy::ResourceId Sexy::GetIdByVariable(void* theVariable)
 {
-	typedef std::map<int, int> MyMap;
+	typedef std::map<intptr_t, int> MyMap;
 	static MyMap aMap;
 
 	if (gNeedRecalcVariableToIdMap)
@@ -3242,24 +3242,26 @@ Sexy::ResourceId Sexy::GetIdByVariable(void* theVariable)
 		gNeedRecalcVariableToIdMap = false;
 		aMap.clear();
 		for (int i = 0; i < (int)ResourceId::RESOURCE_ID_MAX; i++)
-			aMap[*(int*)gResources[i]] = i;
+		{
+			if (gResources[i] != nullptr)
+				aMap[(intptr_t)gResources[i]] = i;
+		}
 	}
 
-	MyMap::iterator anIter = aMap.find((intptr_t)theVariable);
-	if (anIter == aMap.end())
+	if (theVariable == nullptr)
 		return ResourceId::RESOURCE_ID_MAX;
-	else
+
+	// 首先尝试直接查找传入的指针值
+	MyMap::iterator anIter = aMap.find((intptr_t)theVariable);
+	if (anIter != aMap.end())
 		return (ResourceId)anIter->second;
+
+	// 如果没找到，检查是否是资源指针（需要解引用变量地址）
+	for (int i = 0; i < (int)ResourceId::RESOURCE_ID_MAX; i++)
+	{
+		if (gResources[i] != nullptr && *(void**)gResources[i] == theVariable)
+			return (ResourceId)i;
+	}
+
+	return ResourceId::RESOURCE_ID_MAX;
 }
-/*
-	*aMap.end() => __asm 
-	{ 
-		mov eax,[aMap+04]
-	}
-	anIter == aMap.end() => __asm
-	{ 
-		mov edi,[aMap+04]  ; edi = *aMap.end()
-		mov ebx,[anIter]   ; ebx = *anIter
-		cmp ebx,edi        ; this 与 other 的 “==”操作，比较 *this 与 *other 是否相同
-	}
-*/

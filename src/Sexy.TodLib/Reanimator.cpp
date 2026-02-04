@@ -802,6 +802,48 @@ Image* Reanimation::GetCurrentTrackImage(const char* theTrackName)
 	return aImage;
 }
 
+// 不需要轨道名的版本 - 获取复合轨道图像
+Image* Reanimation::GetCurrentTrackImage()
+{
+	if (mDead)
+		return nullptr;
+
+    //TODO:修改为自动计算大小
+	int compositeWidth = 100;
+	int compositeHeight = 100;
+	
+	// 创建复合图像
+	MemoryImage* compositeImage = new MemoryImage();
+	compositeImage->mWidth = compositeWidth;
+	compositeImage->mHeight = compositeHeight;
+	int numPixels = compositeWidth * compositeHeight;
+	compositeImage->mBits = new uint[numPixels + 1];
+	compositeImage->mHasTrans = true;
+	compositeImage->mHasAlpha = true;
+	memset(compositeImage->mBits, 0, numPixels * 4);
+	compositeImage->mBits[numPixels] = Sexy::MEMORYCHECK_ID;
+
+	Graphics compositeGraphics(compositeImage);
+
+	TodTriangleGroup aTriangleGroup;
+	for (int aTrackIndex = 0; aTrackIndex < mDefinition->mTracks.count; aTrackIndex++)
+	{
+		ReanimatorTrackInstance* aTrackInstance = &mTrackInstances[aTrackIndex];
+		if (aTrackInstance->mRenderGroup == RENDER_GROUP_NORMAL)
+		{
+			bool aTrackDrawn = DrawTrack(&compositeGraphics, aTrackIndex, RENDER_GROUP_NORMAL, &aTriangleGroup);
+			if (aTrackInstance->mAttachmentID != AttachmentID::ATTACHMENTID_NULL)
+			{
+				aTriangleGroup.DrawGroup(&compositeGraphics);
+				AttachmentDraw(aTrackInstance->mAttachmentID, &compositeGraphics, !aTrackDrawn);
+			}
+		}
+	}
+	aTriangleGroup.DrawGroup(&compositeGraphics);
+	
+	return compositeImage;
+}
+
 //0x472C00
 void Reanimation::GetTrackMatrix(int theTrackIndex, SexyTransform2D& theMatrix)
 {

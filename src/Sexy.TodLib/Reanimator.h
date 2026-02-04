@@ -240,6 +240,7 @@ public:
     bool                            ShouldTriggerTimedEvent(float theEventTime);
 //  void                            TodTriangleGroupDraw(Graphics* g, TodTriangleGroup* theTriangleGroup) { ; }
     Image*                          GetCurrentTrackImage(const char* theTrackName);
+    Image*                          GetCurrentTrackImage();
     AttachEffect*                   AttachParticleToTrack(const char* theTrackName, TodParticleSystem* theParticleSystem, float thePosX, float thePosY);
     void                            GetTrackBasePoseMatrix(int theTrackIndex, SexyTransform2D& theBasePosMatrix);
     bool                            IsTrackShowing(const char* theTrackName);

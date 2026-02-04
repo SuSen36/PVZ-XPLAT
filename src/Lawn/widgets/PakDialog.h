@@ -2,28 +2,29 @@
 #define __PAKDIALOG_H__
 
 #include "LawnDialog.h"
-#include "SexyAppFramework/widget/ListListener.h"
 #include "SexyAppFramework/widget/EditListener.h"
+#include "SexyAppFramework/widget/CheckboxListener.h"
 
 namespace Sexy
 {
-	class ListWidget;
-};
+	class EditWidget;
+	class Checkbox;
+}
 
-class PakDialog : public LawnDialog, public ListListener, public EditListener
+class PakDialog : public LawnDialog, public EditListener, public CheckboxListener
 {
 protected:
 	enum
 	{
-		PakDialog_MoveUpPak,
-		PakDialog_MoveDownPak
+		PakDialog_IpEdit = 1,
+		PakDialog_PortEdit = 2,
+		PakDialog_HostCheck = 3
 	};
 
 public:
-	ListWidget*			mPakList;				//+0x174
-	DialogButton*		mMoveUpButton;			//+0x178
-	DialogButton*		mMoveDownButton;			//+0x17C
-	int					mNumPaks;				//+0x180
+	EditWidget*			mIpEditWidget;			//+0x174
+	EditWidget*			mPortEditWidget;			//+0x178
+	Checkbox*			mHostCheckbox;
 
 public:
     PakDialog(LawnApp* theApp);
@@ -33,18 +34,17 @@ public:
 	virtual int			GetPreferredHeight(int theWidth);
 	virtual void		AddedToManager(WidgetManager* theWidgetManager);
 	virtual void		RemovedFromManager(WidgetManager* theWidgetManager);
-	virtual void 		ListClicked(int theId, int theIdx, int theClickCount);
-	virtual void 		ListClosed(int){}
-	virtual void 		ListHiliteChanged(int, int, int){}
 	virtual void		ButtonDepress(int theId);
 	virtual void		EditWidgetText(int theId, const SexyString& theString);
+	virtual void		CheckboxChecked(int theId, bool checked);
 
 	virtual bool		AllowChar(int theId, SexyChar theChar);
 	virtual void		Draw(Graphics* g);
-    void                MovePakUp();
-    void                MovePakDown();
-    void                SavePakList();
-	SexyString			GetSelName();
+	SexyString			GetIp();
+	int					GetPort();
+
+private:
+	void			UpdateHostMode(bool isHost);
 
 
 };

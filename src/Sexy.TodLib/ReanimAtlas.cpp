@@ -37,7 +37,7 @@ MemoryImage* ReanimAtlasMakeBlankMemoryImage(int theWidth, int theHeight)
 	MemoryImage* aImage = new MemoryImage();
 
 	int aBitsCount = theWidth * theHeight;
-	aImage->mBits = new uint32_t[aBitsCount + 1];
+	aImage->mBits = new uint[aBitsCount + 1];
 	aImage->mWidth = theWidth;
 	aImage->mHeight = theHeight;
 	aImage->mHasTrans = true;

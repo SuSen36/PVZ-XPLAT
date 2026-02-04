@@ -203,11 +203,6 @@ LawnApp::~LawnApp()
 	delete mLastLevelStats;
 
 	mResourceManager->DeleteResources("");
-	/*
-#ifdef _DEBUG
-	BetaSubmit(true);
-#endif
-	*/
 }
 
 //0x44F200
@@ -812,12 +807,7 @@ void LawnApp::FinishPakDialog(bool isYes)
     PakDialog* aPakDialog = (PakDialog*)GetDialog(Dialogs::DIALOG_PAKDIALOG);
     if (aPakDialog)
     {
-        if (isYes)
-        {
-            // 保存 PAK 列表
-
-        }
-        aPakDialog->SavePakList(); // 调用保存方法
+        (void)isYes;
         KillDialog(Dialogs::DIALOG_PAKDIALOG);
     }
 }
@@ -1515,10 +1505,10 @@ void LawnApp::CheckForGameEnd()
 
 void LawnApp::UpdatePlayTimeStats()
 {
-	static int aLastTime = -1;
+	static uint aLastTime = -1;
 
-	int aTickCount = SDL_GetTicks();
-	int aSession = (aTickCount - aLastTime) / 1000;
+	uint aTickCount = SDL_GetTicks();
+    uint aSession = (aTickCount - aLastTime) / 1000;
 
 	if (mPlayerInfo && !mPlayerInfo->mHasUsedCheatKeys && !mDebugKeysEnabled && mTodCheatKeys)
 	{
@@ -1817,7 +1807,6 @@ void LawnApp::ButtonDepress(int theId)
 			return;
 
 		case Dialogs::DIALOG_PREGAME_NAG:
-			DoRegister();
 			return;
 
 		case Dialogs::DIALOG_LOAD_GAME:
@@ -1838,7 +1827,6 @@ void LawnApp::ButtonDepress(int theId)
 
 		case Dialogs::DIALOG_NAG:
 			KillDialog(Dialogs::DIALOG_NAG);
-			DoRegister();
 			return;
 
 		case Dialogs::DIALOG_INFO:
@@ -3311,34 +3299,9 @@ void LawnApp::DoHighScoreDialog()
 
 }
 
-void LawnApp::DoRegister()
-{
-
-}
-
-void LawnApp::DoRegisterError()
-{
-
-}
-
-bool LawnApp::CanDoRegisterDialog()
-{
-	return false;
-}
-
-void LawnApp::DoNeedRegisterDialog()
-{
-
-}
-
 void LawnApp::FinishModelessDialogs()
 {
 
-}
-
-bool LawnApp::NeedRegister()
-{
-	return false;
 }
 
 void LawnApp::UpdateRegisterInfo()

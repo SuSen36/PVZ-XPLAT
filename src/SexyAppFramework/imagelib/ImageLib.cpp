@@ -36,7 +36,7 @@ int	Image::GetHeight()
 	return mHeight;
 }
 
-uint32_t* Image::GetBits()
+uint* Image::GetBits()
 {
 	return mBits;
 }
@@ -104,9 +104,9 @@ Image* GetPNGImage(const std::string& theFileName) {
     png_set_bgr(png_ptr);
 
     // 分配内存并读取图像
-    uint32_t* aBits = new uint32_t[width * height];
+    uint* aBits = new uint[width * height];
     png_bytep row_pointers[height];
-    for (uint32_t i = 0; i < height; i++) {
+    for (uint i = 0; i < height; i++) {
         row_pointers[i] = (png_bytep)(aBits + i * width);
     }
     png_read_image(png_ptr, row_pointers);
@@ -150,9 +150,9 @@ Image* GetTGAImage(const std::string& theFileName) {
     Image* anImage = new Image();
     anImage->mWidth = anImageWidth;
     anImage->mHeight = anImageHeight;
-    anImage->mBits = new uint32_t[anImageWidth * anImageHeight];
+    anImage->mBits = new uint[anImageWidth * anImageHeight];
 
-    p_fread(anImage->mBits, sizeof(uint32_t), anImage->mWidth * anImage->mHeight, aTGAFile);
+    p_fread(anImage->mBits, sizeof(uint), anImage->mWidth * anImage->mHeight, aTGAFile);
     p_fclose(aTGAFile);
 
     return anImage;
@@ -362,7 +362,7 @@ Image* GetGIFImage(const std::string& theFileName)
 		p_fread(&flag, sizeof(char), 1, fp);  // 读取帧标志的压缩字节
 
 		colors = !BitSet(flag, 0x80) ? global_colors : 1 << ((flag & 0x07) + 1);  // 判断使用全局颜色列表或使用局部颜色列表，并取得列表大小
-		uint32_t* colortable = new uint32_t[colors];  // 申请颜色列表
+		uint* colortable = new uint[colors];  // 申请颜色列表
 
 		interlaced = BitSet(flag, 0x40);  // 当前帧图像数据存储方式，为 1 表示交织顺序存储，0 表示顺序存储
 
@@ -529,7 +529,7 @@ Image* GetGIFImage(const std::string& theFileName)
 		pass = 0;
 		top_stack = pixel_stack;
 
-		uint32_t* aBits = new uint32_t[width * height];
+		uint* aBits = new uint[width * height];
 
 		unsigned char* c = NULL;
 
@@ -540,7 +540,7 @@ Image* GetGIFImage(const std::string& theFileName)
 			//break;
 			//indexes=GetIndexes(image);
 
-			uint32_t* q = aBits + offset * width;
+			uint* q = aBits + offset * width;
 
 
 
@@ -788,7 +788,7 @@ bool ImageLib::WriteJPEGImage(const std::string& theFileName, Image* theImage)
 
 	unsigned char* aTempBuffer = new unsigned char[row_stride];
 
-	uint32_t* aSrcPtr = theImage->mBits;
+	uint* aSrcPtr = theImage->mBits;
 
 	for (int aRow = 0; aRow < theImage->mHeight; aRow++)
 	{
@@ -796,7 +796,7 @@ bool ImageLib::WriteJPEGImage(const std::string& theFileName, Image* theImage)
 
 		for (int aCol = 0; aCol < theImage->mWidth; aCol++)
 		{
-			uint32_t src = *(aSrcPtr++);
+			uint src = *(aSrcPtr++);
 
 			*aDest++ = (src >> 16) & 0xFF;
 			*aDest++ = (src >>  8) & 0xFF;
@@ -1010,7 +1010,7 @@ bool ImageLib::WriteBMPImage(const std::string& theFileName, Image* theImage)
 
 	fwrite(&aFileHeader,sizeof(aFileHeader),1,aFile);
 	fwrite(&aHeader,sizeof(aHeader),1,aFile);
-	uint32_t *aRow = theImage->mBits + (theImage->mHeight-1)*theImage->mWidth;
+	uint *aRow = theImage->mBits + (theImage->mHeight-1)*theImage->mWidth;
 	int aRowSize = theImage->mWidth*4;
 	(void)aRowSize; // Unused
 	for (int i=0; i<theImage->mHeight; i++, aRow-=theImage->mWidth)
@@ -1150,8 +1150,8 @@ Image* GetJPEGImage(const std::string& theFileName)
 	unsigned char** buffer = (*cinfo.mem->alloc_sarray)
 		((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
 
-	uint32_t* aBits = new uint32_t[cinfo.output_width*cinfo.output_height];
-	uint32_t* q = aBits;
+	uint* aBits = new uint[cinfo.output_width*cinfo.output_height];
+	uint* q = aBits;
 
 	if (cinfo.output_components==1)
 	{
@@ -1200,7 +1200,6 @@ Image* GetJPEGImage(const std::string& theFileName)
 
 int ImageLib::gAlphaComposeColor = 0xFFFFFF;
 bool ImageLib::gAutoLoadAlpha = true;
-bool ImageLib::gIgnoreJPEG2000Alpha = true;
 
 Image* ImageLib::GetImage(const std::string& theFilename, bool lookForAlphaImage)
 {
@@ -1264,8 +1263,8 @@ Image* ImageLib::GetImage(const std::string& theFilename, bool lookForAlphaImage
 			if ((anImage->mWidth == anAlphaImage->mWidth) &&
 				(anImage->mHeight == anAlphaImage->mHeight))
 			{
-				uint32_t* aBits1 = anImage->mBits;
-				uint32_t* aBits2 = anAlphaImage->mBits;
+				uint* aBits1 = anImage->mBits;
+				uint* aBits2 = anAlphaImage->mBits;
 				int aSize = anImage->mWidth*anImage->mHeight;
 
 				for (int i = 0; i < aSize; i++)
@@ -1282,7 +1281,7 @@ Image* ImageLib::GetImage(const std::string& theFilename, bool lookForAlphaImage
 		{
 			anImage = anAlphaImage;
 
-			uint32_t* aBits1 = anImage->mBits;
+			uint* aBits1 = anImage->mBits;
 
 			int aSize = anImage->mWidth*anImage->mHeight;
 			for (int i = 0; i < aSize; i++)
@@ -1296,7 +1295,7 @@ Image* ImageLib::GetImage(const std::string& theFilename, bool lookForAlphaImage
 			const int aColor = gAlphaComposeColor;
 			anImage = anAlphaImage;
 
-			uint32_t* aBits1 = anImage->mBits;
+			uint* aBits1 = anImage->mBits;
 
 			int aSize = anImage->mWidth*anImage->mHeight;
 			for (int i = 0; i < aSize; i++)

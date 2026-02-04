@@ -17,8 +17,10 @@
 #include "Sexy.TodLib/Attachment.h"
 #include "Sexy.TodLib/TodParticle.h"
 #include "SexyAppFramework/Common.h"
-
+#include "Lawn/system/ReanimationLawn.h"
 #include <climits>
+#include "SexyAppFramework/graphics/MemoryImage.h"
+#include "SexyAppFramework/graphics/Graphics.h"
 
 ZombieDefinition gZombieDefs[NUM_ZOMBIE_TYPES] = {  //0x69DA80
     { ZOMBIE_NORMAL,            REANIM_ZOMBIE,              1,      1,      1,      4000,   __S("ZOMBIE") },
@@ -2332,7 +2334,6 @@ void Zombie::UpdateZombiePeaHead()
 
         float aOriginX = mPosX + aTransform.mTransX - 9.0f;
         float aOriginY = mPosY + aTransform.mTransY + 6.0f - mAltitude;
-#ifdef DO_FIX_BUGS
         if (mMindControlled)  // 魅惑修复
         {
             aOriginX += 90.0f * mScaleZombie;
@@ -2344,11 +2345,6 @@ void Zombie::UpdateZombiePeaHead()
             Projectile* aProjectile = mBoard->AddProjectile(aOriginX, aOriginY, mRenderOrder, mRow, ProjectileType::PROJECTILE_ZOMBIE_PEA);
             aProjectile->mMotionType = ProjectileMotion::MOTION_BACKWARDS;
         }
-#else
-        Projectile* aProjectile = mBoard->AddProjectile(aOriginX, aOriginY, mRenderOrder, mRow, ProjectileType::PROJECTILE_ZOMBIE_PEA);
-        aProjectile->mMotionType = ProjectileMotion::MOTION_BACKWARDS;
-#endif
-
         mPhaseCounter = 150;
     }
 }
@@ -2449,7 +2445,6 @@ void Zombie::UpdateZombieGatlingHead()
 
         float aOriginX = mPosX + aTransform.mTransX - 9.0f;
         float aOriginY = mPosY + aTransform.mTransY + 6.0f;
-#ifdef DO_FIX_BUGS
         if (mMindControlled)  // 魅惑修复
         {
             aOriginX += 90.0f * mScaleZombie;
@@ -2461,10 +2456,6 @@ void Zombie::UpdateZombieGatlingHead()
             Projectile* aProjectile = mBoard->AddProjectile(aOriginX, aOriginY, mRenderOrder, mRow, ProjectileType::PROJECTILE_ZOMBIE_PEA);
             aProjectile->mMotionType = ProjectileMotion::MOTION_BACKWARDS;
         }
-#else
-        Projectile* aProjectile = mBoard->AddProjectile(aOriginX, aOriginY, mRenderOrder, mRow, ProjectileType::PROJECTILE_ZOMBIE_PEA);
-        aProjectile->mMotionType = ProjectileMotion::MOTION_BACKWARDS;
-#endif
     }
     else if (mPhaseCounter == 0)
     {
@@ -3481,6 +3472,23 @@ void Zombie::DropHead(unsigned int theDamageFlags)
 
     if (Zombie::IsZombotany(mZombieType))
     {
+        // 生成掉头粒子
+        float aPosX, aPosY;
+        GetTrackPosition("anim_head1", aPosX, aPosY);
+
+        ParticleEffect aEffect = ParticleEffect::PARTICLE_ZOMBIE_HEAD;
+        TodParticleSystem* aParticle = mApp->AddTodParticle(aPosX, aPosY, mRenderOrder + 1, aEffect);
+
+        if (aParticle)
+        {
+            Reanimation* aHeadReanim = mApp->ReanimationGet(mSpecialHeadReanimID);
+            if (aHeadReanim) {
+                aParticle->OverrideImage(nullptr, aHeadReanim->GetCurrentTrackImage());
+            }
+            OverrideParticleColor(aParticle);
+            OverrideParticleScale(aParticle);
+        }
+        // 移除特殊头部附件
         mApp->ReanimationGet(mSpecialHeadReanimID)->ReanimationDie();
         mSpecialHeadReanimID = ReanimationID::REANIMATIONID_NULL;
         return;

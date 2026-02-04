@@ -127,7 +127,7 @@ int Color::operator[](int theIdx) const
 	}
 }
 
-uint32_t Color::ToInt() const
+uint Color::ToInt() const
 {
 	return (mAlpha << 24) | (mRed << 0) | (mGreen << 8) | (mBlue << 16);
 }

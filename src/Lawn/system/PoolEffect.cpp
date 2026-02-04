@@ -1,4 +1,4 @@
-﻿#include "PoolEffect.h"
+#include "PoolEffect.h"
 #include "LawnApp.h"
 #include "../../Resources.h"
 #include "GameConstants.h"
@@ -18,7 +18,7 @@ void PoolEffect::PoolEffectInitialize()
     mCausticImage = new MemoryImage(gSexyAppBase);
     mCausticImage->mWidth = CAUSTIC_IMAGE_WIDTH;
     mCausticImage->mHeight = CAUSTIC_IMAGE_HEIGHT;
-    mCausticImage->mBits = new uint32_t[CAUSTIC_IMAGE_WIDTH * CAUSTIC_IMAGE_HEIGHT + 1];
+    mCausticImage->mBits = new uint[CAUSTIC_IMAGE_WIDTH * CAUSTIC_IMAGE_HEIGHT + 1];
     mCausticImage->mHasTrans = true;
     mCausticImage->mHasAlpha = true;
     memset(mCausticImage->mBits, 0xFF, CAUSTIC_IMAGE_WIDTH * CAUSTIC_IMAGE_HEIGHT * 4);
@@ -75,7 +75,7 @@ void PoolEffect::UpdateWaterEffect()
 
         for (int x = 0; x < CAUSTIC_IMAGE_WIDTH; x++)
         {
-            uint32_t* pix = &mCausticImage->mBits[idx];
+            uint* pix = &mCausticImage->mBits[idx];
 
             int timeU = x << 17;
             int timePool0 = mPoolCounter << 16;

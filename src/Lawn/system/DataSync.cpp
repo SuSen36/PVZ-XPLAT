@@ -36,7 +36,7 @@ bool DataReader::OpenFile(const std::string& theFileName)
 	return mFile;
 }
 
-void DataReader::OpenMemory(const void* theData, uint32_t theDataLen, bool takeOwnership)
+void DataReader::OpenMemory(const void* theData, uint theDataLen, bool takeOwnership)
 {
 	if (mFile)
 	{
@@ -63,7 +63,7 @@ void DataReader::Close()
 }
 
 //0x441BE0
-void DataReader::ReadBytes(void* theMem, uint32_t theNumBytes)
+void DataReader::ReadBytes(void* theMem, uint theNumBytes)
 {
 	if (mData)
 	{
@@ -82,7 +82,7 @@ void DataReader::ReadBytes(void* theMem, uint32_t theNumBytes)
 	}
 }
 
-void DataReader::Rewind(uint32_t theNumBytes)
+void DataReader::Rewind(uint theNumBytes)
 {
 	theNumBytes = std::min(theNumBytes, mDataPos);
 	mDataPos -= theNumBytes;
@@ -96,7 +96,7 @@ unsigned short DataReader::ReadShort()
 	return aShort;
 }
 
-uint32_t DataReader::ReadLong()
+uint DataReader::ReadLong()
 {
 	unsigned int aLong;
 	ReadBytes(&aLong, sizeof(aLong));
@@ -177,7 +177,7 @@ void DataSync::Reset()
 	ResetPointerTable();
 }
 
-void DataSync::SyncBytes(void* theData, uint32_t theDataLen)
+void DataSync::SyncBytes(void* theData, uint theDataLen)
 {
 	if (mReader)
 	{
