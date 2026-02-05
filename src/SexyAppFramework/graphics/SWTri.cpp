@@ -5,19 +5,7 @@
 using namespace Sexy;
 
 static SWHelper::XYZStruct	vertexReservoir[64];
-static unsigned int			vertexReservoirUsed = 0;
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static int FixedFloor(int x)
-{
-	if (x>0)
-		return x&0xFFFF0000;
-	else
-		return (x&0xFFFF0000)-0x10000;
-}
-
+static uint			vertexReservoirUsed = 0;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93,7 +81,7 @@ static inline void bClip(SWHelper::XYZStruct & dst, const SWHelper::XYZStruct & 
 
 // --------------------------------------------------------------------------------------------------------------------------------
 
-static inline unsigned int leClip(SWHelper::XYZStruct ** src, SWHelper::XYZStruct ** dst, const float edge)
+static inline uint leClip(SWHelper::XYZStruct ** src, SWHelper::XYZStruct ** dst, const float edge)
 {
    SWHelper::XYZStruct ** _dst = dst;
 
@@ -134,7 +122,7 @@ static inline unsigned int leClip(SWHelper::XYZStruct ** src, SWHelper::XYZStruc
 
 // --------------------------------------------------------------------------------------------------------------------------------
 
-static inline unsigned int reClip(SWHelper::XYZStruct ** src, SWHelper::XYZStruct ** dst, const float edge)
+static inline uint reClip(SWHelper::XYZStruct ** src, SWHelper::XYZStruct ** dst, const float edge)
 {
    SWHelper::XYZStruct ** _dst = dst;
 
@@ -175,7 +163,7 @@ static inline unsigned int reClip(SWHelper::XYZStruct ** src, SWHelper::XYZStruc
 
 // --------------------------------------------------------------------------------------------------------------------------------
 
-static inline unsigned int teClip(SWHelper::XYZStruct ** src, SWHelper::XYZStruct ** dst, const float edge)
+static inline uint teClip(SWHelper::XYZStruct ** src, SWHelper::XYZStruct ** dst, const float edge)
 {
    SWHelper::XYZStruct ** _dst = dst;
 
@@ -216,7 +204,7 @@ static inline unsigned int teClip(SWHelper::XYZStruct ** src, SWHelper::XYZStruc
 
 // --------------------------------------------------------------------------------------------------------------------------------
 
-static inline unsigned int beClip(SWHelper::XYZStruct ** src, SWHelper::XYZStruct ** dst, const float edge)
+static inline uint beClip(SWHelper::XYZStruct ** src, SWHelper::XYZStruct ** dst, const float edge)
 {
    SWHelper::XYZStruct ** _dst = dst;
 
@@ -292,10 +280,11 @@ static inline int	clipShape(SWHelper::XYZStruct ** dst, SWHelper::XYZStruct ** s
 void SWHelper::SWDrawShape(XYZStruct *theVerts, int theNumVerts, MemoryImage *theImage, const Color &theColor, int theDrawMode, const Rect &theClipRect, void *theSurface, int thePitch, int thePixelFormat, bool blend, bool vertexColor)
 {
     (void)theDrawMode;
+
     float tclx0 = theClipRect.mX;
     float tcly0 = theClipRect.mY;
-    float tclx1 = theClipRect.mX + theClipRect.mWidth - 1;
-    float tcly1 = theClipRect.mY + theClipRect.mHeight - 1;
+    float tclx1 = theClipRect.mX + theClipRect.mWidth;
+    float tcly1 = theClipRect.mY + theClipRect.mHeight;
 
     SWDiffuse globalDiffuse;
     {
@@ -313,7 +302,6 @@ void SWHelper::SWDrawShape(XYZStruct *theVerts, int theNumVerts, MemoryImage *th
     bool textured = theImage != NULL;
     bool talpha = (textured && (theImage->mHasAlpha || theImage->mHasTrans || blend));
 
-    // Fixed: Correct triangle strip handling
     for (int i = 0; i < theNumVerts - 2; i++)
     {
         struct XYZStruct *aTriRef[3];
@@ -329,20 +317,16 @@ void SWHelper::SWDrawShape(XYZStruct *theVerts, int theNumVerts, MemoryImage *th
         }
 
         XYZStruct *clipped[64];
-        float clipX0 = tclx0;
-        float clipY0 = tcly0;
-        float clipX1 = tclx1;
-        float clipY1 = tcly1;
 
-        unsigned int vCount = clipShape(clipped, aTriRef, clipX0, clipX1, clipY0, clipY1);
+        uint vCount = clipShape(clipped, aTriRef, tclx0, tclx1, tcly0, tcly1);
 
         if (vCount >= 3)
         {
-            unsigned int *pFrameBuffer = reinterpret_cast<unsigned int *>(theSurface);
+            uint *pFrameBuffer = reinterpret_cast<uint *>(theSurface);
             SWVertex pVerts[64];
             SWTextureInfo textureInfo;
 
-            for (unsigned int j = 0; j < vCount; ++j)
+            for (uint j = 0; j < vCount; ++j)
             {
                 pVerts[j].x = static_cast<int>(clipped[j]->mX * 65536.0f);
                 pVerts[j].y = static_cast<int>(clipped[j]->mY * 65536.0f);
@@ -350,47 +334,43 @@ void SWHelper::SWDrawShape(XYZStruct *theVerts, int theNumVerts, MemoryImage *th
 
             if (textured)
             {
-                for (unsigned int j = 0; j < vCount; ++j)
+                for (uint j = 0; j < vCount; ++j)
                 {
                     pVerts[j].u = static_cast<int>(clipped[j]->mU * (float)theImage->mWidth * 65536.0f);
                     pVerts[j].v = static_cast<int>(clipped[j]->mV * (float)theImage->mHeight * 65536.0f);
                 }
 
-                textureInfo.pTexture = reinterpret_cast<unsigned int *>(theImage->GetBits());
+                textureInfo.pTexture = reinterpret_cast<uint *>(theImage->GetBits());
                 textureInfo.pitch = theImage->mWidth;
                 textureInfo.height = theImage->mHeight;
-                textureInfo.endpos = theImage->mWidth * theImage->mHeight;
-                unsigned int temp = theImage->mWidth;
-                temp >>= 1;
-                textureInfo.vShift = 0;
-                while(temp) {textureInfo.vShift += 1; temp >>= 1;}
-                textureInfo.vShift = 16 - textureInfo.vShift;
 
-                textureInfo.uMask = static_cast<unsigned int>(theImage->mWidth - 1) << 16;
-                textureInfo.vMask = static_cast<unsigned int>(theImage->mHeight - 1) << 16;
+                textureInfo.uMask = static_cast<uint>(theImage->mWidth - 1) << 16;
+                textureInfo.vMask = static_cast<uint>(theImage->mHeight - 1) << 16;
             }
 
             if (vertexColor)
             {
-                // Fixed: Correct vertex color extraction - proper ARGB in 16.16 fixed point [1](#13-0)
-                for (unsigned int j = 0; j < vCount; ++j)
+                for (uint j = 0; j < vCount; ++j)
                 {
                     uint32_t diffuse = static_cast<uint32_t>(clipped[j]->mDiffuse);
-                    pVerts[j].a = ((diffuse >> 24) & 0xFF) << 16;  // Alpha
-                    pVerts[j].r = ((diffuse >> 16) & 0xFF) << 16;  // Red
-                    pVerts[j].g = ((diffuse >> 8) & 0xFF) << 16;   // Green
-                    pVerts[j].b = (diffuse & 0xFF) << 16;          // Blue
+                    pVerts[j].a = ((diffuse >> 24) & 0xFF) << 16;
+                    pVerts[j].r = ((diffuse >> 16) & 0xFF) << 16;
+                    pVerts[j].g = ((diffuse >> 8) & 0xFF) << 16;
+                    pVerts[j].b = (diffuse & 0xFF) << 16;
                 }
             }
 
-            SWDrawTriangle(pVerts[0], pVerts[1], pVerts[2], textured, talpha, vertexColor, globalargb, pFrameBuffer, thePitch, &textureInfo, globalDiffuse, thePixelFormat, blend);
+            for (uint k = 1; k < vCount - 1; ++k)
+            {
+                SWDrawTriangle(pVerts[0], pVerts[k], pVerts[k+1], textured, talpha, vertexColor, globalargb, pFrameBuffer, thePitch, &textureInfo, globalDiffuse, thePixelFormat, blend);
+            }
         }
     }
 }
 
 void SWHelper::SWDrawTriangle(const SWHelper::SWVertex& v0, const SWHelper::SWVertex& v1, const SWHelper::SWVertex& v2,
                               bool textured, bool talpha, bool vertexColor, bool globalargb,
-                              unsigned int* pFrameBuffer, int thePitch, SWTextureInfo* textureInfo,
+                              uint* pFrameBuffer, int thePitch, SWTextureInfo* textureInfo,
                               const SWDiffuse& globalDiffuse, int thePixelFormat, bool blend)
 {
     // Convert vertices to local copies for manipulation
