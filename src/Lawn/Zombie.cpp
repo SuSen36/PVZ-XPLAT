@@ -19,7 +19,7 @@
 #include "SexyAppFramework/Common.h"
 #include "Lawn/system/ReanimationLawn.h"
 #include <climits>
-#include "SexyAppFramework/graphics/MemoryImage.h"
+#include "SexyAppFramework/graphics/SDLImage.h"
 #include "SexyAppFramework/graphics/Graphics.h"
 
 ZombieDefinition gZombieDefs[NUM_ZOMBIE_TYPES] = {  //0x69DA80

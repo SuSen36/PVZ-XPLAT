@@ -7,13 +7,12 @@ namespace Sexy
 {
 
 class Image;
-class GLImage;
-class MemoryImage;
+class SDLImage;
 
 class SharedImage
 {
 public:
-	GLImage*				mImage;
+	SDLImage*				mImage;
 	int						mRefCount;		
 
 	SharedImage();
@@ -25,7 +24,7 @@ class SharedImageRef
 {
 public:
 	SharedImage*			mSharedImage;
-	MemoryImage*			mUnsharedImage;
+	SDLImage*			mUnsharedImage;
 	bool					mOwnsUnshared;
 
 public:
@@ -38,11 +37,10 @@ public:
 
 	SharedImageRef&			operator=(const SharedImageRef& theSharedImageRef);
 	SharedImageRef&			operator=(SharedImage* theSharedImage);
-	SharedImageRef&			operator=(MemoryImage* theUnsharedImage);
-	MemoryImage*			operator->();
+	SharedImageRef&			operator=(SDLImage* theUnsharedImage);
+	SDLImage*			    operator->();
 	operator Image*();
-	operator MemoryImage*();
-	operator GLImage*();
+	operator SDLImage*();
 };
 
 }

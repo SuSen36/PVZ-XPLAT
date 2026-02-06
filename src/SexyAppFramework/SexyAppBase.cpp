@@ -17,9 +17,9 @@
 #include "SexyAppFramework/widget/WidgetManager.h"
 #include "SexyAppFramework/widget/Widget.h"
 #include "../Sexy.TodLib/TodDebug.h"
-#include "SexyAppFramework/graphics/GLImage.h"
-#include "SexyAppFramework/graphics/MemoryImage.h"
-#include "SexyAppFramework/graphics/GLInterface.h"
+#include "SexyAppFramework/graphics/SDLImage.h"
+#include "SexyAppFramework/graphics/SDLImage.h"
+
 #include <unistd.h>
 #include "SexyAppFramework/widget/Dialog.h"
 #include "SexyAppFramework/imagelib/ImageLib.h"
@@ -99,7 +99,7 @@ SexyAppBase::SexyAppBase()
 	mPreferredY = -1;
 	mAllowMonitorPowersave = true;
 	//mHWnd = NULL;
-	mGLInterface = NULL;
+	// mGLInterface = NULL;
 	mMusicInterface = NULL;
 	mFrameTime = 10;
 	mNonDrawCount = 0;
@@ -251,7 +251,7 @@ SexyAppBase::~SexyAppBase()
 		mSharedImageMap.erase(aSharedImageItr++);
 	}
 
-	delete mGLInterface;
+	// delete mGLInterface; // 不再使用GLInterface
 	delete mMusicInterface;
 	delete mSoundManager;
 
@@ -893,7 +893,7 @@ bool SexyAppBase::ReadBufferFromFile(const std::string& theFileName, Buffer* the
 {
 	PFILE* aFP = p_fopen(theFileName.c_str(), "rb");
 
-	if (aFP == NULL)
+	if (aFP == nullptr)
 	{
 		return false;
 	}
@@ -1033,9 +1033,8 @@ void SexyAppBase::Redraw(Rect* theClipRect)
 	if ((mIsDrawing) || (mShutdown))
 		return;
 
-
 	static DWORD aRetryTick = 0;
-	mGLInterface->Redraw(theClipRect);
+	SDL_RenderPresent(gRenderer);
 	mFPSFlipCount++;
 }
 
@@ -1286,35 +1285,24 @@ std::string	SexyAppBase::NotifyCrashHook()
 
 void SexyAppBase::DeleteNativeImageData()
 {
-	AutoCrit anAutoCrit(mGLInterface ? mGLInterface->mCritSect : mCritSect);
+	AutoCrit anAutoCrit(mCritSect);
 
-	for (MemoryImage* aMemoryImage : mMemoryImageSet)
+	for (SDLImage* aSDLImage : mSDLImageSet)
 	{
-		if (aMemoryImage)
-			aMemoryImage->DeleteNativeData();
-	}
-}
-
-void SexyAppBase::DeleteExtraImageData()
-{
-	AutoCrit anAutoCrit(mGLInterface ? mGLInterface->mCritSect : mCritSect);
-
-	for (MemoryImage* aMemoryImage : mMemoryImageSet)
-	{
-		if (aMemoryImage)
-			aMemoryImage->DeleteExtraBuffers();
+		if (aSDLImage)
+			aSDLImage->DeleteNativeData();
 	}
 }
 
 void SexyAppBase::ReInitImages()
 {
-    AutoCrit anAutoCrit(mGLInterface ? mGLInterface->mCritSect : mCritSect);
+    AutoCrit anAutoCrit(mCritSect);
     
-    MemoryImageSet::iterator anItr = mMemoryImageSet.begin();
-	while (anItr != mMemoryImageSet.end())
+    SDLImageSet::iterator anItr = mSDLImageSet.begin();
+	while (anItr != mSDLImageSet.end())
 	{
-		MemoryImage* aMemoryImage = *anItr;
-		aMemoryImage->ReInit();
+		SDLImage* aSDLImage = *anItr;
+		aSDLImage->ReInit();
 		++anItr;
 	}
 }
@@ -1409,8 +1397,8 @@ void SexyAppBase::SetAlphaDisabled(bool isDisabled)
 	if (mAlphaDisabled != isDisabled)
 	{
 		mAlphaDisabled = isDisabled;
-		mGLInterface->SetVideoOnlyDraw(mAlphaDisabled);
-		mWidgetManager->mImage = mGLInterface->GetScreenImage();
+		// SDLImage不需要SetVideoOnlyDraw，它直接处理alpha混合
+		// mWidgetManager->mImage已经是SDLImage，无需重新获取
 		mWidgetManager->MarkAllDirty();
 	}
 }
@@ -1821,30 +1809,25 @@ int SexyAppBase::InitGLInterface()
     // 删除之前的图像数据
     DeleteNativeImageData();
 
-    // 确保GLInterface已正确创建
-    if (mGLInterface == nullptr)
+    // 使用SDLImage作为主渲染表面
+    if (mWidgetManager->mImage == nullptr)
     {
-        std::cerr << "mGLInterface is not initialized." << std::endl;
+        std::cerr << "SDLImage is not initialized." << std::endl;
         return -1; // 返回错误代码，表示初始化失败
     }
 
-    // 调用GLInterface的初始化
-    int aResult = mGLInterface->Init(mIsPhysWindowed);
-    if (aResult < 0)
-    {
-        std::cerr << "Failed to initialize GLInterface." << std::endl;
-        return aResult; // 返回GLInterface初始化错误码
-    }
+    // SDLImage初始化成功
+    int aResult = 0;
 
+    // 设置屏幕边界（使用SDLImage的尺寸）
+    mScreenBounds.mX = (mWidth - mWidgetManager->mImage->mWidth) / 2;
+    mScreenBounds.mY = (mHeight - mWidgetManager->mImage->mHeight) / 2;
 
-    mScreenBounds.mX = (mWidth - mGLInterface->mWidth) / 2;
-    mScreenBounds.mY = (mHeight - mGLInterface->mHeight) / 2;
+    mScreenBounds.mWidth = mWidgetManager->mImage->mWidth;
+    mScreenBounds.mHeight = mWidgetManager->mImage->mHeight;
 
-    mScreenBounds.mWidth = mGLInterface->mWidth;
-    mScreenBounds.mHeight = mGLInterface->mHeight;
-
-    // 调整小部件管理器的大小
-    mWidgetManager->Resize(mScreenBounds, mGLInterface->mPresentationRect);
+    // 调整小部件管理器的大小（使用SDLImage的边界）
+    mWidgetManager->Resize(mScreenBounds, mScreenBounds);
 
     // 后初始化钩子
     PostGLInterfaceInitHook();
@@ -2296,14 +2279,14 @@ void SexyAppBase::EnableCustomCursors(bool enabled)
 	EnforceCursor();
 }
 
-Sexy::GLImage* SexyAppBase::GetImage(const std::string& theFileName, bool commitBits)
+Sexy::SDLImage* SexyAppBase::GetImage(const std::string& theFileName, bool commitBits)
 {
 	ImageLib::Image* aLoadedImage = ImageLib::GetImage(theFileName, true);
 
 	if (aLoadedImage == NULL)
 		return NULL;
 
-	GLImage* anImage = new GLImage(mGLInterface);
+	SDLImage* anImage = new SDLImage();
 	anImage->mFilePath = theFileName;
 	anImage->SetBits(aLoadedImage->GetBits(), aLoadedImage->GetWidth(), aLoadedImage->GetHeight(), commitBits);
 	anImage->mFilePath = theFileName;
@@ -2312,12 +2295,12 @@ Sexy::GLImage* SexyAppBase::GetImage(const std::string& theFileName, bool commit
 	return anImage;
 }
 
-Sexy::GLImage* SexyAppBase::CreateCrossfadeImage(Sexy::Image* theImage1, const Rect& theRect1, Sexy::Image* theImage2, const Rect& theRect2, double theFadeFactor)
+Sexy::SDLImage* SexyAppBase::CreateCrossfadeImage(Sexy::Image* theImage1, const Rect& theRect1, Sexy::Image* theImage2, const Rect& theRect2, double theFadeFactor)
 {
-	MemoryImage* aMemoryImage1 = dynamic_cast<MemoryImage*>(theImage1);
-	MemoryImage* aMemoryImage2 = dynamic_cast<MemoryImage*>(theImage2);
+	SDLImage* aSDLImage1 = dynamic_cast<SDLImage*>(theImage1);
+	SDLImage* aSDLImage2 = dynamic_cast<SDLImage*>(theImage2);
 
-	if ((aMemoryImage1 == NULL) || (aMemoryImage2 == NULL))
+	if ((aSDLImage1 == NULL) || (aSDLImage2 == NULL))
 		return NULL;
 
 	if ((theRect1.mX < 0) || (theRect1.mY < 0) ||
@@ -2339,15 +2322,15 @@ Sexy::GLImage* SexyAppBase::CreateCrossfadeImage(Sexy::Image* theImage1, const R
 	int aWidth = theRect1.mWidth;
 	int aHeight = theRect1.mHeight;
 
-	GLImage* anImage = new GLImage(mGLInterface);
+	SDLImage* anImage = new SDLImage();
 	anImage->Create(aWidth, aHeight);
 
 	uint32_t* aDestBits = anImage->GetBits();
-	uint32_t* aSrcBits1 = aMemoryImage1->GetBits();
-	uint32_t* aSrcBits2 = aMemoryImage2->GetBits();
+	uint32_t* aSrcBits1 = aSDLImage1->GetBits();
+	uint32_t* aSrcBits2 = aSDLImage2->GetBits();
 
-	int aSrc1Width = aMemoryImage1->GetWidth();
-	int aSrc2Width = aMemoryImage2->GetWidth();
+	int aSrc1Width = aSDLImage1->GetWidth();
+	int aSrc2Width = aSDLImage2->GetWidth();
 	uint32_t aMult = (int) (theFadeFactor*256);
 	uint32_t aOMM = (256 - aMult);
 
@@ -2380,24 +2363,13 @@ Sexy::GLImage* SexyAppBase::CreateCrossfadeImage(Sexy::Image* theImage1, const R
 
 void SexyAppBase::ColorizeImage(Image* theImage, const Color& theColor)
 {
-	MemoryImage* aSrcMemoryImage = dynamic_cast<MemoryImage*>(theImage);
+	SDLImage* aSrcSDLImage = dynamic_cast<SDLImage*>(theImage);
 
-	if (aSrcMemoryImage == NULL)
+	if (aSrcSDLImage == NULL)
 		return;
 
-	uint32_t* aBits;
-	int aNumColors;
-
-	if (aSrcMemoryImage->mColorTable == NULL)
-	{
-		aBits = aSrcMemoryImage->GetBits();
-		aNumColors = theImage->GetWidth()*theImage->GetHeight();
-	}
-	else
-	{
-		aBits = aSrcMemoryImage->mColorTable;
-		aNumColors = 256;
-	}
+	uint32_t* aBits = aSrcSDLImage->GetBits();
+	int aNumColors = theImage->GetWidth() * theImage->GetHeight();
 
 	if ((theColor.mAlpha <= 255) && (theColor.mRed <= 255) &&
 		(theColor.mGreen <= 255) && (theColor.mBlue <= 255))
@@ -2437,39 +2409,23 @@ void SexyAppBase::ColorizeImage(Image* theImage, const Color& theColor)
 		}
 	}
 
-	aSrcMemoryImage->BitsChanged();
+	aSrcSDLImage->BitsChanged();
 }
 
-GLImage* SexyAppBase::CreateColorizedImage(Image* theImage, const Color& theColor)
+SDLImage* SexyAppBase::CreateColorizedImage(Image* theImage, const Color& theColor)
 {
-	MemoryImage* aSrcMemoryImage = dynamic_cast<MemoryImage*>(theImage);
+	SDLImage* aSrcSDLImage = dynamic_cast<SDLImage*>(theImage);
 
-	if (aSrcMemoryImage == NULL)
+	if (aSrcSDLImage == NULL)
 		return NULL;
 
-	GLImage* anImage = new GLImage(mGLInterface);
+	SDLImage* anImage = new SDLImage();
 
 	anImage->Create(theImage->GetWidth(), theImage->GetHeight());
 
-	uint32_t* aSrcBits;
-	uint32_t* aDestBits;
-	int aNumColors;
-
-	if (aSrcMemoryImage->mColorTable == NULL)
-	{
-		aSrcBits = aSrcMemoryImage->GetBits();
-		aDestBits = anImage->GetBits();
-		aNumColors = theImage->GetWidth()*theImage->GetHeight();
-	}
-	else
-	{
-		aSrcBits = aSrcMemoryImage->mColorTable;
-		aDestBits = anImage->mColorTable = new uint32_t[256];
-		aNumColors = 256;
-
-		anImage->mColorIndices = new uchar[anImage->mWidth*theImage->mHeight];
-		memcpy(anImage->mColorIndices, aSrcMemoryImage->mColorIndices, anImage->mWidth*theImage->mHeight);
-	}
+	uint32_t* aSrcBits = aSrcSDLImage->GetBits();
+	uint32_t* aDestBits = anImage->GetBits();
+	int aNumColors = theImage->GetWidth() * theImage->GetHeight();
 
 	if ((theColor.mAlpha <= 255) && (theColor.mRed <= 255) &&
 		(theColor.mGreen <= 255) && (theColor.mBlue <= 255))
@@ -2514,9 +2470,9 @@ GLImage* SexyAppBase::CreateColorizedImage(Image* theImage, const Color& theColo
 	return anImage;
 }
 
-GLImage* SexyAppBase::CopyImage(Image* theImage, const Rect& theRect)
+SDLImage* SexyAppBase::CopyImage(Image* theImage, const Rect& theRect)
 {
-	GLImage* anImage = new GLImage(mGLInterface);
+	SDLImage* anImage = new SDLImage();
 
 	anImage->Create(theRect.mWidth, theRect.mHeight);
 
@@ -2528,19 +2484,19 @@ GLImage* SexyAppBase::CopyImage(Image* theImage, const Rect& theRect)
 	return anImage;
 }
 
-GLImage* SexyAppBase::CopyImage(Image* theImage)
+SDLImage* SexyAppBase::CopyImage(Image* theImage)
 {
 	return CopyImage(theImage, Rect(0, 0, theImage->GetWidth(), theImage->GetHeight()));
 }
 
 void SexyAppBase::MirrorImage(Image* theImage)
 {
-	MemoryImage* aSrcMemoryImage = dynamic_cast<MemoryImage*>(theImage);
+	SDLImage* aSrcSDLImage = dynamic_cast<SDLImage*>(theImage);
 
-	uint32_t* aSrcBits = aSrcMemoryImage->GetBits();
+	uint32_t* aSrcBits = aSrcSDLImage->GetBits();
 
-	int aPhysSrcWidth = aSrcMemoryImage->mWidth;
-	for (int y = 0; y < aSrcMemoryImage->mHeight; y++)
+	int aPhysSrcWidth = aSrcSDLImage->mWidth;
+	for (int y = 0; y < aSrcSDLImage->mHeight; y++)
 	{
 		uint32_t* aLeftBits = aSrcBits + (y * aPhysSrcWidth);
 		uint32_t* aRightBits = aLeftBits + (aPhysSrcWidth - 1);
@@ -2554,17 +2510,17 @@ void SexyAppBase::MirrorImage(Image* theImage)
 		}
 	}
 
-	aSrcMemoryImage->BitsChanged();
+	aSrcSDLImage->BitsChanged();
 }
 
 void SexyAppBase::FlipImage(Image* theImage)
 {
-	MemoryImage* aSrcMemoryImage = dynamic_cast<MemoryImage*>(theImage);
+	SDLImage* aSrcSDLImage = dynamic_cast<SDLImage*>(theImage);
 
-	uint32_t* aSrcBits = aSrcMemoryImage->GetBits();
+	uint32_t* aSrcBits = aSrcSDLImage->GetBits();
 
-	int aPhysSrcHeight = aSrcMemoryImage->mHeight;
-	int aPhysSrcWidth = aSrcMemoryImage->mWidth;
+	int aPhysSrcHeight = aSrcSDLImage->mHeight;
+	int aPhysSrcWidth = aSrcSDLImage->mWidth;
 	for (int x = 0; x < aPhysSrcWidth; x++)
 	{
 		uint32_t* aTopBits    = aSrcBits + x;
@@ -2581,10 +2537,10 @@ void SexyAppBase::FlipImage(Image* theImage)
 		}
 	}
 
-	aSrcMemoryImage->BitsChanged();
+	aSrcSDLImage->BitsChanged();
 }
 
-void SexyAppBase::RotateImageHue(Sexy::MemoryImage *theImage, int theDelta)
+void SexyAppBase::RotateImageHue(Sexy::SDLImage *theImage, int theDelta)
 {
 	while (theDelta < 0)
 		theDelta += 256;
@@ -2734,22 +2690,6 @@ void SexyAppBase::RGBToHSL(const uint32_t* theSource, uint32_t* theDest, int the
 	}
 }
 
-void SexyAppBase::PrecacheAdditive(MemoryImage* theImage)
-{
-	theImage->GetRLAdditiveData(mGLInterface);
-}
-
-void SexyAppBase::PrecacheAlpha(MemoryImage* theImage)
-{
-	theImage->GetRLAlphaData();
-}
-
-void SexyAppBase::PrecacheNative(MemoryImage* theImage)
-{
-	theImage->GetNativeAlphaData(mGLInterface);
-}
-
-
 void SexyAppBase::PlaySample(int theSoundNum)
 {
 	if (!mSoundManager)
@@ -2814,7 +2754,7 @@ void SexyAppBase::SetMusicVolume(double theVolume)
 {
 	mMusicVolume = theVolume;
 
-	if (mMusicInterface != NULL)
+	if (mMusicInterface != nullptr)
 		mMusicInterface->SetVolume((mMuteCount > 0) ? 0.0 : mMusicVolume);
 }
 
@@ -2827,7 +2767,7 @@ void SexyAppBase::SetSfxVolume(double theVolume)
 {
 	mSfxVolume = theVolume;
 
-	if (mSoundManager != NULL)
+	if (mSoundManager != nullptr)
 		mSoundManager->SetVolume((mMuteCount > 0) ? 0.0 : mSfxVolume);
 }
 
@@ -2842,30 +2782,29 @@ void SexyAppBase::SetMasterVolume(double theMasterVolume)
 	mSoundManager->SetMasterVolume(mSfxVolume);
 }
 
-void SexyAppBase::AddMemoryImage(MemoryImage* theMemoryImage)
+void SexyAppBase::AddSDLImage(SDLImage* theSDLImage)
 {
-	AutoCrit anAutoCrit(mGLInterface ? mGLInterface->mCritSect : mCritSect);
-	mMemoryImageSet.insert(theMemoryImage);
+	AutoCrit anAutoCrit(mCritSect);
+	mSDLImageSet.insert(theSDLImage);
 }
 
-void SexyAppBase::RemoveMemoryImage(MemoryImage* theMemoryImage)
+void SexyAppBase::RemoveSDLImage(SDLImage* theSDLImage)
 {
-	AutoCrit anAutoCrit(mGLInterface ? mGLInterface->mCritSect : mCritSect);
-	MemoryImageSet::iterator anItr = mMemoryImageSet.find(theMemoryImage);
-	if (anItr != mMemoryImageSet.end())
-		mMemoryImageSet.erase(anItr);
+	AutoCrit anAutoCrit(mCritSect);
+	SDLImageSet::iterator anItr = mSDLImageSet.find(theSDLImage);
+	if (anItr != mSDLImageSet.end())
+		mSDLImageSet.erase(anItr);
 
-	Remove3DData(theMemoryImage);
+	Remove3DData(theSDLImage);
 }
 
-void SexyAppBase::Remove3DData(MemoryImage* theMemoryImage)
+void SexyAppBase::Remove3DData(SDLImage* theSDLImage)
 {
-	if (mGLInterface)
-		mGLInterface->Remove3DData(theMemoryImage);
+	// SDLImage不再需要3D数据清理
+	// 如果需要清理SDL资源，可以在这里添加SDL相关清理代码
 }
 
-
-SharedImageRef SexyAppBase::SetSharedImage(const std::string& theFileName, const std::string& theVariant, GLImage* theImage, bool* isNew)
+SharedImageRef SexyAppBase::SetSharedImage(const std::string& theFileName, const std::string& theVariant, SDLImage* theImage, bool* isNew)
 {
 	std::string anUpperFileName = StringToUpper(theFileName);
 	std::string anUpperVariant = StringToUpper(theVariant);
@@ -2874,7 +2813,7 @@ SharedImageRef SexyAppBase::SetSharedImage(const std::string& theFileName, const
 	SharedImageRef aSharedImageRef;
 
 	{
-		AutoCrit anAutoCrit(mGLInterface->mCritSect);
+		AutoCrit anAutoCrit(mCritSect);
 		aResultPair = mSharedImageMap.insert(SharedImageMap::value_type(SharedImageMap::key_type(anUpperFileName, anUpperVariant), SharedImage()));
 		aSharedImageRef = &aResultPair.first->second;
 	}
@@ -2897,9 +2836,8 @@ SharedImageRef SexyAppBase::GetSharedImage(const std::string& theFileName, const
 
 	std::pair<SharedImageMap::iterator, bool> aResultPair;
 	SharedImageRef aSharedImageRef;
-
 	{
-		AutoCrit anAutoCrit(mGLInterface->mCritSect);
+		AutoCrit anAutoCrit(mCritSect);
 		aResultPair = mSharedImageMap.insert(SharedImageMap::value_type(SharedImageMap::key_type(anUpperFileName, anUpperVariant), SharedImage()));
 		aSharedImageRef = &aResultPair.first->second;
 	}
@@ -2911,7 +2849,7 @@ SharedImageRef SexyAppBase::GetSharedImage(const std::string& theFileName, const
 	{
 		// Pass in a '!' as the first char of the file name to create a new image
 		if ((theFileName.length() > 0) && (theFileName[0] == '!'))
-			aSharedImageRef.mSharedImage->mImage = new GLImage(mGLInterface);
+			aSharedImageRef.mSharedImage->mImage = new SDLImage();
 		else
 			aSharedImageRef.mSharedImage->mImage = GetImage(theFileName,false);
 	}
@@ -2921,7 +2859,7 @@ SharedImageRef SexyAppBase::GetSharedImage(const std::string& theFileName, const
 
 void SexyAppBase::CleanSharedImages()
 {
-	AutoCrit anAutoCrit(mGLInterface->mCritSect);
+	AutoCrit anAutoCrit(mCritSect);
 
 	if (mCleanupSharedImages)
 	{

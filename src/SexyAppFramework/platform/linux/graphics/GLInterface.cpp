@@ -6,12 +6,12 @@
 
 #include <iostream>
 #include <SDL_egl.h>
-#include "SexyAppFramework/graphics/GLImage.h"
+#include "SexyAppFramework/graphics/SDLImage.h"
 #include "SexyAppFramework/SexyAppBase.h"
 #include "SexyAppFramework/misc/AutoCrit.h"
 #include "SexyAppFramework/misc/CritSect.h"
 #include "SexyAppFramework/graphics/Graphics.h"
-#include "SexyAppFramework/graphics/MemoryImage.h"
+#include "SexyAppFramework/graphics/SDLImage.h"
 
 
 #define MAX_VERTICES 16384
@@ -120,7 +120,7 @@ static void GfxAddVertices(const TriVertex arr[][3], int arrCount, unsigned int 
 }
 
 
-static void CopyImageToTexture8888(MemoryImage *theImage, int offx, int offy, int theWidth, int theHeight, int theDestPitch, int theDestHeight, bool rightPad, bool bottomPad, bool create)
+static void CopyImageToTexture8888(SDLImage *theImage, int offx, int offy, int theWidth, int theHeight, int theDestPitch, int theDestHeight, bool rightPad, bool bottomPad, bool create)
 {
     uint32_t *aDest = new uint32_t[theDestPitch * theDestHeight];
 
@@ -211,7 +211,7 @@ static void CopyImageToTexture8888(MemoryImage *theImage, int offx, int offy, in
     delete[] aDest;
 }
 
-static void CopyImageToTexture4444(MemoryImage *theImage, int offx, int offy, int theWidth, int theHeight, int theDestPitch, int theDestHeight, bool rightPad, bool bottomPad, bool create)
+static void CopyImageToTexture4444(SDLImage *theImage, int offx, int offy, int theWidth, int theHeight, int theDestPitch, int theDestHeight, bool rightPad, bool bottomPad, bool create)
 {
     uint16_t *aDest = new uint16_t[theDestPitch * theDestHeight];
 
@@ -299,7 +299,7 @@ static void CopyImageToTexture4444(MemoryImage *theImage, int offx, int offy, in
     delete[] aDest;
 }
 
-static void CopyImageToTexture565(MemoryImage *theImage, int offx, int offy, int theWidth, int theHeight, int theDestPitch, int theDestHeight, bool rightPad, bool bottomPad, bool create)
+static void CopyImageToTexture565(SDLImage *theImage, int offx, int offy, int theWidth, int theHeight, int theDestPitch, int theDestHeight, bool rightPad, bool bottomPad, bool create)
 {
 	uint16_t *aDest = new uint16_t[theDestPitch * theDestHeight];
 
@@ -363,7 +363,7 @@ static void CopyImageToTexture565(MemoryImage *theImage, int offx, int offy, int
 	delete[] aDest;
 }
 
-static void CopyImageToTexturePalette8(MemoryImage *theImage, int offx, int offy, int theWidth, int theHeight, int theDestPitch, int theDestHeight, bool rightPad, bool bottomPad, bool create)
+static void CopyImageToTexturePalette8(SDLImage *theImage, int offx, int offy, int theWidth, int theHeight, int theDestPitch, int theDestHeight, bool rightPad, bool bottomPad, bool create)
 {
 	printf("PALETTE %d %d - %d %d - %d %d\n", offx, offy, theWidth, theHeight, theDestPitch, theDestHeight);
 	fflush(stdout);
@@ -407,7 +407,7 @@ static void CopyImageToTexturePalette8(MemoryImage *theImage, int offx, int offy
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-static void CopyImageToTexture(MemoryImage *theImage, int offx, int offy, int texWidth, int texHeight, PixelFormat theFormat, bool create)
+static void CopyImageToTexture(SDLImage *theImage, int offx, int offy, int texWidth, int texHeight, PixelFormat theFormat, bool create)
 {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (gLinearFilter) ? GL_LINEAR : GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (gLinearFilter) ? GL_LINEAR : GL_NEAREST);
@@ -574,7 +574,7 @@ void TextureData::ReleaseTextures()
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-void TextureData::CreateTextureDimensions(MemoryImage *theImage)
+void TextureData::CreateTextureDimensions(SDLImage *theImage)
 {
 	int aWidth = theImage->GetWidth();
 	int aHeight = theImage->GetHeight();
@@ -648,7 +648,7 @@ void TextureData::CreateTextureDimensions(MemoryImage *theImage)
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-void TextureData::CreateTextures(MemoryImage *theImage)
+void TextureData::CreateTextures(SDLImage *theImage)
 {
 	theImage->DeleteSWBuffers(); // don't need these buffers for 3d drawing
 
@@ -737,7 +737,7 @@ void TextureData::CreateTextures(MemoryImage *theImage)
 	
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-void TextureData::CheckCreateTextures(MemoryImage *theImage)
+void TextureData::CheckCreateTextures(SDLImage *theImage)
 {
 	if(mPixelFormat==PixelFormat_Unknown || theImage->mWidth != mWidth || theImage->mHeight != mHeight || theImage->mBitsChangedCount != mBitsChangedCount || theImage->mD3DFlags != mImageFlags)
 		CreateTextures(theImage);
@@ -1243,7 +1243,7 @@ GLInterface::~GLInterface()
 	ImageSet::iterator anItr;
 	for(anItr = mImageSet.begin(); anItr != mImageSet.end(); ++anItr)
 	{
-		MemoryImage *anImage = *anItr;
+		SDLImage *anImage = *anItr;
 		delete (TextureData*)anImage->mD3DData;
 		anImage->mD3DData = NULL;
 	}
@@ -1263,23 +1263,23 @@ void GLInterface::SetDrawMode(int theDrawMode)
 	}
 }
 
-void GLInterface::AddGLImage(GLImage* theGLImage)
+void GLInterface::AddSDLImage(SDLImage* theSDLImage)
 {
 	AutoCrit anAutoCrit(mCritSect);
 
-	mGLImageSet.insert(theGLImage);
+	mSDLImageSet.insert(theSDLImage);
 }
 
-void GLInterface::RemoveGLImage(GLImage* theGLImage)
+void GLInterface::RemoveSDLImage(SDLImage* theSDLImage)
 {
 	AutoCrit anAutoCrit(mCritSect);
 
-	GLImageSet::iterator anItr = mGLImageSet.find(theGLImage);
-	if (anItr != mGLImageSet.end())
-		mGLImageSet.erase(anItr);
+	SDLImageSet::iterator anItr = mSDLImageSet.find(theSDLImage);
+	if (anItr != mSDLImageSet.end())
+		mSDLImageSet.erase(anItr);
 }
 
-void GLInterface::Remove3DData(MemoryImage* theImage)
+void GLInterface::Remove3DData(SDLImage* theImage)
 {
 	if (theImage->mD3DData != NULL)
 	{
@@ -1291,7 +1291,7 @@ void GLInterface::Remove3DData(MemoryImage* theImage)
 	}
 }
 
-GLImage* GLInterface::GetScreenImage()
+SDLImage* GLInterface::GetScreenImage()
 {
 	return mScreenImage;
 }
@@ -1408,7 +1408,7 @@ bool GLInterface::Redraw(Rect* theClipRect)
 void GLInterface::SetVideoOnlyDraw(bool videoOnly)
 {
 	if (mScreenImage) delete mScreenImage;
-	mScreenImage = new GLImage(this);
+	mScreenImage = new SDLImage(this);
 	//mScreenImage->SetSurface(useSecondary ? mSecondarySurface : mDrawSurface);		
 	//mScreenImage->mNoLock = mVideoOnlyDraw;
 	//mScreenImage->mVideoMemory = mVideoOnlyDraw;
@@ -1438,13 +1438,13 @@ void GLInterface::Flush()
 	SDL_GL_SwapWindow((SDL_Window*)mApp->mWindow);
 }
 
-bool GLInterface::CreateImageTexture(MemoryImage *theImage)
+bool GLInterface::CreateImageTexture(SDLImage *theImage)
 {
 	bool wantPurge = false;
 
-	if(theImage->mD3DData==NULL)
+	if(theImage->mTexture==NULL)
 	{
-		theImage->mD3DData = new TextureData();
+		theImage->mTexture = new TextureData();
 		
 		// The actual purging was deferred
 		wantPurge = theImage->mPurgeBits;
@@ -1453,7 +1453,7 @@ bool GLInterface::CreateImageTexture(MemoryImage *theImage)
 		mImageSet.insert(theImage);
 	}
 
-	TextureData *aData = (TextureData*)theImage->mD3DData;
+	TextureData *aData = (TextureData*)theImage->mTexture;
 	aData->CheckCreateTextures(theImage);
 	
 	if (wantPurge)
@@ -1462,7 +1462,7 @@ bool GLInterface::CreateImageTexture(MemoryImage *theImage)
 	return aData->mPixelFormat != PixelFormat_Unknown;
 }
 
-bool GLInterface::RecoverBits(MemoryImage* theImage)
+bool GLInterface::RecoverBits(SDLImage* theImage)
 {
 	if (theImage->mD3DData == NULL)
 		return false;
@@ -1587,14 +1587,14 @@ void GLInterface::Blt(Image* theImage, float theX, float theY, const Rect& theSr
 	if (!PreDraw())
 		return;
 
-	MemoryImage* aSrcMemoryImage = (MemoryImage*) theImage;
+	SDLImage* aSrcSDLImage = (SDLImage*) theImage;
 
-	if (!CreateImageTexture(aSrcMemoryImage))
+	if (!CreateImageTexture(aSrcSDLImage))
 		return;
 
 	SetDrawMode(theDrawMode);
 
-	TextureData *aData = (TextureData*)aSrcMemoryImage->mD3DData;
+	TextureData *aData = (TextureData*)aSrcSDLImage->mD3DData;
 
 	SetLinearFilter(linearFilter);
 	aData->Blt(theX,theY,theSrcRect,theColor);
@@ -1653,14 +1653,14 @@ void GLInterface::BltTransformed(Image* theImage, const Rect* theClipRect, const
 	if (!PreDraw())
 		return;
 
-	MemoryImage* aSrcMemoryImage = (MemoryImage*) theImage;
+	SDLImage* aSrcSDLImage = (SDLImage*) theImage;
 
-	if (!CreateImageTexture(aSrcMemoryImage))
+	if (!CreateImageTexture(aSrcSDLImage))
 		return;
 
 	SetDrawMode(theDrawMode);
 
-	TextureData *aData = (TextureData*)aSrcMemoryImage->mD3DData;
+	TextureData *aData = (TextureData*)aSrcSDLImage->mD3DData;
 
 	if (!mTransformStack.empty())
 	{
@@ -1808,14 +1808,14 @@ void GLInterface::DrawTrianglesTex(const TriVertex theVertices[][3], int theNumT
 {
 	if (!PreDraw()) return;
 
-	MemoryImage* aSrcMemoryImage = (MemoryImage*)theTexture;
+	SDLImage* aSrcSDLImage = (SDLImage*)theTexture;
 
-	if (!CreateImageTexture(aSrcMemoryImage))
+	if (!CreateImageTexture(aSrcSDLImage))
 		return;
 
 	SetDrawMode(theDrawMode);
 
-	TextureData *aData = (TextureData*)aSrcMemoryImage->mD3DData;
+	TextureData *aData = (TextureData*)aSrcSDLImage->mD3DData;
 
 	SetLinearFilter(blend);
 

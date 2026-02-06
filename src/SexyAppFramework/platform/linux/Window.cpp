@@ -3,8 +3,8 @@
 
 
 #include "SexyAppFramework/SexyAppBase.h"
-#include "SexyAppFramework/graphics/GLInterface.h"
-#include "SexyAppFramework/graphics/GLImage.h"
+
+#include "SexyAppFramework/graphics/SDLImage.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
 #include "SexyAppFramework/paklib/PakInterface.h"
 

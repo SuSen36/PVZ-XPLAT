@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_STANDARD 17)  # 设置 C++ 标准为 C++17
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -28,7 +28,6 @@ file(GLOB SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/Lawn/*.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/Lawn/widgets/*.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Lawn/system/*.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/glad/*.c
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/imagelib/png/*.c
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/imagelib/jpeg/*.c
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/imagelib/zlib/*.c
@@ -59,7 +58,6 @@ elseif (EMSCRIPTEN)
     )
 else()
 	list(APPEND SOURCES
-		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/pc/Window.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/pc/Input.cpp
 	)
 	list(APPEND PLAT_INCLUDES

@@ -1,8 +1,7 @@
 #include "SDL3/SDL.h"
 
 #include "SexyAppFramework/SexyAppBase.h"
-#include "SexyAppFramework/graphics/GLInterface.h"
-#include "SexyAppFramework/graphics/GLImage.h"
+#include "SexyAppFramework/graphics/SDLImage.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
 #include "SexyAppFramework/paklib/PakInterface.h"
 #include "Sexy.TodLib/TodDebug.h"
@@ -15,22 +14,20 @@ void SexyAppBase::MakeWindow()
 {
 	if (mWindow)
 	{
-		// Avoid fullscreen desktop scaling; toggle true fullscreen only when requested
 		SDL_SetWindowFullscreen((SDL_Window*)mWindow, (!mIsWindowed ? SDL_WINDOW_FULLSCREEN : 0));
+		if (gRenderer == nullptr)
+		{
+			gRenderer = SDL_CreateRenderer((SDL_Window*)mWindow, nullptr);
+			SDL_SetRenderLogicalPresentation(gRenderer, mWidth, mHeight, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+		}
 	}
 	else
 	{
 		SDL_Init(SDL_INIT_VIDEO);
 
-		// 线性缩放，避免拉伸锯齿 - SDL3 中不再支持此提示
-
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
-
-		Uint32 windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY;
+		Uint32 windowFlags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY;
 		if (!mIsWindowed)
-			windowFlags |= SDL_WINDOW_FULLSCREEN; // 桌面全屏，按比例拉伸
+			windowFlags |= SDL_WINDOW_FULLSCREEN;
 
 		mWindow = (void*)SDL_CreateWindow(
 			SexyStringToStringFast(mTitle).c_str(),
@@ -45,14 +42,10 @@ void SexyAppBase::MakeWindow()
 		} else {
 			TodLog("Icon loading failed: ", SDL_GetError());
 		}
-		mContext = (void*)SDL_GL_CreateContext((SDL_Window*)mWindow);
-		SDL_GL_SetSwapInterval(1);
-	}
 
-	if (mGLInterface == NULL)
-	{
-		mGLInterface = new GLInterface(this);
-		InitGLInterface();
+		gRenderer = SDL_CreateRenderer((SDL_Window*)mWindow, nullptr);
+		SDL_SetRenderLogicalPresentation(gRenderer, mWidth, mHeight, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+		mContext = nullptr;
 	}
 
 	bool isActive = mActive;
@@ -74,6 +67,8 @@ void SexyAppBase::MakeWindow()
 
 	ReInitImages();
 
-	mWidgetManager->mImage = mGLInterface->GetScreenImage();
+	mWidgetManager->mImage = new SDLImage();
+	mWidgetManager->mImage->mWidth = mWidth;
+	mWidgetManager->mImage->mHeight = mHeight;
 	mWidgetManager->MarkAllDirty();
 }

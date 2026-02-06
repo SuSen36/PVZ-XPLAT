@@ -1,19 +1,19 @@
 #include "SharedImage.h"
-#include "SexyAppFramework/graphics/GLImage.h"
+#include "SexyAppFramework/graphics/SDLImage.h"
 #include "../SexyAppBase.h"
 
 using namespace Sexy;
 
 SharedImage::SharedImage()
 {
-	mImage = NULL;
+	mImage = nullptr;
 	mRefCount = 0;
 }
 
 SharedImageRef::SharedImageRef(const SharedImageRef& theSharedImageRef)
 {
 	mSharedImage = theSharedImageRef.mSharedImage;
-	if (mSharedImage != NULL)
+	if (mSharedImage != nullptr)
 		mSharedImage->mRefCount++;
 	mUnsharedImage = theSharedImageRef.mUnsharedImage;	
 	mOwnsUnshared = false;
@@ -29,7 +29,7 @@ SharedImageRef::SharedImageRef()
 SharedImageRef::SharedImageRef(SharedImage* theSharedImage)
 {
 	mSharedImage = theSharedImage;
-	if (theSharedImage != NULL)
+	if (theSharedImage != nullptr)
 		mSharedImage->mRefCount++;
 
 	mUnsharedImage = NULL;
@@ -71,36 +71,29 @@ SharedImageRef&	SharedImageRef::operator=(SharedImage* theSharedImage)
 	return *this;
 }
 
-SharedImageRef& SharedImageRef::operator=(MemoryImage* theUnsharedImage)
+SharedImageRef& SharedImageRef::operator=(SDLImage* theUnsharedImage)
 {
 	Release();
 	mUnsharedImage = theUnsharedImage;	
 	return *this;
 }
 
-MemoryImage* SharedImageRef::operator->()
+SDLImage* SharedImageRef::operator->()
 {
-	return (MemoryImage*) *this;
+	return (SDLImage*) *this;
 }
-
 
 SharedImageRef::operator Image*()
 {	
-	return (MemoryImage*) *this;
+	return (SDLImage*) *this;
 }
 
-SharedImageRef::operator MemoryImage*()
+SharedImageRef::operator SDLImage*()
 {
-	if (mUnsharedImage != NULL)
-		return mUnsharedImage;
-	else
-		return (GLImage*) *this;
-}
-
-SharedImageRef::operator GLImage*()
-{
-	if (mSharedImage != NULL)
-		return mSharedImage->mImage;
-	else
-		return NULL;
+    if (mUnsharedImage != NULL)
+        return mUnsharedImage;
+    else if (mSharedImage != NULL)
+        return mSharedImage->mImage;
+    else
+        return NULL;
 }

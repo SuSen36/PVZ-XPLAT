@@ -4,13 +4,14 @@
 #include "../Common.h"
 #include "../misc/KeyCodes.h"
 #include "WidgetContainer.h"
+#include "SexyAppFramework/graphics/SDLImage.h"
 
 namespace Sexy
 {
 
 class Widget;
 class Image;
-class MemoryImage;
+class SDLImage;
 class SexyAppBase;
 class Graphics;
 
@@ -46,8 +47,8 @@ public:
 	
 	Graphics*				mCurG;
 	SexyAppBase*			mApp;
-	MemoryImage*			mImage;	
-	MemoryImage*			mTransientImage;
+	Sexy::SDLImage *mImage;
+	SDLImage*			mTransientImage;
 	bool					mLastHadTransients;	
 	Widget*					mPopupCommandWidget;	
 	DeferredOverlayVector	mDeferredOverlayWidgets;

@@ -2,8 +2,7 @@
 #include "ResourceManager.h"
 #include "XMLParser.h"
 #include "SexyAppFramework/sound/SoundManager.h"
-#include "SexyAppFramework/graphics/GLImage.h"
-#include "SexyAppFramework/graphics/GLInterface.h"
+#include "SexyAppFramework/graphics/SDLImage.h"
 #include "SexyAppFramework/graphics/ImageFont.h"
 //#include "SexyAppFramework/graphics/SysFont.h"
 #include "SexyAppFramework/imagelib/ImageLib.h"
@@ -111,9 +110,9 @@ void ResourceManager::DeleteExtraImageBuffers(const std::string &theGroup)
 		if (theGroup.empty() || anItr->second->mResGroup==theGroup)
 		{
 			ImageRes *aRes = (ImageRes*)anItr->second;
-			MemoryImage *anImage = (MemoryImage*)aRes->mImage;
-			if (anImage != NULL)
-				anImage->DeleteExtraBuffers();
+			SDLImage *anImage = (SDLImage*)aRes->mImage;
+			//if (anImage != NULL)
+			//	anImage->DeleteExtraBuffers();
 		}
 	}
 }
@@ -623,60 +622,19 @@ bool ResourceManager::ReparseResourcesFile(const std::string& theFilename)
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-bool ResourceManager::LoadAlphaGridImage(ImageRes *theRes, GLImage *theImage)
-{	
-	ImageLib::Image* anAlphaImage = ImageLib::GetImage(theRes->mAlphaGridImage,true);	
-	if (anAlphaImage==NULL)
-		return Fail(StrFormat("Failed to load image: %s",theRes->mAlphaGridImage.c_str()));
-
-	std::unique_ptr<ImageLib::Image> aDelAlphaImage(anAlphaImage);
-
-	int aNumRows = theRes->mRows;
-	int aNumCols = theRes->mCols;
-
-	int aCelWidth = theImage->mWidth/aNumCols;
-	int aCelHeight = theImage->mHeight/aNumRows;
-
-
-	if (anAlphaImage->mWidth!=aCelWidth || anAlphaImage->mHeight!=aCelHeight)
-		return Fail(StrFormat("GridAlphaImage size mismatch between %s and %s",theRes->mPath.c_str(),theRes->mAlphaGridImage.c_str()));
-
-	uint32_t *aMasterRowPtr = theImage->mBits;
-	for (int i=0; i < aNumRows; i++)
-	{
-		uint32_t *aMasterColPtr = aMasterRowPtr;
-		for (int j=0; j < aNumCols; j++)
-		{
-			uint32_t* aRowPtr = aMasterColPtr;
-			uint32_t* anAlphaBits = anAlphaImage->mBits;
-			for (int y=0; y<aCelHeight; y++)
-			{
-				uint32_t *aDestPtr = aRowPtr;
-				for (int x=0; x<aCelWidth; x++)
-				{
-					*aDestPtr = (*aDestPtr & 0x00FFFFFF) | ((*anAlphaBits & 0xFF) << 24);
-					++anAlphaBits;
-					++aDestPtr;
-				}
-				aRowPtr += theImage->mWidth;
-			}
-
-			aMasterColPtr += aCelWidth;
-		}
-		aMasterRowPtr += aCelHeight*theImage->mWidth;
-	}
-
-	theImage->BitsChanged();
-	return true;
+bool ResourceManager::LoadAlphaGridImage(ImageRes *theRes, SDLImage *theImage)
+{
+	return true;//已弃用
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-bool ResourceManager::LoadAlphaImage(ImageRes *theRes, GLImage *theImage)
+bool ResourceManager::LoadAlphaImage(ImageRes *theRes, SDLImage *theImage)
 {
+    //即将弃用
 	ImageLib::Image* anAlphaImage = ImageLib::GetImage(theRes->mAlphaImage,true);
 
-	if (anAlphaImage==NULL)
+	if (anAlphaImage==nullptr)
 		return Fail(StrFormat("Failed to load image: %s",theRes->mAlphaImage.c_str()));
 
 	std::unique_ptr<ImageLib::Image> aDelAlphaImage(anAlphaImage);
@@ -712,9 +670,9 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes)
 	SharedImageRef aSharedImageRef = gSexyAppBase->GetSharedImage(theRes->mPath, theRes->mVariant, &isNew);
 	ImageLib::gAlphaComposeColor = 0xFFFFFF;
 
-	GLImage* aGLImage = (GLImage*) aSharedImageRef;
+	SDLImage* aSDLImage = (SDLImage*) aSharedImageRef;
 	
-	if (aGLImage == NULL)
+	if (aSDLImage == NULL)
 		return Fail(StrFormat("Failed to load image: %s",theRes->mPath.c_str()));
 
 	if (isNew)
@@ -732,38 +690,29 @@ bool ResourceManager::DoLoadImage(ImageRes *theRes)
 		}
 	}
 	
-	aGLImage->CommitBits();
+	aSDLImage->CommitBits();
 	theRes->mImage = aSharedImageRef;
-	aGLImage->mPurgeBits = theRes->mPurgeBits;
+	aSDLImage->mPurgeBits = theRes->mPurgeBits;
 
 	if (theRes->mDDSurface)
 	{
-		aGLImage->CommitBits();
+		aSDLImage->CommitBits();
 				
-		if (!aGLImage->mHasAlpha)
+		if (!aSDLImage->mHasAlpha)
 		{
-			//aGLImage->mWantDDSurface = true;
-			aGLImage->mPurgeBits = true;			
+			//aSDLImage->mWantDDSurface = true;
+			aSDLImage->mPurgeBits = true;
 		}
 	}	
 
-	//if (theRes->mA4R4G4B4)
-	//	aGLImage->mD3DFlags |= D3DImageFlag_UseA4R4G4B4;
-    //
-	//if (theRes->mA8R8G8B8)
-	//	aGLImage->mD3DFlags |= D3DImageFlag_UseA8R8G8B8;
-    //
-	//if (theRes->mMinimizeSubdivisions)
-	//	aGLImage->mD3DFlags |= D3DImageFlag_MinimizeNumSubdivisions;
-
 	if (theRes->mAnimInfo.mAnimType != AnimType_None)
-		aGLImage->mAnimInfo = new AnimInfo(theRes->mAnimInfo);
+		aSDLImage->mAnimInfo = new AnimInfo(theRes->mAnimInfo);
 
-	aGLImage->mNumRows = theRes->mRows;
-	aGLImage->mNumCols = theRes->mCols;
+	aSDLImage->mNumRows = theRes->mRows;
+	aSDLImage->mNumCols = theRes->mCols;
 
-	if (aGLImage->mPurgeBits)
-		aGLImage->PurgeBits();
+	if (aSDLImage->mPurgeBits)
+		aSDLImage->PurgeBits();
 
 	ResourceLoadedHook(theRes);
 	return true;
@@ -785,7 +734,7 @@ SharedImageRef ResourceManager::LoadImage(const std::string &theName)
 		return NULL;
 
 	ImageRes *aRes = (ImageRes*)anItr->second;
-	if ((GLImage*) aRes->mImage != NULL)
+	if ((SDLImage*) aRes->mImage != NULL)
 		return aRes->mImage;
 
 	if (aRes->mFromProgram)
@@ -941,7 +890,7 @@ bool ResourceManager::LoadNextResource()
 			case ResType_Image: 
 			{
 				ImageRes *anImageRes = (ImageRes*)aRes;
-				if ((GLImage*)anImageRes->mImage!=NULL)
+				if ((SDLImage*)anImageRes->mImage!=NULL)
 					continue;
 
 				return DoLoadImage(anImageRes); 
@@ -1125,7 +1074,7 @@ SharedImageRef ResourceManager::GetImageThrow(const std::string &theId)
 	if (anItr != mImageMap.end())
 	{
 		ImageRes *aRes = (ImageRes*)anItr->second;
-		if ((MemoryImage*) aRes->mImage != NULL)
+		if ((SDLImage*) aRes->mImage != NULL)
 			return aRes->mImage;
 
 		if (mAllowMissingProgramResources && aRes->mFromProgram)
@@ -1192,7 +1141,7 @@ bool ResourceManager::ReplaceImage(const std::string &theId, Image *theImage)
 	if (anItr != mImageMap.end())
 	{
 		anItr->second->DeleteResource();
-		((ImageRes*)anItr->second)->mImage = (MemoryImage*) theImage;
+		((ImageRes*)anItr->second)->mImage = (SDLImage*) theImage;
 		((ImageRes*)anItr->second)->mImage.mOwnsUnshared = true;
 		return true;
 	}

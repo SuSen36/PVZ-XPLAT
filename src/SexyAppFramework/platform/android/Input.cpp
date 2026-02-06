@@ -1,8 +1,8 @@
 #include "SDL3/SDL.h"
 #include <cmath>
 #include "SexyAppFramework/SexyAppBase.h"
-#include "SexyAppFramework/graphics/GLInterface.h"
-#include "SexyAppFramework/graphics/GLImage.h"
+
+#include "SexyAppFramework/graphics/SDLImage.h"
 #include "SexyAppFramework/widget/WidgetManager.h"
 #include "SexyAppFramework/widget/Dialog.h"
 #include "ConstEnums.h"
@@ -43,8 +43,10 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
                 break;
 
             case SDL_EVENT_WINDOW_RESIZED:
-                mGLInterface->UpdateViewport();
-                mWidgetManager->Resize(mScreenBounds, mGLInterface->mPresentationRect);
+                // SDL3 handles viewport automatically - just update screen bounds
+                mScreenBounds.mWidth = event.window.data1;
+                mScreenBounds.mHeight = event.window.data2;
+                mWidgetManager->Resize(mScreenBounds, mScreenBounds);
                 break;
 
             case SDL_EVENT_WINDOW_FOCUS_GAINED:

@@ -8,7 +8,7 @@
 #include "EffectSystem.h"
 #include "GameConstants.h"
 #include "SexyAppFramework/graphics/Font.h"
-#include "SexyAppFramework/graphics/MemoryImage.h"
+#include "SexyAppFramework/graphics/SDLImage.h"
 #include "ConstEnums.h"
 #include "SexyAppFramework/Common.h"
 #include <cstring>
@@ -365,7 +365,7 @@ void ReanimationPreload(ReanimationType theReanimationType)
 	ReanimationCreateAtlas(aReanimDef, theReanimationType);
 	if (aReanimDef->mReanimAtlas)
 	{
-		TodSandImageIfNeeded(aReanimDef->mReanimAtlas->mMemoryImage);
+		TodSandImageIfNeeded(aReanimDef->mReanimAtlas->mSDLImage);
 	}
 }
 
@@ -720,7 +720,7 @@ bool Reanimation::DrawTrack(Graphics* g, int theTrackIndex, int theRenderGroup, 
 	if (aAtlasImage != nullptr)  // 如果存在图集（动画定义存在 atlas，轨道变换存在图像，轨道不存在覆写贴图）
 	{
 		Rect aSrcRect(aAtlasImage->mX, aAtlasImage->mY, aAtlasImage->mWidth, aAtlasImage->mHeight);
-		aImage = mDefinition->mReanimAtlas->mMemoryImage;
+		aImage = mDefinition->mReanimAtlas->mSDLImage;
 		if (mFilterEffect != FilterEffect::FILTER_EFFECT_NONE)  // 如果动画存在滤镜
 		{
 			aImage = FilterEffectGetImage(aImage, mFilterEffect);  // 取得滤镜后的贴图
@@ -813,7 +813,7 @@ Image* Reanimation::GetCurrentTrackImage()
 	int compositeHeight = 100;
 	
 	// 创建复合图像
-	MemoryImage* compositeImage = new MemoryImage();
+	SDLImage* compositeImage = new SDLImage();
 	compositeImage->mWidth = compositeWidth;
 	compositeImage->mHeight = compositeHeight;
 	int numPixels = compositeWidth * compositeHeight;

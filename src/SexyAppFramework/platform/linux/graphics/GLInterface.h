@@ -2,7 +2,7 @@
 #define __GLINTERFACE_H__
 
 #include "SexyAppFramework/Common.h"
-#include "SexyAppFramework/graphics/MemoryImage.h"
+#include "SexyAppFramework/graphics/SDLImage.h"
 #include "SexyAppFramework/misc/CritSect.h"
 #include "SexyAppFramework/graphics/NativeDisplay.h"
 #include "SexyAppFramework/misc/Rect.h"
@@ -18,11 +18,11 @@ namespace Sexy
 {
 
 class SexyAppBase;
-class GLImage;
+class SDLImage;
 class SexyMatrix3;
 class TriVertex;
 
-typedef std::set<GLImage*> GLImageSet;
+typedef std::set<SDLImage*> SDLImageSet;
 
 enum D3DImageFlags 
 {
@@ -151,9 +151,9 @@ public:
 
 	void ReleaseTextures();
 
-	void CreateTextureDimensions(MemoryImage *theImage);
-	void CreateTextures(MemoryImage *theImage);
-	void CheckCreateTextures(MemoryImage *theImage);
+	void CreateTextureDimensions(SDLImage *theImage);
+	void CreateTextures(SDLImage *theImage);
+	void CheckCreateTextures(SDLImage *theImage);
 	GLuint& GetTexture(int x, int y, int &width, int &height, float &u1, float &v1, float &u2, float &v2);
 	GLuint& GetTextureF(float x, float y, float &width, float &height, float &u1, float &v1, float &u2, float &v2);
 
@@ -177,16 +177,16 @@ public:
 	int						mRefreshRate;
 	int						mMillisecondsPerFrame;
 
-	GLImage*				mScreenImage;
+	SDLImage*				mScreenImage;
 
 	int						mNextCursorX;
 	int						mNextCursorY;
 	int						mCursorX;
 	int						mCursorY;
 
-	typedef std::set<MemoryImage*> ImageSet;
+	typedef std::set<SDLImage*> ImageSet;
 	ImageSet mImageSet;
-	GLImageSet				mGLImageSet;
+	SDLImageSet				mSDLImageSet;
 
 	typedef std::list<SexyMatrix3> TransformStack;
 	TransformStack mTransformStack;
@@ -194,15 +194,15 @@ public:
 	void					SetDrawMode(int theDrawMode);
 
 public:
-	void					AddGLImage(GLImage* theDDImage);
-	void					RemoveGLImage(GLImage* theDDImage);
-	void					Remove3DData(MemoryImage* theImage); // for 3d texture cleanup
+	void					AddSDLImage(SDLImage* theDDImage);
+	void					RemoveSDLImage(SDLImage* theDDImage);
+	void					Remove3DData(SDLImage* theImage); // for 3d texture cleanup
 
 public:
 	GLInterface(SexyAppBase* theApp);
 	virtual ~GLInterface();
 
-	GLImage*				GetScreenImage();
+	SDLImage*				GetScreenImage();
 	void					UpdateViewport();
 	int						Init(bool IsWindowed);
 	bool					Redraw(Rect* theClipRect = NULL);
@@ -217,8 +217,8 @@ public:
 	bool					PreDraw();
 	void					Flush();
 
-	bool					CreateImageTexture(MemoryImage* theImage);
-	bool					RecoverBits(MemoryImage* theImage);
+	bool					CreateImageTexture(SDLImage* theImage);
+	bool					RecoverBits(SDLImage* theImage);
 	void					Blt(Image* theImage, float theX, float theY, const Rect& theSrcRect, const Color& theColor, int theDrawMode, bool linearFilter = false);
 	void					BltClipF(Image* theImage, float theX, float theY, const Rect& theSrcRect, const Rect *theClipRect, const Color& theColor, int theDrawMode);
 	void					BltMirror(Image* theImage, float theX, float theY, const Rect& theSrcRect, const Color& theColor, int theDrawMode, bool linearFilter = false);

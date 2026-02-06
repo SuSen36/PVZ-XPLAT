@@ -6,7 +6,7 @@
 namespace Sexy
 {
     class Graphics;
-    class MemoryImage;
+    class SDLImage;
 };
 using namespace Sexy;
 
@@ -16,7 +16,7 @@ class ReanimCacheImageVariation
 public:
     SeedType                mSeedType;
     DrawVariation           mDrawVariation;
-    MemoryImage*            mImage;
+    SDLImage*            mImage;
 };
 typedef TodList<ReanimCacheImageVariation> ImageVariationList;
 
@@ -24,10 +24,10 @@ class Reanimation;
 class ReanimatorCache
 {
 public:
-	MemoryImage*			mPlantImages[SeedType::NUM_SEED_TYPES];
+	SDLImage*			mPlantImages[SeedType::NUM_SEED_TYPES];
     ImageVariationList      mImageVariationList;
-    MemoryImage*            mLawnMowers[LawnMowerType::NUM_MOWER_TYPES];
-    MemoryImage*            mZombieImages[ZombieType::NUM_CACHED_ZOMBIE_TYPES];
+    SDLImage*            mLawnMowers[LawnMowerType::NUM_MOWER_TYPES];
+    SDLImage*            mZombieImages[ZombieType::NUM_CACHED_ZOMBIE_TYPES];
     LawnApp*                mApp;
 
 public:
@@ -39,10 +39,10 @@ public:
     void                    DrawCachedPlant(Graphics* g, float thePosX, float thePosY, SeedType theSeedType, DrawVariation theDrawVariation);
     void                    DrawCachedMower(Graphics* g, float thePosX, float thePosY, LawnMowerType theMowerType);
     void                    DrawCachedZombie(Graphics* g, float thePosX, float thePosY, ZombieType theZombieType);
-    MemoryImage*            MakeBlankMemoryImage(int theWidth, int theHeight);
-    MemoryImage*            MakeCachedPlantFrame(SeedType theSeedType, DrawVariation theDrawVariation);
-    MemoryImage*            MakeCachedMowerFrame(LawnMowerType theMowerType);
-    MemoryImage*            MakeCachedZombieFrame(ZombieType theZombieType);
+    SDLImage*            MakeBlankSDLImage(int theWidth, int theHeight);
+    SDLImage*            MakeCachedPlantFrame(SeedType theSeedType, DrawVariation theDrawVariation);
+    SDLImage*            MakeCachedMowerFrame(LawnMowerType theMowerType);
+    SDLImage*            MakeCachedZombieFrame(ZombieType theZombieType);
     /*inline*/ void         GetPlantImageSize(SeedType theSeedType, int& theOffsetX, int& theOffsetY, int& theWidth, int& theHeight);
     void                    DrawReanimatorFrame(Graphics* g, float thePosX, float thePosY, ReanimationType theReanimationType, const char* theTrackName, DrawVariation theDrawVariation);
     void                    UpdateReanimationForVariation(Reanimation* theReanim, DrawVariation theDrawVariation);

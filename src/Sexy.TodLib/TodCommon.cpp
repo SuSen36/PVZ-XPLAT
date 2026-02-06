@@ -8,11 +8,10 @@
 #include "TodStringFile.h"
 #include "GameConstants.h"
 #include "SexyAppFramework/graphics/Font.h"
-#include "SexyAppFramework/graphics/GLImage.h"
+#include "SexyAppFramework/graphics/SDLImage.h"
 #include "SexyAppFramework/graphics/Graphics.h"
 #include "SexyAppFramework/graphics/ImageFont.h"
 #include "SexyAppFramework/misc/SexyMatrix.h"
-#include "SexyAppFramework/graphics/GLInterface.h"
 
 
 //0x5114E0
@@ -624,19 +623,18 @@ void SexyMatrix3ExtractScale(const SexyMatrix3& m, float& theScaleX, float& theS
 
 void TodMarkImageForSanding(Image* theImage)
 {
-	((MemoryImage*)theImage)->mD3DFlags |= D3DIMAGEFLAG_SANDING;
+	//((SDLImage*)theImage)->mD3DFlags |= D3DIMAGEFLAG_SANDING;
 }
 
 void TodSandImageIfNeeded(Image* theImage)
 {
-	MemoryImage* aImage = (MemoryImage*)theImage;
+	SDLImage* aImage = (SDLImage*)theImage;
 	/*if (TestBit(aImage->mD3DFlags, D3DIMAGEFLAG_SANDING))*/ // UB shift by a billion
-	if (aImage->mD3DFlags & D3DIMAGEFLAG_SANDING)
-	{
-		FixPixelsOnAlphaEdgeForBlending(theImage);
-		((MemoryImage*)theImage)->mD3DFlags &= ~D3DIMAGEFLAG_SANDING; // Unset the sanding flag
-		//SetBit((unsigned int&)aImage->mD3DFlags, D3DIMAGEFLAG_SANDING, false);  // 清除标记 Also UB!?!
-	}
+	//if (aImage->mD3DFlags & D3DIMAGEFLAG_SANDING)
+	//{
+	//	FixPixelsOnAlphaEdgeForBlending(theImage);
+	//	((SDLImage*)theImage)->mD3DFlags &= ~D3DIMAGEFLAG_SANDING; // Unset the sanding flag
+	//	//SetBit((unsigned int&)aImage->mD3DFlags, D3DIMAGEFLAG_SANDING, false);  // 清除标记 Also UB!?!
 }
 
 //0x512650
@@ -656,11 +654,10 @@ void TodBltMatrix(Graphics* g, Image* theImage, const SexyMatrix3& theTransform,
 	{
 		g->mDestImage->BltMatrix(theImage, aOffsetX, aOffsetY, theTransform, theClipRect, theColor, theDrawMode, theSrcRect, g->mLinearBlend);
 	}
-	else if (GLImage::Check3D(g->mDestImage))
+	else if (SDLImage::Check3D(g->mDestImage))
 	{
 		theImage->mDrawn = true;
-		GLInterface* aInterface = ((GLImage*)g->mDestImage)->mGLInterface;
-		aInterface->BltTransformed(theImage, nullptr, theColor, theDrawMode, theSrcRect, theTransform, g->mLinearBlend, aOffsetX, aOffsetY, true);
+		g->mDestImage->BltMatrix(theImage, aOffsetX, aOffsetY, theTransform, theClipRect, theColor, theDrawMode, theSrcRect, g->mLinearBlend);
 	}
 	else
 	{
@@ -792,7 +789,7 @@ void TodDrawImageCenterScaledF(Graphics* g, Image* theImage, float thePosX, floa
 }
 
 //0x512AC0
-uint AverageNearByPixels(MemoryImage* theImage, uint* thePixel, int x, int y)
+uint AverageNearByPixels(SDLImage* theImage, uint* thePixel, int x, int y)
 {
 	int aRed = 0;
 	int aGreen = 0;
@@ -837,7 +834,7 @@ uint AverageNearByPixels(MemoryImage* theImage, uint* thePixel, int x, int y)
 //0x512C60
 void FixPixelsOnAlphaEdgeForBlending(Image* theImage)
 {
-	MemoryImage* aImage = (MemoryImage*)theImage;
+	SDLImage* aImage = (SDLImage*)theImage;
 	if (aImage->mBits == nullptr)
 		return;
 
@@ -1050,7 +1047,7 @@ bool TodResourceManager::TodLoadNextResource()
 		case ResType_Image:
 		{
 			ImageRes* anImageRes = (ImageRes*)aRes;
-			if ((GLImage*)anImageRes->mImage != nullptr)
+			if ((SDLImage*)anImageRes->mImage != nullptr)
 			{
 				mCurResGroupListItr++;
 				continue;

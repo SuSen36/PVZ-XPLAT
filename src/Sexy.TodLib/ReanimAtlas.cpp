@@ -2,21 +2,21 @@
 #include "TodCommon.h"
 #include "Reanimator.h"
 #include "ReanimAtlas.h"
-#include "SexyAppFramework/graphics/MemoryImage.h"
+#include "SexyAppFramework/graphics/SDLImage.h"
 
 //0x470250
 ReanimAtlas::ReanimAtlas()
 {
 	mImageCount = 0;
-	mMemoryImage = nullptr;
+	mSDLImage = nullptr;
 }
 
 void ReanimAtlas::ReanimAtlasDispose()
 {
-	if (mMemoryImage)
+	if (mSDLImage)
 	{
-		delete mMemoryImage;
-		mMemoryImage = nullptr;
+		delete mSDLImage;
+		mSDLImage = nullptr;
 	}
 	mImageCount = 0;
 }
@@ -32,9 +32,9 @@ ReanimAtlasImage* ReanimAtlas::GetEncodedReanimAtlas(Image* theImage)
 }
 
 //0x470290
-MemoryImage* ReanimAtlasMakeBlankMemoryImage(int theWidth, int theHeight)
+SDLImage* ReanimAtlasMakeBlankSDLImage(int theWidth, int theHeight)
 {
-	MemoryImage* aImage = new MemoryImage();
+	SDLImage* aImage = new SDLImage();
 
 	int aBitsCount = theWidth * theHeight;
 	aImage->mBits = new uint[aBitsCount + 1];
@@ -243,12 +243,12 @@ void ReanimAtlas::ReanimAtlasCreate(ReanimatorDefinition* theReanimDef)
 		}
 	}
 
-	mMemoryImage = ReanimAtlasMakeBlankMemoryImage(aAtlasWidth, aAtlasHeight);
-	Graphics aMemoryGraphis(mMemoryImage);
+	mSDLImage = ReanimAtlasMakeBlankSDLImage(aAtlasWidth, aAtlasHeight);
+	Graphics aMemoryGraphis(mSDLImage);
 	for (int aImageIndex = 0; aImageIndex < mImageCount; aImageIndex++)
 	{
 		ReanimAtlasImage* aImage = &mImageArray[aImageIndex];
 		aMemoryGraphis.DrawImage(aImage->mOriginalImage, aImage->mX, aImage->mY);  // 将原贴图绘制在图集上
 	}
-	FixPixelsOnAlphaEdgeForBlending(mMemoryImage);  // 将所有透明像素的颜色修正为其周围像素颜色的平均值
+	FixPixelsOnAlphaEdgeForBlending(mSDLImage);  // 将所有透明像素的颜色修正为其周围像素颜色的平均值
 }

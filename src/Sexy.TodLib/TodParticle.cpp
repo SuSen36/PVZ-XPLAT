@@ -4,7 +4,6 @@
 #include "EffectSystem.h"
 #include "GameConstants.h"
 #include "SexyAppFramework/graphics/Graphics.h"
-#include "SexyAppFramework/graphics/GLInterface.h"
 
 int gParticleDefCount;                      // [0x6A9F08]
 TodParticleDefinition* gParticleDefArray;   // [0x6A9F0C]

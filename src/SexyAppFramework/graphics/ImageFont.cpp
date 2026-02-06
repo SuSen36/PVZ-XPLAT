@@ -2,8 +2,8 @@
 #include "Graphics.h"
 #include "Image.h"
 #include "../SexyAppBase.h"
-#include "MemoryImage.h"
-#include "SexyAppFramework/graphics/GLImage.h"
+#include "SDLImage.h"
+#include "SexyAppFramework/graphics/SDLImage.h"
 #include "../misc/AutoCrit.h"
 #include "SexyAppFramework/fcaseopen/fcaseopen.h"
 
@@ -595,8 +595,8 @@ bool FontData::HandleCommand(const ListDataElement& theParams)
 
 				if ((Image*)anImage != NULL)
 				{
-					if (isNew)
-						anImage->Palletize();
+					//if (isNew)
+						//anImage->Palletize();
 					aLayer->mImage = anImage;
 				}
 				else
@@ -1084,7 +1084,7 @@ bool FontData::LoadLegacy(Image* theFontImage, const std::string& theFontDescFil
 	if (anItr == mFontLayerMap.end())
 		return false;
 
-	aFontLayer->mImage = (MemoryImage*)theFontImage;
+	aFontLayer->mImage = (SDLImage*)theFontImage;
 	aFontLayer->mDefaultHeight = aFontLayer->mImage->GetHeight();
 	aFontLayer->mAscent = aFontLayer->mImage->GetHeight();
 
@@ -1201,7 +1201,7 @@ ImageFont::ImageFont(Image* theFontImage)
 	// Weird stray .first
 	(void)mFontData->mFontLayerMap.insert(FontLayerMap::value_type("", aFontLayer)).first;
 
-	aFontLayer->mImage = (MemoryImage*)theFontImage;
+	aFontLayer->mImage = (SDLImage*)theFontImage;
 	aFontLayer->mDefaultHeight = aFontLayer->mImage->GetHeight();
 	aFontLayer->mAscent = aFontLayer->mImage->GetHeight();
 }
@@ -1323,7 +1323,7 @@ void ImageFont::GenerateActiveFontLayers()
 					// Resize font elements
 					int aCharNum = 0;
 
-					MemoryImage* aMemoryImage = new MemoryImage(mFontData->mApp);
+					SDLImage* aSDLImage = new SDLImage();
 
 					int aCurX = 0;
 					int aMaxHeight = 0;
@@ -1360,14 +1360,14 @@ void ImageFont::GenerateActiveFontLayers()
 						aCurX += aScaledRect.mWidth;
 					}
 
-					anActiveFontLayer->mScaledImage = aMemoryImage;
+					anActiveFontLayer->mScaledImage = aSDLImage;
 					anActiveFontLayer->mOwnsImage = true;
 
 					// Create the image now
 
-					aMemoryImage->Create(aCurX, aMaxHeight);
+					aSDLImage->Create(aCurX, aMaxHeight);
 
-					Graphics g(aMemoryImage);
+					Graphics g(aSDLImage);
 
 					//for (aCharNum = 0; aCharNum < 256; aCharNum++)
 					//{
@@ -1385,8 +1385,8 @@ void ImageFont::GenerateActiveFontLayers()
 
 					if (mForceScaledImagesWhite)
 					{
-						int aCount = aMemoryImage->mWidth * aMemoryImage->mHeight;
-						uint32_t* aBits = aMemoryImage->GetBits();
+						int aCount = aSDLImage->mWidth * aSDLImage->mHeight;
+						uint32_t* aBits = aSDLImage->GetBits();
 
 						for (int i = 0; i < aCount; i++) {
 							// *(aBits++) = *aBits | 0x00FFFFFF; ambiguous
@@ -1395,7 +1395,7 @@ void ImageFont::GenerateActiveFontLayers()
 						}
 					}
 
-					aMemoryImage->Palletize();
+					//aSDLImage->Palletize();
 				}
 
 				int aLayerAscent = (aFontLayer->mAscent * aPointSize) / aLayerPointSize;

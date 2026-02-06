@@ -1,13 +1,10 @@
+#include <cmath>
 #include "PoolEffect.h"
 #include "LawnApp.h"
-#include "../../Resources.h"
 #include "GameConstants.h"
 #include "Sexy.TodLib/TodDebug.h"
-#include "SexyAppFramework/graphics/GLImage.h"
+#include "SexyAppFramework/graphics/SDLImage.h"
 #include "SexyAppFramework/graphics/Graphics.h"
-#include "SexyAppFramework/graphics/GLInterface.h"
-//#include "SexyAppFramework/graphics/D3DInterface.h"
-
 //0x469A60
 void PoolEffect::PoolEffectInitialize()
 {
@@ -15,7 +12,7 @@ void PoolEffect::PoolEffectInitialize()
 
     mApp = gLawnApp;
 
-    mCausticImage = new MemoryImage(gSexyAppBase);
+    mCausticImage = new SDLImage();
     mCausticImage->mWidth = CAUSTIC_IMAGE_WIDTH;
     mCausticImage->mHeight = CAUSTIC_IMAGE_HEIGHT;
     mCausticImage->mBits = new uint[CAUSTIC_IMAGE_WIDTH * CAUSTIC_IMAGE_HEIGHT + 1];
@@ -25,15 +22,23 @@ void PoolEffect::PoolEffectInitialize()
     mCausticImage->mBits[CAUSTIC_IMAGE_WIDTH * CAUSTIC_IMAGE_HEIGHT] = MEMORYCHECK_ID;
 
     mCausticGrayscaleImage = new unsigned char[256 * 256];
-    MemoryImage* aCausticGrayscaleImage = (MemoryImage*)IMAGE_POOL_CAUSTIC_EFFECT;
-    int index = 0;
-    for (int x = 0; x < 256; x++)
+    SDLImage* aCausticGrayscaleImage = dynamic_cast<SDLImage*>(IMAGE_POOL_CAUSTIC_EFFECT);
+    if (aCausticGrayscaleImage && aCausticGrayscaleImage->mBits)
     {
-        for (int y = 0; y < 256; y++)
+        int index = 0;
+        for (int x = 0; x < 256; x++)
         {
-            mCausticGrayscaleImage[index] = (unsigned char)aCausticGrayscaleImage->mBits[index];
-            index++;
+            for (int y = 0; y < 256; y++)
+            {
+                mCausticGrayscaleImage[index] = (unsigned char)aCausticGrayscaleImage->mBits[index];
+                index++;
+            }
         }
+    }
+    else
+    {
+        // Fallback: fill with default values if cast fails or no bits available
+        memset(mCausticGrayscaleImage, 128, 256 * 256);
     }
 }
 
@@ -103,7 +108,8 @@ void PoolEffect::UpdateWaterEffect()
         }
     }
 
-    ++mCausticImage->mBitsChangedCount;
+    //TODO
+    //++mCausticImage->mBitsChangedCount;
 }
 
 //0x469DE0
@@ -215,7 +221,7 @@ void PoolEffect::PoolEffectDraw(Sexy::Graphics* g, bool theIsNight)
     }
 
     UpdateWaterEffect();
-    GLInterface* anInterface = ((GLImage*)g->mDestImage)->mGLInterface;
+    //GLInterface* anInterface = ((SDLImage*)g->mDestImage)->mGLInterface;
     //anInterface->CheckDXError(anInterface->mD3DDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_ADDRESSU, D3DTEXTUREADDRESS::D3DTADDRESS_WRAP), "DrawPool");
     //anInterface->CheckDXError(anInterface->mD3DDevice->SetTextureStageState(0, D3DTEXTURESTAGESTATETYPE::D3DTSS_ADDRESSV, D3DTEXTUREADDRESS::D3DTADDRESS_WRAP), "DrawPool");
     g->DrawTrianglesTex(mCausticImage, aVertArray[2], 150);

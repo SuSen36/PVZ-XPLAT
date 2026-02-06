@@ -113,7 +113,7 @@ void					TodBltMatrix(Graphics* g, Image* theImage, const SexyMatrix3& theTransf
 void					TodMarkImageForSanding(Image* theImage);
 void					TodSandImageIfNeeded(Image* theImage);
 void					FixPixelsOnAlphaEdgeForBlending(Image* theImage);
-uint					AverageNearByPixels(MemoryImage* theImage, uint* thePixel, int x, int y);
+uint					AverageNearByPixels(SDLImage* theImage, uint* thePixel, int x, int y);
 void					Tod_SWTri_AddAllDrawTriFuncs();
 
 SexyString				TodReplaceString(const SexyString& theText, const SexyChar* theStringToFind, const SexyString& theStringToSubstitute);

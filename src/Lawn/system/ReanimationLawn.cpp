@@ -5,7 +5,7 @@
 #include "Sexy.TodLib/TodDebug.h"
 #include "SexyAppFramework/graphics/Color.h"
 #include "Sexy.TodLib/Reanimator.h"
-#include "SexyAppFramework/graphics/MemoryImage.h"
+#include "SexyAppFramework/graphics/SDLImage.h"
 #include "SexyAppFramework/Common.h"
 
 //0x46EF00
@@ -95,9 +95,9 @@ void ReanimatorCache::DrawReanimatorFrame(Graphics* g, float thePosX, float theP
 }
 
 //0x46F280
-MemoryImage* ReanimatorCache::MakeBlankMemoryImage(int theWidth, int theHeight)
+SDLImage* ReanimatorCache::MakeBlankSDLImage(int theWidth, int theHeight)
 {
-	MemoryImage* aImage = new MemoryImage();
+	SDLImage* aImage = new SDLImage();
 
 	int aBitsCount = theWidth * theHeight;
 	aImage->mBits = new uint[aBitsCount + 1];
@@ -134,15 +134,15 @@ void ReanimatorCache::GetPlantImageSize(SeedType theSeedType, int& theOffsetX, i
 }
 
 //0x46F330
-MemoryImage* ReanimatorCache::MakeCachedMowerFrame(LawnMowerType theMowerType)
+SDLImage* ReanimatorCache::MakeCachedMowerFrame(LawnMowerType theMowerType)
 {
-	MemoryImage* aImage = nullptr;
+	SDLImage* aImage = nullptr;
 
 	switch (theMowerType)
 	{
 	case LawnMowerType::LAWNMOWER_LAWN:
 	{
-		aImage = MakeBlankMemoryImage(90, 100);
+		aImage = MakeBlankSDLImage(90, 100);
 		Graphics aMemoryGraphics(aImage);
 		aMemoryGraphics.SetLinearBlend(true);
 		aMemoryGraphics.mScaleX = 0.85f;
@@ -152,7 +152,7 @@ MemoryImage* ReanimatorCache::MakeCachedMowerFrame(LawnMowerType theMowerType)
 	}
 	case LawnMowerType::LAWNMOWER_POOL:
 	{
-		aImage = MakeBlankMemoryImage(90, 100);
+		aImage = MakeBlankSDLImage(90, 100);
 		Graphics aMemoryGraphics(aImage);
 		aMemoryGraphics.SetLinearBlend(true);
 		aMemoryGraphics.mScaleX = 0.8f;
@@ -162,7 +162,7 @@ MemoryImage* ReanimatorCache::MakeCachedMowerFrame(LawnMowerType theMowerType)
 	}
 	case LawnMowerType::LAWNMOWER_ROOF:
 	{
-		aImage = MakeBlankMemoryImage(90, 100);
+		aImage = MakeBlankSDLImage(90, 100);
 		Graphics aMemoryGraphics(aImage);
 		aMemoryGraphics.SetLinearBlend(true);
 		aMemoryGraphics.mScaleX = 0.85f;
@@ -172,7 +172,7 @@ MemoryImage* ReanimatorCache::MakeCachedMowerFrame(LawnMowerType theMowerType)
 	}
 	case LawnMowerType::LAWNMOWER_SUPER_MOWER:
 	{
-		aImage = MakeBlankMemoryImage(90, 100);
+		aImage = MakeBlankSDLImage(90, 100);
 		Graphics aMemoryGraphics(aImage);
 		aMemoryGraphics.SetLinearBlend(true);
 		aMemoryGraphics.mScaleX = 0.85f;
@@ -189,12 +189,12 @@ MemoryImage* ReanimatorCache::MakeCachedMowerFrame(LawnMowerType theMowerType)
 }
 
 //0x46F550
-MemoryImage* ReanimatorCache::MakeCachedPlantFrame(SeedType theSeedType, DrawVariation theDrawVariation)
+SDLImage* ReanimatorCache::MakeCachedPlantFrame(SeedType theSeedType, DrawVariation theDrawVariation)
 {
 	int aOffsetX, aOffsetY, aWidth, aHeight;
 	GetPlantImageSize(theSeedType, aOffsetX, aOffsetY, aWidth, aHeight);
-	MemoryImage* aMemoryImage = MakeBlankMemoryImage(aWidth, aHeight);
-	Graphics aMemoryGraphics(aMemoryImage);
+	SDLImage* aSDLImage = MakeBlankSDLImage(aWidth, aHeight);
+	Graphics aMemoryGraphics(aSDLImage);
 	aMemoryGraphics.SetLinearBlend(true);
 
 	PlantDefinition& aPlantDef = GetPlantDefinition(theSeedType);
@@ -241,20 +241,20 @@ MemoryImage* ReanimatorCache::MakeCachedPlantFrame(SeedType theSeedType, DrawVar
 	}
 
 	// 只修复万寿菊的花瓣颜色问题：当使用颜色变化时，mTrackColor 在颜色混合时格式不对
-	// 问题在于 mTrackColor 通过 Color::ToInt() 转换为 ARGB 格式进行混合，但 MemoryImage 期望 BGRA 格式
+	// 问题在于 mTrackColor 通过 Color::ToInt() 转换为 ARGB 格式进行混合，但 SDLImage 期望 BGRA 格式
 	// 这导致只有通过 mTrackColor 进行颜色混合的花瓣部分出现颜色错误
 	// 为了不影响其他部分（叶子、茎等），先绘制一个不使用颜色变化的版本作为参考
 	// 然后只修复有差异的像素（这些应该是花瓣部分）
 	if (theSeedType == SeedType::SEED_MARIGOLD && theDrawVariation >= DrawVariation::VARIATION_MARIGOLD_WHITE && theDrawVariation <= DrawVariation::VARIATION_MARIGOLD_LIGHT_GREEN)
 	{
 		// 先绘制一个不使用颜色变化的版本作为参考
-		MemoryImage* aReferenceImage = MakeBlankMemoryImage(aWidth, aHeight);
+		SDLImage* aReferenceImage = MakeBlankSDLImage(aWidth, aHeight);
 		Graphics aReferenceGraphics(aReferenceImage);
 		aReferenceGraphics.SetLinearBlend(true);
 		DrawReanimatorFrame(&aReferenceGraphics, -aOffsetX, -aOffsetY, aPlantDef.mReanimationType, "anim_idle", DrawVariation::VARIATION_NORMAL);
 		
 		// 比较两个图像，只修复有差异的像素（花瓣部分）
-		uint* aBits = aMemoryImage->GetBits();
+		uint* aBits = aSDLImage->GetBits();
 		uint* aRefBits = aReferenceImage->GetBits();
 		int aPixelCount = aWidth * aHeight;
 		for (int i = 0; i < aPixelCount; i++)
@@ -286,24 +286,24 @@ MemoryImage* ReanimatorCache::MakeCachedPlantFrame(SeedType theSeedType, DrawVar
 				if (colorDiff > 10)  // 颜色差异阈值，避免误判
 				{
 					// 从 ARGB 格式提取各个通道（Color::ToInt() 返回的格式）
-					// 转换为 BGRA 格式（MemoryImage 期望的格式）：Blue(0-7), Green(8-15), Red(16-23), Alpha(24-31)
+					// 转换为 BGRA 格式（SDLImage 期望的格式）：Blue(0-7), Green(8-15), Red(16-23), Alpha(24-31)
 					aBits[i] = (b << 0) | (g << 8) | (r << 16) | (a << 24);
 				}
 			}
 		}
-		aMemoryImage->BitsChanged();
+		aSDLImage->BitsChanged();
 		
 		delete aReferenceImage;
 	}
 
-	return aMemoryImage;
+	return aSDLImage;
 }
 
 //0x46F8A0
-MemoryImage* ReanimatorCache::MakeCachedZombieFrame(ZombieType theZombieType)
+SDLImage* ReanimatorCache::MakeCachedZombieFrame(ZombieType theZombieType)
 {
-	MemoryImage* aMemoryImage = MakeBlankMemoryImage(200, 210);
-	Graphics aMemoryGraphics(aMemoryImage);
+	SDLImage* aSDLImage = MakeBlankSDLImage(200, 210);
+	Graphics aMemoryGraphics(aSDLImage);
 	aMemoryGraphics.SetLinearBlend(true);
 
 	ZombieType aUseZombieType = theZombieType;
@@ -451,7 +451,7 @@ MemoryImage* ReanimatorCache::MakeCachedZombieFrame(ZombieType theZombieType)
 
 		DrawReanimatorFrame(&aMemoryGraphics, aPosX, aPosY, aZombieDef.mReanimationType, aTrackName, DrawVariation::VARIATION_NORMAL);
 	}
-	return aMemoryImage;
+	return aSDLImage;
 }
 
 //0x46FDC0
@@ -489,7 +489,7 @@ void ReanimatorCache::DrawCachedPlant(Graphics* g, float thePosX, float thePosY,
 {
 	TOD_ASSERT(theSeedType >= 0 && theSeedType < SeedType::NUM_SEED_TYPES);
 
-	MemoryImage* aImage = nullptr;
+	SDLImage* aImage = nullptr;
 	if (theDrawVariation != DrawVariation::VARIATION_NORMAL)
 	{
 		for (TodListNode<ReanimCacheImageVariation>* aNode = mImageVariationList.mHead; aNode != nullptr; aNode = aNode->mNext)

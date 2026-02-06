@@ -22,11 +22,11 @@ namespace Sexy
 class WidgetManager;
 class GLInterface;
 class Image;
-class GLImage;
+class SDLImage;
 class Widget;
 class SoundManager;
 class MusicInterface;
-class MemoryImage;
+class SDLImage;
 class HTTPTransfer;
 class Dialog;
 
@@ -41,7 +41,7 @@ public:
 
 
 typedef std::list<WidgetSafeDeleteInfo> WidgetSafeDeleteList;
-typedef std::set<MemoryImage*> MemoryImageSet;
+typedef std::set<SDLImage*> SDLImageSet;
 typedef std::map<int, Dialog*> DialogMap;
 typedef std::list<Dialog*> DialogList;
 //typedef std::list<MSG> WindowsMessageList;
@@ -169,7 +169,7 @@ public:
 	int						mMuteCount;
 	int						mAutoMuteCount;
 	bool					mMuteOnLostFocus;
-	MemoryImageSet			mMemoryImageSet;
+	SDLImageSet			mSDLImageSet;
 	SharedImageMap			mSharedImageMap;
 	bool					mCleanupSharedImages;
 	
@@ -279,8 +279,7 @@ protected:
 	virtual void			MakeWindow();
 	virtual void			EnforceCursor();
 	virtual void			ReInitImages();
-	virtual void			DeleteNativeImageData();	
-	virtual void			DeleteExtraImageData();
+	virtual void			DeleteNativeImageData();
 	
 	// Loading thread methods	
 	virtual void			LoadingThreadCompleted();
@@ -361,32 +360,29 @@ public:
 	void					SetCursor(int theCursorNum);
 	int						GetCursor();
 	void					EnableCustomCursors(bool enabled);	
-	virtual GLImage*		GetImage(const std::string& theFileName, bool commitBits = true);	
-	virtual SharedImageRef	SetSharedImage(const std::string& theFileName, const std::string& theVariant, GLImage* theImage, bool* isNew);
+	virtual SDLImage*		GetImage(const std::string& theFileName, bool commitBits = true);
+	virtual SharedImageRef	SetSharedImage(const std::string& theFileName, const std::string& theVariant, SDLImage* theImage, bool* isNew);
 	virtual SharedImageRef	GetSharedImage(const std::string& theFileName, const std::string& theVariant = "", bool* isNew = NULL);
 
 	void					CleanSharedImages();
-	void					PrecacheAdditive(MemoryImage* theImage);
-	void					PrecacheAlpha(MemoryImage* theImage);
-	void					PrecacheNative(MemoryImage* theImage);
 	void					SetCursorImage(int theCursorNum, Image* theImage);
 
-	GLImage*				CreateCrossfadeImage(Image* theImage1, const Rect& theRect1, Image* theImage2, const Rect& theRect2, double theFadeFactor);
+	SDLImage*				CreateCrossfadeImage(Image* theImage1, const Rect& theRect1, Image* theImage2, const Rect& theRect2, double theFadeFactor);
 	void					ColorizeImage(Image* theImage, const Color& theColor);
-	GLImage*				CreateColorizedImage(Image* theImage, const Color& theColor);
-	GLImage*				CopyImage(Image* theImage, const Rect& theRect);
-	GLImage*				CopyImage(Image* theImage);
+	SDLImage*				CreateColorizedImage(Image* theImage, const Color& theColor);
+	SDLImage*				CopyImage(Image* theImage, const Rect& theRect);
+	SDLImage*				CopyImage(Image* theImage);
 	void					MirrorImage(Image* theImage);
 	void					FlipImage(Image* theImage);
-	void					RotateImageHue(Sexy::MemoryImage *theImage, int theDelta);
+	void					RotateImageHue(Sexy::SDLImage *theImage, int theDelta);
 	uint32_t				HSLToRGB(int h, int s, int l);
 	uint32_t				RGBToHSL(int r, int g, int b);
 	void					HSLToRGB(const uint32_t* theSource, uint32_t* theDest, int theSize);
 	void					RGBToHSL(const uint32_t* theSource, uint32_t* theDest, int theSize);
 
-	void					AddMemoryImage(MemoryImage* theMemoryImage);
-	void					RemoveMemoryImage(MemoryImage* theMemoryImage);
-	void					Remove3DData(MemoryImage* theMemoryImage);
+	void					AddSDLImage(SDLImage* theSDLImage);
+	void					RemoveSDLImage(SDLImage* theSDLImage);
+	void					Remove3DData(SDLImage* theSDLImage);
 	virtual void			SwitchScreenMode();
 	virtual void			SwitchScreenMode(bool wantWindowed);
 	virtual void			SwitchScreenMode(bool wantWindowed,bool force = false);
