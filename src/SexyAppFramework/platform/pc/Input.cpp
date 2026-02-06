@@ -1,5 +1,4 @@
-#include <SDL.h>
-
+#include "SDL3/SDL.h"
 #include "SexyAppFramework/SexyAppBase.h"
 #include "SexyAppFramework/graphics/GLInterface.h"
 #include "SexyAppFramework/graphics/GLImage.h"
@@ -18,13 +17,13 @@ void SexyAppBase::InitInput()
 
 bool SexyAppBase::StartTextInput(std::string& theInput)
 {
-	SDL_StartTextInput();
+	SDL_StartTextInput((SDL_Window*)mWindow);
 	return false;
 }
 
 void SexyAppBase::StopTextInput()
 {
-	SDL_StopTextInput();
+	SDL_StopTextInput((SDL_Window*)mWindow);
 }
 
 bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
@@ -34,42 +33,41 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 	{
 		switch(event.type)
 		{
-			case SDL_QUIT:
+			case SDL_EVENT_QUIT:
 				mShutdown = true;
 				break;
 
-			case SDL_WINDOWEVENT:
-				switch(event.window.event)
-				{
-					case SDL_WINDOWEVENT_RESIZED:
-						mGLInterface->UpdateViewport();
-						mWidgetManager->Resize(mScreenBounds, mGLInterface->mPresentationRect);
-						break;
-
-				case SDL_WINDOWEVENT_FOCUS_GAINED:
-				case SDL_WINDOWEVENT_FOCUS_LOST:
-					mActive = event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED;
-					RehupFocus();
-					EnforceCursor();
-					break;
-				case SDL_WINDOWEVENT_ENTER:
-					if (!mMouseIn)
-					{
-						mMouseIn = true;
-						EnforceCursor();
-					}
-					break;
-				case SDL_WINDOWEVENT_LEAVE:
-					if (mMouseIn)
-					{
-						mMouseIn = false;
-						EnforceCursor();
-					}
-					break;
-				}
+			case SDL_EVENT_WINDOW_RESIZED:
+			mGLInterface->UpdateViewport();
+			mWidgetManager->Resize(mScreenBounds, mGLInterface->mPresentationRect);
+			break;
+		case SDL_EVENT_WINDOW_FOCUS_GAINED:
+			mActive = true;
+			RehupFocus();
+			EnforceCursor();
+			break;
+		case SDL_EVENT_WINDOW_FOCUS_LOST:
+			mActive = false;
+			RehupFocus();
+			EnforceCursor();
+			break;
+		case SDL_EVENT_WINDOW_MOUSE_ENTER:
+			if (!mMouseIn)
+			{
+				mMouseIn = true;
+				EnforceCursor();
+			}
+			break;
+		case SDL_EVENT_WINDOW_MOUSE_LEAVE:
+			if (mMouseIn)
+			{
+				mMouseIn = false;
+				EnforceCursor();
+			}
+			break;
 				break;
 
-			case SDL_MOUSEMOTION:
+			case SDL_EVENT_MOUSE_MOTION:
 			{
 				if (!mMouseIn)
 				{
@@ -77,8 +75,8 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 					EnforceCursor();
 				}
 
-				int x = event.motion.x;
-				int y = event.motion.y;
+				int x = (int)event.motion.x;
+				int y = (int)event.motion.y;
 				mWidgetManager->RemapMouse(x, y);
 
 				mLastUserInputTick = mLastTimerTime;
@@ -87,7 +85,7 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 				break;
 			}
 
-			case SDL_MOUSEBUTTONDOWN:
+			case SDL_EVENT_MOUSE_BUTTON_DOWN:
 			{
 				if (!mMouseIn)
 				{
@@ -95,8 +93,8 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 					EnforceCursor();
 				}
 
-				int x = event.button.x;
-				int y = event.button.y;
+				int x = (int)event.button.x;
+				int y = (int)event.button.y;
 				mWidgetManager->RemapMouse(x, y);
 
 				mLastUserInputTick = mLastTimerTime;
@@ -113,7 +111,7 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 				break;
 			}
 
-			case SDL_MOUSEBUTTONUP:
+			case SDL_EVENT_MOUSE_BUTTON_UP:
 			{
 				if (!mMouseIn)
 				{
@@ -121,8 +119,8 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 					EnforceCursor();
 				}
 
-				int x = event.button.x;
-				int y = event.button.y;
+				int x = (int)event.button.x;
+				int y = (int)event.button.y;
 				mWidgetManager->RemapMouse(x, y);
 
 				mLastUserInputTick = mLastTimerTime;
@@ -137,7 +135,7 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 				break;
 			}
 
-			case SDL_KEYDOWN:
+			case SDL_EVENT_KEY_DOWN:
 				mLastUserInputTick = mLastTimerTime;
 
 				/*
@@ -161,7 +159,7 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 				*/
 
 				// 处理 PC Esc 键
-				if (event.key.keysym.sym == SDLK_ESCAPE)
+				if (event.key.key == SDLK_ESCAPE)
 				{
 					// 如果有打开的对话框，关闭最顶层的对话框
 					if (!mDialogList.empty())
@@ -218,25 +216,25 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
 					}
 				}
 
-				mWidgetManager->KeyDown((KeyCode)event.key.keysym.sym);
+				mWidgetManager->KeyDown((KeyCode)event.key.key);
 				break;
 
-			case SDL_KEYUP:
+			case SDL_EVENT_KEY_UP:
 				mLastUserInputTick = mLastTimerTime;
-				mWidgetManager->KeyUp((KeyCode)event.key.keysym.sym);
+				mWidgetManager->KeyUp((KeyCode)event.key.key);
 				break;
 
-			case SDL_TEXTINPUT:
+			case SDL_EVENT_TEXT_INPUT:
 				mLastUserInputTick = mLastTimerTime;
 				mWidgetManager->KeyChar((SexyChar)event.text.text[0]);
 				break;
 
-            case SDL_MOUSEWHEEL:
-                int aZDelta = event.wheel.y;
+            case SDL_EVENT_MOUSE_WHEEL:
+                int aZDelta = (int)event.wheel.y;
                 mWidgetManager->MouseWheel(aZDelta);
                 break;
 		}
 	}
 
-	return SDL_HasEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+	return SDL_PumpEvents(), SDL_HasEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
 }

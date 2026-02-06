@@ -1266,9 +1266,8 @@ GLInterface::GLInterface(SexyAppBase* theApp)
 
     mPresentationRect = Rect( 0, 0, mWidth, mHeight );
 
-    SDL_DisplayMode aMode;
-    SDL_GetCurrentDisplayMode(SDL_GetWindowDisplayIndex((SDL_Window*)mApp->mWindow), &aMode);
-    mRefreshRate = aMode.refresh_rate;
+    const SDL_DisplayMode* aMode = SDL_GetCurrentDisplayMode(SDL_GetDisplayForWindow((SDL_Window*)mApp->mWindow));
+    mRefreshRate = aMode ? aMode->refresh_rate : 0;
     if (!mRefreshRate) mRefreshRate = 60;
     mMillisecondsPerFrame = 1000/mRefreshRate;
 
@@ -1353,7 +1352,7 @@ void GLInterface::UpdateViewport()
     int viewport_x = 0;
     int viewport_y = 0;
 
-    SDL_GL_GetDrawableSize((SDL_Window*)mApp->mWindow, &width, &height);
+    SDL_GetWindowSizeInPixels((SDL_Window*)mApp->mWindow, &width, &height);
 
     glClear(GL_COLOR_BUFFER_BIT);
     Flush();

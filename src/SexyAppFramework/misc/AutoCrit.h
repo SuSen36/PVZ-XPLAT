@@ -3,16 +3,17 @@
 
 #include "../Common.h"
 #include "CritSect.h"
+#include <SDL3/SDL_mutex.h>
 
 namespace Sexy
 {
 
 class AutoCrit
 {
-	SDL_mutex* mCritSec;
+	SDL_Mutex* mCritSec;
 
 public:
-	AutoCrit(SDL_mutex* theCritSec) : 
+	AutoCrit(SDL_Mutex* theCritSec) :
 		mCritSec(theCritSec)
 	{
 		SDL_LockMutex(mCritSec);

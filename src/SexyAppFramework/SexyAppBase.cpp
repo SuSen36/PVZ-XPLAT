@@ -52,7 +52,7 @@ SexyAppBase::SexyAppBase()
 {
 	gSexyAppBase = this;
 
-	SDL_Init(SDL_INIT_TIMER);
+	// SDL_INIT_TIMER removed in SDL3
 	//mMutex = NULL;
 	mNotifyGameMessage = 0;
 
@@ -1036,94 +1036,6 @@ void SexyAppBase::Redraw(Rect* theClipRect)
 
 	static DWORD aRetryTick = 0;
 	mGLInterface->Redraw(theClipRect);
-	/*
-	if (!mGLInterface->Redraw(theClipRect))
-	{
-		//gD3DInterfacePreDrawError = false; // this predraw error happens naturally when ddraw is failing
-		if (!gIsFailing)
-		{
-			//gDebugStream << GetTickCount() << " Redraw failed!" << std::endl;
-			gIsFailing = true;
-		}
-
-		WINDOWPLACEMENT aWindowPlacement;
-		ZeroMemory(&aWindowPlacement, sizeof(aWindowPlacement));
-		aWindowPlacement.length = sizeof(aWindowPlacement);
-		::GetWindowPlacement(mHWnd, &aWindowPlacement);
-
-		DWORD aTick = SDL_GetTicks();
-		//if ((mActive || (aTick-aRetryTick>1000 && mIsPhysWindowed)) && (aWindowPlacement.showCmd != SW_SHOWMINIMIZED) && (!mMinimized))
-		if ((mActive || (aTick-aRetryTick>1000 && mIsPhysWindowed)) && (!mMinimized))
-		{
-			aRetryTick = aTick;
-
-			mWidgetManager->mImage = NULL;
-
-			// Re-check resolution at this point, because we hit here when you change your resolution.
-
-			if (((mWidth >= GetSystemMetrics(SM_CXFULLSCREEN)) || (mHeight >= GetSystemMetrics(SM_CYFULLSCREEN))) && (mIsWindowed))
-			{
-				if (mForceWindowed)
-				{
-					Popup(GetString("PLEASE_SET_COLOR_DEPTH", __S("Please set your desktop color depth to 16 bit.")));
-					Shutdown();
-					return;
-				}
-				mForceFullscreen = true;
-
-				SwitchScreenMode(false);
-				return;
-			}
-
-
-			int aResult = InitGLInterface();
-
-			//gDebugStream << GetTickCount() << " ReInit..." << std::endl;
-
-			if ((mIsWindowed) && (aResult == DDInterface::RESULT_INVALID_COLORDEPTH))
-			{
-				//gDebugStream << GetTickCount() << "ReInit Invalid Colordepth" << std::endl;
-				if (!mActive) // don't switch to full screen if not active app
-					return;
-
-				SwitchScreenMode(false);
-				mForceFullscreen = true;
-				return;
-			}
-			else if (aResult == DDInterface::RESULT_3D_FAIL)
-			{
-				Set3DAcclerated(false);
-				return;
-			}
-			else if (aResult != DDInterface::RESULT_OK)
-			{
-				//gDebugStream << GetTickCount() << " ReInit Failed" << std::endl;
-				//Fail("Failed to initialize DirectDraw");
-				//Sleep(1000);
-
-				return;
-			}
-			if (!aResult) return;
-
-			ReInitImages();
-
-			mWidgetManager->mImage = mGLInterface->GetScreenImage();
-			mWidgetManager->MarkAllDirty();
-
-			mLastTime = SDL_GetTicks();
-		}
-	}
-	else
-	{
-		if (gIsFailing)
-		{
-			//gDebugStream << GetTickCount() << " Redraw succeeded" << std::endl;
-			gIsFailing = false;
-			aRetryTick = 0;
-		}
-	}
-	*/
-
 	mFPSFlipCount++;
 }
 
@@ -1508,11 +1420,11 @@ void SexyAppBase::EnforceCursor()
 	// Handle error state or mouse not in window
 	if (!mMouseIn)
 	{
-		SDL_Cursor* aCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+		SDL_Cursor* aCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_DEFAULT);
 		if (aCursor)
 		{
 			SDL_SetCursor(aCursor);
-			SDL_ShowCursor(SDL_ENABLE);
+			SDL_ShowCursor();
 		}
 		return;
 	}
@@ -1522,55 +1434,55 @@ void SexyAppBase::EnforceCursor()
 		((mCustomCursorsEnabled) || (mCursorNum == CURSOR_CUSTOM)))
 	{
 		// Using custom cursor, hide system cursor so game can draw its own
-		SDL_ShowCursor(SDL_DISABLE);
+		SDL_HideCursor();
 		return;
 	}
 
 	// Use SDL system cursor based on cursor type
-	SDL_SystemCursor aSystemCursor = SDL_SYSTEM_CURSOR_ARROW;
+	SDL_SystemCursor aSystemCursor = SDL_SYSTEM_CURSOR_DEFAULT;
 	bool shouldShowCursor = true;
 
 	switch (mCursorNum)
 	{
 	case CURSOR_POINTER:
-		aSystemCursor = SDL_SYSTEM_CURSOR_ARROW;
+		aSystemCursor = SDL_SYSTEM_CURSOR_DEFAULT;
 		break;
 	case CURSOR_HAND:
-		aSystemCursor = SDL_SYSTEM_CURSOR_HAND;
+		aSystemCursor = SDL_SYSTEM_CURSOR_POINTER;
 		break;
 	case CURSOR_TEXT:
-		aSystemCursor = SDL_SYSTEM_CURSOR_IBEAM;
+		aSystemCursor = SDL_SYSTEM_CURSOR_TEXT;
 		break;
 	case CURSOR_DRAGGING:
-		aSystemCursor = SDL_SYSTEM_CURSOR_SIZEALL;
+		aSystemCursor = SDL_SYSTEM_CURSOR_MOVE;
 		break;
 	case CURSOR_CIRCLE_SLASH:
-		aSystemCursor = SDL_SYSTEM_CURSOR_NO;
+		aSystemCursor = SDL_SYSTEM_CURSOR_NOT_ALLOWED;
 		break;
 	case CURSOR_SIZEALL:
-		aSystemCursor = SDL_SYSTEM_CURSOR_SIZEALL;
+		aSystemCursor = SDL_SYSTEM_CURSOR_MOVE;
 		break;
 	case CURSOR_SIZENESW:
-		aSystemCursor = SDL_SYSTEM_CURSOR_SIZENESW;
+		aSystemCursor = SDL_SYSTEM_CURSOR_NESW_RESIZE;
 		break;
 	case CURSOR_SIZENS:
-		aSystemCursor = SDL_SYSTEM_CURSOR_SIZENS;
+		aSystemCursor = SDL_SYSTEM_CURSOR_NS_RESIZE;
 		break;
 	case CURSOR_SIZENWSE:
-		aSystemCursor = SDL_SYSTEM_CURSOR_SIZENWSE;
+		aSystemCursor = SDL_SYSTEM_CURSOR_NWSE_RESIZE;
 		break;
 	case CURSOR_SIZEWE:
-		aSystemCursor = SDL_SYSTEM_CURSOR_SIZEWE;
+		aSystemCursor = SDL_SYSTEM_CURSOR_EW_RESIZE;
 		break;
 	case CURSOR_WAIT:
 		aSystemCursor = SDL_SYSTEM_CURSOR_WAIT;
 		break;
 	case CURSOR_CUSTOM:
 	case CURSOR_NONE:
-		SDL_ShowCursor(SDL_DISABLE);
+		SDL_HideCursor();
 		return;
 	default:
-		aSystemCursor = SDL_SYSTEM_CURSOR_ARROW;
+		aSystemCursor = SDL_SYSTEM_CURSOR_DEFAULT;
 		break;
 	}
 
@@ -1581,7 +1493,7 @@ void SexyAppBase::EnforceCursor()
 		SDL_SetCursor(aCursor);
 		if (shouldShowCursor)
 		{
-			SDL_ShowCursor(SDL_ENABLE);
+			SDL_ShowCursor();
 		}
 	}
 }
@@ -2208,7 +2120,7 @@ void SexyAppBase::InitHook()
 
 void SexyAppBase::Init()
 {
-	mPrimaryThreadId = (void*)SDL_ThreadID;
+	mPrimaryThreadId = (void*)SDL_GetCurrentThreadID();
 
 	if (mShutdown)
 		return;

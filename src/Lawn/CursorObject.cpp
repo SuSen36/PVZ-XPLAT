@@ -59,11 +59,11 @@ void CursorObject::Update()
     }
     if (mCursorType == CursorType::CURSOR_TYPE_NORMAL)
     {
-        SDL_ShowCursor(SDL_ENABLE);
+        SDL_ShowCursor();
     }
     else
     {
-        SDL_ShowCursor(SDL_DISABLE);
+        SDL_HideCursor();
     }
     mVisible = true;
     mX = mApp->mWidgetManager->mLastMouseX - 25;

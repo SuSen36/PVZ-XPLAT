@@ -67,14 +67,14 @@ else()
 	)
 endif()
 
-set(SDL_STATIC OFF CACHE BOOL "Build static library of SDL" FORCE)
-set(SDL_SHARED ON CACHE BOOL "Build shared library of SDL" FORCE)
+if(NOT EMSCRIPTEN)
+	set(SDL_STATIC OFF CACHE BOOL "Build static library of SDL" FORCE)
+	set(SDL_SHARED ON CACHE BOOL "Build shared library of SDL" FORCE)
+endif()
 
 # For Emscripten, SDL is usually handled by the toolchain itself
-if(NOT EMSCRIPTEN)
-    add_subdirectory(Libs/SDL)
-    add_subdirectory(Libs/SDL_net)
-endif()
+add_subdirectory(Libs/SDL3)
+add_subdirectory(Libs/SDL3_net)
 
 include(FetchContent)
 
@@ -161,24 +161,27 @@ target_compile_definitions(xp-plants-vs-zombies PRIVATE $<$<CONFIG:Debug>:_DEBUG
 
 target_include_directories(xp-plants-vs-zombies PRIVATE
 	${PROJECT_SOURCE_DIR}/src
-	${PROJECT_SOURCE_DIR}/Libs/SDL/include
-	${PROJECT_SOURCE_DIR}/Libs/SDL_net/include
+	${PROJECT_SOURCE_DIR}/Libs/SDL3/include/SDL3
+	${PROJECT_SOURCE_DIR}/Libs/SDL3_net/include/SDL3_net
 	${PLAT_INCLUDES}
 	${bass_SOURCE_DIR}/${BASS_INCLUDE}
 )
 
 #target_compile_definitions(xp-plants-vs-zombies PRIVATE _DEBUG)
 
-
 if (NOT EMSCRIPTEN)
-    target_link_libraries(xp-plants-vs-zombies SDL2 SDL2_net bass)
+    target_link_libraries(xp-plants-vs-zombies SDL3::SDL3 SDL3_net::SDL3_net-shared bass)
 else()
-    target_link_libraries(xp-plants-vs-zombies SDL2) # Emscripten provides its own SDL2
+    target_link_libraries(xp-plants-vs-zombies SDL3) # Emscripten provides its own SDL3
 endif()
 
 if (WIN32)
-    file(COPY ${CMAKE_BINARY_DIR}/Libs/SDL/SDL2d.dll DESTINATION ${CMAKE_BINARY_DIR})
-	file(COPY ${CMAKE_BINARY_DIR}/Libs/SDL_net/SDL2_netd.dll DESTINATION ${CMAKE_BINARY_DIR})
+    if(EXISTS "${CMAKE_BINARY_DIR}/Libs/SDL3/SDL3.dll")
+        file(COPY ${CMAKE_BINARY_DIR}/Libs/SDL3/SDL3.dll DESTINATION ${CMAKE_BINARY_DIR})
+    endif()
+    if(EXISTS "${CMAKE_BINARY_DIR}/Libs/SDL3_net/SDL3_net.dll")
+        file(COPY ${CMAKE_BINARY_DIR}/Libs/SDL3_net/SDL3_net.dll DESTINATION ${CMAKE_BINARY_DIR})
+    endif()
 
 	target_link_options(xp-plants-vs-zombies PRIVATE -static -static-libgcc -static-libstdc++)
 	target_link_libraries(xp-plants-vs-zombies opengl32)
@@ -202,7 +205,7 @@ file(MAKE_DIRECTORY ${PAK_OUTPUT_DIR})
 
 set(PAK_SCRIPT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/tools/create_pak.py)
 
-# 添加自定义目标来创建 PAK 文件
+# 创建 PAK 文件
 add_custom_target(create_resources_pak
     COMMAND ${CMAKE_COMMAND} -E echo "正在创建资源 PAK 文件..."
     COMMAND ${Python3_EXECUTABLE} ${PAK_SCRIPT_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/Resources ${PAK_OUTPUT_DIR}/main.pak

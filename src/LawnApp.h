@@ -315,8 +315,7 @@ bool								LawnGetCloseRequest();
 bool								LawnHasUsedCheatKeys();
 
 extern bool (*gAppCloseRequest)();				//[0x69E6A0]
-extern bool (*gAppHasUsedCheatKeys)();			//[0x69E6A4]
-extern SexyString (*gGetCurrentLevelName)();
+//[0x69E6A4]
 
 extern bool gIsPartnerBuild;
 extern bool gFastMo;  //0x6A9EAB

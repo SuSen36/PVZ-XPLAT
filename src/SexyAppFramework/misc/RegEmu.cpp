@@ -1,17 +1,17 @@
 // simple Windows Registry emulator
 
 #include "RegEmu.h"
-// #include "../Common.h" // Include Common.h for StringToWString (removed, not needed with SDL_RWops for paths)
+// #include "../Common.h" // Include Common.h for StringToWString (removed, not needed with SDL_IOStream for paths)
 
 #include <map>
 #include <cstdio>
 #include <cstring>
 
-// #ifdef _WIN32 // Not needed if SDL_RWops is used universally
+// #ifdef _WIN32 // Not needed if SDL_IOStream is used universally
 // #include <windows.h> // For _wfopen and other Win32 specific functions
 // #endif
 
-#include <SDL.h> // Include SDL for SDL_RWops
+#include <SDL.h> // Include SDL for SDL_IOStream
 #include <vector>
 
 #define REGEMU_VERSION 1
@@ -24,7 +24,7 @@ struct RegValue
 };
 typedef std::map<std::string, std::map<std::string, RegValue> > RegContents;
 static RegContents registry;
-static std::string currFile; // Assume this is UTF-8 for SDL_RWFromFile
+static std::string currFile; // Assume this is UTF-8 for SDL_IOFromFile
 
 static void SaveToFile()
 {
@@ -34,47 +34,47 @@ static void SaveToFile()
         return;
     }
 
-    SDL_RWops* rw = SDL_RWFromFile(currFile.c_str(), "wb"); // SDL_RWFromFile expects UTF-8 path
+    SDL_IOStream* io = SDL_IOFromFile(currFile.c_str(), "wb"); // SDL_IOFromFile expects UTF-8 path
 
-    if (!rw) // Check against NULL for SDL_RWops
+    if (!io) // Check against NULL for SDL_IOStream
     {
         printf("RegEmu: Couldn't open '%s' for writing\n", currFile.c_str());
         return;
     }
 
-    SDL_RWwrite(rw, "REGEMU", 1, 6); // write 6 bytes, 1 time
+    SDL_WriteIO(io, "REGEMU", 6); // write 6 bytes
 
     uint16_t aVersion = REGEMU_VERSION;
-    SDL_RWwrite(rw, &aVersion, 1, sizeof(uint16_t));
+    SDL_WriteIO(io, &aVersion, sizeof(uint16_t));
 
     uint32_t aNumKeys = registry.size();
-    SDL_RWwrite(rw, &aNumKeys, 1, sizeof(uint32_t));
+    SDL_WriteIO(io, &aNumKeys, sizeof(uint32_t));
 
     for (auto& keyPair : registry)
     {
         // Assuming keyPair.first (std::string) contains UTF-8 or a consistent encoding
         uint32_t aKeyNameLen = keyPair.first.size()+1;
-        SDL_RWwrite(rw, &aKeyNameLen, 1, sizeof(uint32_t));
-        SDL_RWwrite(rw, keyPair.first.c_str(), 1, aKeyNameLen);
+        SDL_WriteIO(io, &aKeyNameLen, sizeof(uint32_t));
+        SDL_WriteIO(io, keyPair.first.c_str(), aKeyNameLen);
 
         uint32_t aNumValues = keyPair.second.size();
-        SDL_RWwrite(rw, &aNumValues, 1, sizeof(uint32_t));
+        SDL_WriteIO(io, &aNumValues, sizeof(uint32_t));
 
         for (auto& valuePair : registry[keyPair.first])
         {
             // Assuming valuePair.first (std::string) contains UTF-8 or a consistent encoding
             uint32_t aValueNameLen = valuePair.first.size()+1;
-            SDL_RWwrite(rw, &aValueNameLen, 1, sizeof(uint32_t));
-            SDL_RWwrite(rw, valuePair.first.c_str(), 1, aValueNameLen);
+            SDL_WriteIO(io, &aValueNameLen, sizeof(uint32_t));
+            SDL_WriteIO(io, valuePair.first.c_str(), aValueNameLen);
 
             RegValue& value = valuePair.second;
-            SDL_RWwrite(rw, &value.mType, 1, sizeof(uint32_t));
-            SDL_RWwrite(rw, &value.mLength, 1, sizeof(uint32_t));
-            SDL_RWwrite(rw, value.mValue, 1, value.mLength);
+            SDL_WriteIO(io, &value.mType, sizeof(uint32_t));
+            SDL_WriteIO(io, &value.mLength, sizeof(uint32_t));
+            SDL_WriteIO(io, value.mValue, value.mLength);
         }
     }
 
-    SDL_RWclose(rw);
+    SDL_CloseIO(io);
 }
 
 void regemu::SetRegFile(const std::string& fileName)
@@ -82,63 +82,63 @@ void regemu::SetRegFile(const std::string& fileName)
     currFile = fileName;
     registry.clear();
 
-    SDL_RWops* rw = SDL_RWFromFile(currFile.c_str(), "rb");
+    SDL_IOStream* io = SDL_IOFromFile(currFile.c_str(), "rb");
 
-    if (!rw)
+    if (!io)
     {
         printf("RegEmu: Can't read '%s': File does not exist\n", currFile.c_str());
         return;
     }
 
     char aHeader[6];
-    SDL_RWread(rw, aHeader, 1, 6);
+    SDL_ReadIO(io, aHeader, 6);
     if (strncmp(aHeader, "REGEMU", 6))
     {
         printf("RegEmu: Can't read '%s': Invalid header\n", currFile.c_str());
-        SDL_RWclose(rw);
+        SDL_CloseIO(io);
         return;
     }
 
     uint16_t aVersion;
-    SDL_RWread(rw, &aVersion, 1, sizeof(uint16_t));
+    SDL_ReadIO(io, &aVersion, sizeof(uint16_t));
 
     uint32_t aNumKeys;
-    SDL_RWread(rw, &aNumKeys, 1, sizeof(uint32_t));
+    SDL_ReadIO(io, &aNumKeys, sizeof(uint32_t));
 
     for (uint32_t i=0; i<aNumKeys; i++)
     {
         uint32_t aKeyNameLen;
         // Use std::vector<char> for dynamic buffer and then construct std::string
-        SDL_RWread(rw, &aKeyNameLen, 1, sizeof(uint32_t));
+        SDL_ReadIO(io, &aKeyNameLen, sizeof(uint32_t));
         std::vector<char> aKeyNameBuf(aKeyNameLen);
-        SDL_RWread(rw, aKeyNameBuf.data(), 1, aKeyNameLen);
+        SDL_ReadIO(io, aKeyNameBuf.data(), aKeyNameLen);
         std::string aKeyName(aKeyNameBuf.data()); // Assuming string constructor from char* handles encoding consistently
 
         registry[aKeyName] = {};
 
         uint32_t aNumValues;
-        SDL_RWread(rw, &aNumValues, 1, sizeof(uint32_t));
+        SDL_ReadIO(io, &aNumValues, sizeof(uint32_t));
 
         for (uint32_t j=0; j<aNumValues; j++)
         {
             RegValue value;
             uint32_t aValueNameLen;
 
-            SDL_RWread(rw, &aValueNameLen, 1, sizeof(uint32_t));
+            SDL_ReadIO(io, &aValueNameLen, sizeof(uint32_t));
             std::vector<char> aValueNameBuf(aValueNameLen);
-            SDL_RWread(rw, aValueNameBuf.data(), 1, aValueNameLen);
+            SDL_ReadIO(io, aValueNameBuf.data(), aValueNameLen);
             std::string aValueName(aValueNameBuf.data()); // Assuming string constructor from char* handles encoding consistently
 
-            SDL_RWread(rw, &value.mType, 1, sizeof(uint32_t));
-            SDL_RWread(rw, &value.mLength, 1, sizeof(uint32_t));
+            SDL_ReadIO(io, &value.mType, sizeof(uint32_t));
+            SDL_ReadIO(io, &value.mLength, sizeof(uint32_t));
             value.mValue = new uint8_t[value.mLength];
-            SDL_RWread(rw, value.mValue, 1, value.mLength);
+            SDL_ReadIO(io, value.mValue, value.mLength);
 
             registry[aKeyName][aValueName] = value;
         }
     }
 
-    SDL_RWclose(rw);
+    SDL_CloseIO(io);
     printf("RegEmu: Loaded from '%s': %zu total key(s)\n", currFile.c_str(), registry.size());
 }
 

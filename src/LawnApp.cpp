@@ -1820,7 +1820,9 @@ void LawnApp::ButtonDepress(int theId)
 		case Dialogs::DIALOG_QUIT:
 			KillDialog(Dialogs::DIALOG_QUIT);
 			{
-				SDL_Event event = {.quit={SDL_QUIT, SDL_GetTicks()}};
+				SDL_Event event = {};
+				event.type = SDL_EVENT_QUIT;
+				event.common.timestamp = SDL_GetTicksNS();
 				SDL_PushEvent(&event);
 			}
 			return;

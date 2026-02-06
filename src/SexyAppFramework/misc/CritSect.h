@@ -2,7 +2,7 @@
 #define _H_CritSect
 
 #include "../Common.h"
-#include <SDL_mutex.h>
+#include "SDL3/SDL_mutex.h"
 
 class CritSync;
 
@@ -13,7 +13,7 @@ class CritSect
 {
 private:
 
-    SDL_mutex* mCriticalSection;
+    SDL_Mutex* mCriticalSection;
 
 	friend class AutoCrit;
 

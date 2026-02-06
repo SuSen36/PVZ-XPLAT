@@ -1,6 +1,7 @@
 #include "NetworkSync.h"
 #include "Lawn/Board.h"
 #include "Sexy.TodLib/TodDebug.h"
+#include <SDL3/SDL.h>
 #include <cstring>
 #include <algorithm>
 
@@ -11,10 +12,11 @@ namespace
         std::string result = baseMessage;
         if (result.empty())
         {
-            const char* sdlNetError = SDLNet_GetError();
-            if (sdlNetError)
+            // SDL3_net doesn't have NET_GetError, use SDL_GetError instead
+            const char* sdlError = SDL_GetError();
+            if (sdlError && strlen(sdlError) > 0)
             {
-                result = sdlNetError;
+                result = sdlError;
             }
         }
         return result;
@@ -180,7 +182,7 @@ bool NetworkSyncContext::ApplyDelta(SaveGameContext& theTargetState)
     return true;
 }
 
-bool NetworkSyncContext::SendPacket(TCPsocket theSocket, SyncPacketType theType)
+bool NetworkSyncContext::SendPacket(NET_StreamSocket* theSocket, SyncPacketType theType)
 {
     NetworkSyncHeader header;
     header.mPacketType = theType;
@@ -220,7 +222,7 @@ bool NetworkSyncContext::SendPacket(TCPsocket theSocket, SyncPacketType theType)
     }
 
     int packetSize = packetContext.mBuffer.mDataBitSize / 8;
-    int result = SDLNet_TCP_Send(theSocket, packetContext.mBuffer.mData.data(), packetSize);
+    int result = NET_WriteToStreamSocket(theSocket, packetContext.mBuffer.mData.data(), packetSize);
     if (result < packetSize)
     {
         mNetworkError = true;
@@ -232,13 +234,13 @@ bool NetworkSyncContext::SendPacket(TCPsocket theSocket, SyncPacketType theType)
     return true;
 }
 
-bool NetworkSyncContext::ReceivePacket(TCPsocket theSocket)
+bool NetworkSyncContext::ReceivePacket(NET_StreamSocket* theSocket)
 {
     NetworkSyncHeader header;
     
     // 先接收固定大小的包头
     char headerBuffer[sizeof(NetworkSyncHeader)];
-    int received = SDLNet_TCP_Recv(theSocket, headerBuffer, sizeof(headerBuffer));
+    int received = NET_ReadFromStreamSocket(theSocket, headerBuffer, sizeof(headerBuffer));
     
     if (received != sizeof(headerBuffer))
     {
@@ -276,7 +278,7 @@ bool NetworkSyncContext::ReceivePacket(TCPsocket theSocket)
         unsigned int dataSize = header.mDataSize - sizeof(NetworkSyncHeader);
         std::vector<uchar> dataBuffer(dataSize);
         
-        received = SDLNet_TCP_Recv(theSocket, dataBuffer.data(), dataSize);
+        received = NET_ReadFromStreamSocket(theSocket, dataBuffer.data(), dataSize);
         if (received != dataSize)
         {
             mNetworkError = true;
@@ -400,10 +402,10 @@ void NetworkSyncManager::Shutdown()
 
 bool NetworkSyncManager::InitializeSDLNet()
 {
-    if (SDLNet_Init() == -1)
+    if (!NET_Init())
     {
-        std::string lastError = FormatSocketError(SDLNet_GetError());
-        TodTrace("SDLNet_Init failed: %s", lastError.c_str());
+        std::string lastError = FormatSocketError("");
+        TodTrace("NET_Init failed: %s", lastError.c_str());
         return false;
     }
     return true;
@@ -411,7 +413,7 @@ bool NetworkSyncManager::InitializeSDLNet()
 
 void NetworkSyncManager::CleanupSDLNet()
 {
-    SDLNet_Quit();
+    NET_Quit();
 }
 
 bool NetworkSyncManager::StartServer(unsigned short thePort)
@@ -421,19 +423,32 @@ bool NetworkSyncManager::StartServer(unsigned short thePort)
         StopServer();
     }
     
-    IPaddress serverIP;
-    if (SDLNet_ResolveHost(&serverIP, nullptr, thePort) == -1)
+    // 解析本地地址
+    NET_Address* serverAddress = NET_ResolveHostname(nullptr);
+    if (!serverAddress)
     {
-        std::string lastError = FormatSocketError(SDLNet_GetError());
-        TodTrace("SDLNet_ResolveHost failed: %s", lastError.c_str());
+        std::string lastError = FormatSocketError("");
+        TodTrace("NET_ResolveHostname failed: %s", lastError.c_str());
         return false;
     }
     
-    mServerSocket = SDLNet_TCP_Open(&serverIP);
+    // 等待地址解析完成
+    NET_Status status = NET_WaitUntilResolved(serverAddress, -1);
+    if (status != NET_SUCCESS)
+    {
+        std::string lastError = FormatSocketError("");
+        TodTrace("Address resolution failed: %s", lastError.c_str());
+        NET_UnrefAddress(serverAddress);
+        return false;
+    }
+    
+    mServerSocket = NET_CreateServer(serverAddress, thePort);
+    NET_UnrefAddress(serverAddress);
+    
     if (!mServerSocket)
     {
-        std::string lastError = FormatSocketError(SDLNet_GetError());
-        TodTrace("SDLNet_TCP_Open failed: %s", lastError.c_str());
+        std::string lastError = FormatSocketError("");
+        TodTrace("NET_CreateServer failed: %s", lastError.c_str());
         return false;
     }
     
@@ -446,21 +461,20 @@ void NetworkSyncManager::StopServer()
 {
     if (mServerSocket)
     {
-        SDLNet_TCP_Close(mServerSocket);
+        NET_DestroyServer(mServerSocket);
         mServerSocket = nullptr;
     }
     mIsServer = false;
 }
 
-bool NetworkSyncManager::AcceptClient(TCPsocket& theClientSocket)
+bool NetworkSyncManager::AcceptClient(NET_StreamSocket** theClientSocket)
 {
     if (!mServerSocket)
     {
         return false;
     }
     
-    theClientSocket = SDLNet_TCP_Accept(mServerSocket);
-    return theClientSocket != nullptr;
+    return NET_AcceptClient(mServerSocket, theClientSocket);
 }
 
 bool NetworkSyncManager::ConnectToServer(const char* theServerIP, unsigned short thePort)
@@ -470,19 +484,43 @@ bool NetworkSyncManager::ConnectToServer(const char* theServerIP, unsigned short
         Disconnect();
     }
     
-    IPaddress serverIP;
-    if (SDLNet_ResolveHost(&serverIP, theServerIP, thePort) == -1)
+    // 解析服务器地址
+    NET_Address* serverAddress = NET_ResolveHostname(theServerIP);
+    if (!serverAddress)
     {
-        std::string lastError = FormatSocketError(SDLNet_GetError());
-        TodTrace("SDLNet_ResolveHost failed: %s", lastError.c_str());
+        std::string lastError = FormatSocketError("");
+        TodTrace("NET_ResolveHostname failed: %s", lastError.c_str());
         return false;
     }
     
-    mClientSocket = SDLNet_TCP_Open(&serverIP);
+    // 等待地址解析完成
+    NET_Status status = NET_WaitUntilResolved(serverAddress, -1);
+    if (status != NET_SUCCESS)
+    {
+        std::string lastError = FormatSocketError("");
+        TodTrace("Address resolution failed: %s", lastError.c_str());
+        NET_UnrefAddress(serverAddress);
+        return false;
+    }
+    
+    mClientSocket = NET_CreateClient(serverAddress, thePort);
+    NET_UnrefAddress(serverAddress);
+    
     if (!mClientSocket)
     {
-        std::string lastError = FormatSocketError(SDLNet_GetError());
-        TodTrace("SDLNet_TCP_Open failed: %s", lastError.c_str());
+        std::string lastError = FormatSocketError("");
+        TodTrace("NET_CreateClient failed: %s", lastError.c_str());
+        return false;
+    }
+    
+    // 等待连接完成
+    status = NET_WaitUntilConnected(mClientSocket, -1);
+    if (status != NET_SUCCESS)
+    {
+        std::string lastError = FormatSocketError("");
+        TodTrace("Connection failed: %s", lastError.c_str());
+        NET_DestroyStreamSocket(mClientSocket);
+        mClientSocket = nullptr;
         return false;
     }
     
@@ -495,7 +533,7 @@ void NetworkSyncManager::Disconnect()
 {
     if (mClientSocket)
     {
-        SDLNet_TCP_Close(mClientSocket);
+        NET_DestroyStreamSocket(mClientSocket);
         mClientSocket = nullptr;
     }
     mIsConnected = false;
@@ -522,7 +560,7 @@ bool NetworkSyncManager::PerformFullSync(Board* theBoard)
     }
     
     // 发送全量同步数据包
-    TCPsocket socket = mIsServer ? mServerSocket : mClientSocket;
+    NET_StreamSocket* socket = mIsServer ? nullptr : mClientSocket;
     if (!socket)
     {
         TodTrace("No valid socket for full sync");
@@ -561,7 +599,7 @@ bool NetworkSyncManager::PerformDeltaSync(Board* theBoard)
     }
     
     // 发送增量同步数据包
-    TCPsocket socket = mIsServer ? mClientSocket : mClientSocket;
+    NET_StreamSocket* socket = mClientSocket;
     if (!socket)
     {
         TodTrace("No valid socket for delta sync");

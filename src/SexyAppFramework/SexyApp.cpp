@@ -198,47 +198,6 @@ void SexyApp::WriteToRegistry()
 bool SexyApp::OpenHTMLTemplate(const std::string& theTemplateFile, const DefinesMap& theDefinesMap)
 {
 	return false;
-	/*
-	std::fstream anInStream(theTemplateFile.c_str(), std::ios::in);
-
-	if (!anInStream.is_open())
-		return false;
-
-	WIN32_FIND_DATA aFindData;
-	HANDLE aHandle = FindFirstFile("temp/tpl*.html", &aFindData);
-	if (aHandle != NULL)
-	{
-		do
-		{
-			std::string aFilePath = std::string("temp/") + aFindData.cFileName;
-			DeleteFile(aFilePath.c_str());
-		}
-		while (FindNextFile(aHandle, &aFindData));
-		
-		FindClose(aHandle);
-	}
-
-	mkdir("temp");
-
-	std::string anOutFilename = StrFormat("temp/tpl%04d.html", rand()%10000);
-
-	//TODO: A better failover case?
-	std::fstream anOutStream(anOutFilename.c_str(), std::ios::out);
-	if (!anOutStream.is_open())
-		return false;
-
-	char aStr[4096];
-	while (!anInStream.eof())
-	{
-		anInStream.getline(aStr, 4096);
-		
-		std::string aNewString = Evaluate(aStr, theDefinesMap);
-
-		anOutStream << aNewString.c_str() << std::endl;
-	}
-	
-	return OpenURL(GetFullPath(anOutFilename));
-	*/
 }
 
 bool SexyApp::OpenRegisterPage(DefinesMap theStatsMap)

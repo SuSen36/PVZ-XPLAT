@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include "NetworkSync.h"
+#include "SDL_net.h"
 
 class Board;
 
@@ -50,7 +51,8 @@ private:
 	int mLocalPlayerIndex;
 	int mSyncIntervalCounter;
 	std::string mLastError;
-	SDLNet_SocketSet mSocketSet;
+	NET_StreamSocket* mClientSocket;
+	NET_Server* mServerSocket;
 	std::unique_ptr<SaveGameContext> mLastSyncStateIncoming;
 	std::unique_ptr<SaveGameContext> mLastSyncStateOutgoing;
 };

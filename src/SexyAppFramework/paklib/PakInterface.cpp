@@ -1,4 +1,4 @@
-﻿#include <unistd.h>
+#include <unistd.h>
 #include <vector>
 #include <SDL.h>
 #include "../Common.h"
@@ -52,10 +52,10 @@ SDL_Surface* LoadWindowIcon(const char* iconPath)
 
 			if (!buffer.empty())
 			{
-				SDL_RWops* rw = SDL_RWFromConstMem(buffer.data(), static_cast<int>(buffer.size()));
-				if (rw)
+				SDL_IOStream* io = SDL_IOFromConstMem(buffer.data(), buffer.size());
+				if (io)
 				{
-					SDL_Surface* surf = SDL_LoadBMP_RW(rw, 1); // SDL 会释放 rw
+					SDL_Surface* surf = SDL_LoadBMP_IO(io, true); // SDL 会释放 io
 					if (surf)
 						return surf;
 				}

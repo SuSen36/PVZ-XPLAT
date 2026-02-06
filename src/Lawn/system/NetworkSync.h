@@ -62,8 +62,8 @@ public:
     bool ApplyDelta(SaveGameContext& theTargetState);
     
     // 网络传输方法
-    bool SendPacket(TCPsocket theSocket, SyncPacketType theType);
-    bool ReceivePacket(TCPsocket theSocket);
+    bool SendPacket(NET_StreamSocket* theSocket, SyncPacketType theType);
+    bool ReceivePacket(NET_StreamSocket* theSocket);
     SyncPacketType GetLastPacketType() const { return mLastPacketType; }
     unsigned int GetLastSequenceNumber() const { return mLastSequenceNumber; }
     unsigned int GetLastTimestamp() const { return mLastTimestamp; }
@@ -107,7 +107,7 @@ public:
     // 服务器功能
     bool StartServer(unsigned short thePort);
     void StopServer();
-    bool AcceptClient(TCPsocket& theClientSocket);
+    bool AcceptClient(NET_StreamSocket** theClientSocket);
     
     // 客户端功能
     bool ConnectToServer(const char* theServerIP, unsigned short thePort);
@@ -123,7 +123,7 @@ public:
     NetworkSyncState GetState() const;
     const std::string& GetLastError() const { return mLastError; }
 
-    TCPsocket mClientSocket;
+    NET_StreamSocket* mClientSocket;
 private:
     NetworkSyncManager();
     ~NetworkSyncManager();
@@ -132,8 +132,8 @@ private:
     
     bool mIsServer;
     bool mIsConnected;
-    TCPsocket mServerSocket;
-    IPaddress mServerIP;
+    NET_Server* mServerSocket;
+    NET_Address* mServerAddress;
     std::string mLastError;
     
     // 同步状态缓存

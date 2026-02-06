@@ -1,4 +1,4 @@
-#include <SDL.h>
+#include "SDL3/SDL.h"
 #include "SexyAppFramework/glad/glad.h"
 
 
@@ -1218,9 +1218,8 @@ GLInterface::GLInterface(SexyAppBase* theApp)
 
 	mPresentationRect = Rect( 0, 0, mWidth, mHeight );
 
-	SDL_DisplayMode aMode;
-	SDL_GetCurrentDisplayMode(SDL_GetWindowDisplayIndex((SDL_Window*)mApp->mWindow), &aMode);
-	mRefreshRate = aMode.refresh_rate;
+	const SDL_DisplayMode* aMode = SDL_GetCurrentDisplayMode(SDL_GetDisplayForWindow((SDL_Window*)mApp->mWindow));
+	mRefreshRate = aMode ? aMode->refresh_rate : 0;
 	if (!mRefreshRate) mRefreshRate = 60;
 	mMillisecondsPerFrame = 1000/mRefreshRate;
 

@@ -127,19 +127,6 @@ typedef std::string			SexyString;
 #define StringToSexyStringFast(x)	(x)
 #define WStringToSexyStringFast(x)	WStringToString(x)
 
-#ifndef SDL_SwapLE16
-#define SDL_SwapLE16(X) ((Uint16)(X))
-#endif
-#ifndef SDL_SwapLE32
-#define SDL_SwapLE32(X) ((Uint32)(X))
-#endif
-#ifndef SDL_SwapBE16
-#define SDL_SwapBE16(X) SDL_Swap16(X)
-#endif
-#ifndef SDL_SwapBE32
-#define SDL_SwapBE32(X) SDL_Swap32(X)
-#endif
-
 #define LONG_BIGE_TO_NATIVE(l) SDL_SwapBE32(l)
 #define WORD_BIGE_TO_NATIVE(w) SDL_SwapBE16(w)
 #define LONG_LITTLEE_TO_NATIVE(l) SDL_SwapLE32(l)

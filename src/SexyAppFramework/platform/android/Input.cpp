@@ -1,4 +1,4 @@
-#include <SDL.h>
+#include "SDL3/SDL.h"
 #include <cmath>
 #include "SexyAppFramework/SexyAppBase.h"
 #include "SexyAppFramework/graphics/GLInterface.h"
@@ -22,13 +22,13 @@ void SexyAppBase::InitInput()
 
 bool SexyAppBase::StartTextInput(std::string& theInput)
 {
-    SDL_StartTextInput();
+    SDL_StartTextInput((SDL_Window*)mWindow);
     return false;
 }
 
 void SexyAppBase::StopTextInput()
 {
-    SDL_StopTextInput();
+    SDL_StopTextInput((SDL_Window*)mWindow);
 }
 
 bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
@@ -38,33 +38,32 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
     {
         switch(event.type)
         {
-            case SDL_QUIT:
+            case SDL_EVENT_QUIT:
                 mShutdown = true;
                 break;
 
-            case SDL_WINDOWEVENT:
-                switch(event.window.event)
-                {
-                    case SDL_WINDOWEVENT_RESIZED:
-                        mGLInterface->UpdateViewport();
-                        mWidgetManager->Resize(mScreenBounds, mGLInterface->mPresentationRect);
-                        break;
-
-                    case SDL_WINDOWEVENT_FOCUS_GAINED:
-                    case SDL_WINDOWEVENT_FOCUS_LOST:
-                        mActive = event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED;
-                        RehupFocus();
-                        break;
-                }
+            case SDL_EVENT_WINDOW_RESIZED:
+                mGLInterface->UpdateViewport();
+                mWidgetManager->Resize(mScreenBounds, mGLInterface->mPresentationRect);
                 break;
 
-            case SDL_MOUSEMOTION:
+            case SDL_EVENT_WINDOW_FOCUS_GAINED:
+                mActive = true;
+                RehupFocus();
+                break;
+            case SDL_EVENT_WINDOW_FOCUS_LOST:
+                mActive = false;
+                RehupFocus();
+                break;
+                break;
+
+            case SDL_EVENT_MOUSE_MOTION:
             {
                 if (!mMouseIn)
                     mMouseIn = true;
 
-                int x = event.motion.x;
-                int y = event.motion.y;
+                int x = (int)event.motion.x;
+                int y = (int)event.motion.y;
                 
                 // 拖拽替代鼠标滚轮：跟踪触摸位置变化，转换为滚轮事件
                 static const float THRESHOLD = 5.0f; // 拖拽阈值，单位像素
@@ -94,13 +93,13 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
                 break;
             }
 
-            case SDL_MOUSEBUTTONDOWN:
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
             {
                 if (!mMouseIn)
                     mMouseIn = true;
 
-                int x = event.button.x;
-                int y = event.button.y;
+                int x = (int)event.button.x;
+                int y = (int)event.button.y;
                 
                 // 重置拖拽跟踪状态，准备开始新的拖拽手势
                 gLastTouchY = -1.0f;
@@ -122,13 +121,13 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
                 break;
             }
 
-            case SDL_MOUSEBUTTONUP:
+            case SDL_EVENT_MOUSE_BUTTON_UP:
             {
                 if (!mMouseIn)
                     mMouseIn = true;
 
-                int x = event.button.x;
-                int y = event.button.y;
+                int x = (int)event.button.x;
+                int y = (int)event.button.y;
                 
                 // 重置拖拽跟踪状态，结束拖拽手势
                 gLastTouchY = -1.0f;
@@ -147,11 +146,11 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
                 mWidgetManager->MouseUp(x, y, btn);
                 break;
             }
-            case SDL_KEYDOWN:
+            case SDL_EVENT_KEY_DOWN:
                 mLastUserInputTick = mLastTimerTime;
                 
                 // 处理 Android 返回键
-                if (event.key.keysym.sym == SDLK_AC_BACK)
+                if (event.key.key == SDLK_AC_BACK)
                 {
                     // 如果有打开的对话框，关闭最顶层的对话框
                     if (!mDialogList.empty())
@@ -208,15 +207,15 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
                     }
                 }
                 
-                mWidgetManager->KeyDown((KeyCode)event.key.keysym.sym);
+                mWidgetManager->KeyDown((KeyCode)event.key.key);
                 break;
 
-            case SDL_KEYUP:
+            case SDL_EVENT_KEY_UP:
                 mLastUserInputTick = mLastTimerTime;
-                mWidgetManager->KeyUp((KeyCode)event.key.keysym.sym);
+                mWidgetManager->KeyUp((KeyCode)event.key.key);
                 break;
 
-            case SDL_TEXTINPUT:
+            case SDL_EVENT_TEXT_INPUT:
                 mLastUserInputTick = mLastTimerTime;
                 mWidgetManager->KeyChar((SexyChar)event.text.text[0]);
                 break;
@@ -224,7 +223,7 @@ bool SexyAppBase::ProcessDeferredMessages(bool singleMessage)
         }
     }
 
-    return SDL_HasEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+    return SDL_PumpEvents(), SDL_HasEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
 }
 
 

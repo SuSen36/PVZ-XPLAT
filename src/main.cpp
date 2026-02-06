@@ -3,7 +3,8 @@
 #include "Resources.h"
 #include "Sexy.TodLib/TodStringFile.h"
 #include "Sexy.TodLib/TodDebug.h"
-#include <SDL.h>
+#include "SDL3/SDL.h"
+#include "SDL3/SDL_main.h"
 #include <iostream>
 #include <memory>
 
@@ -17,8 +18,6 @@ using namespace Sexy;
 
 // Function pointers for game operations
 bool (*gAppCloseRequest)();
-bool (*gAppHasUsedCheatKeys)();
-SexyString (*gGetCurrentLevelName)();
 
 void runGame() {
     // Initialize SDL
@@ -26,9 +25,7 @@ void runGame() {
 
     // Initialize necessary settings
     TodStringListSetColors(gLawnStringFormats, gLawnStringFormatCount);
-    gGetCurrentLevelName = LawnGetCurrentLevelName;
     gAppCloseRequest = LawnGetCloseRequest;
-    gAppHasUsedCheatKeys = LawnHasUsedCheatKeys;
     gExtractResourcesByName = Sexy::ExtractResourcesByName;
 
     // Create an instance of LawnApp using the global pointer

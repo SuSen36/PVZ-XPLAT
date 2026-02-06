@@ -8,7 +8,7 @@
 #include <bass.h>
 #include <memory>
 #include <optional>
-#include <SDL2/SDL_mutex.h>
+#include <SDL3/SDL_mutex.h>
 #include <string>
 #include <unordered_map>
 

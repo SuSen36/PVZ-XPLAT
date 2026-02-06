@@ -5,6 +5,7 @@
 #include "Sexy.TodLib/TodCommon.h"
 #include "Sexy.TodLib/TodDebug.h"
 #include "SexyAppFramework/widget/Dialog.h"
+#include <SDL3/SDL.h>
 
 GameNetworkManager* GameNetworkManager::mInstance = nullptr;
 
@@ -13,13 +14,24 @@ GameNetworkManager::GameNetworkManager() :
 	mState(MultiplayerState::SinglePlayer),
 	mLocalPlayerIndex(-1),
 	mSyncIntervalCounter(0),
-	mSocketSet(nullptr)
+	mClientSocket(nullptr),
+	mServerSocket(nullptr)
 {
 }
 
 GameNetworkManager::~GameNetworkManager()
 {
 	Disconnect();
+	if (mClientSocket)
+	{
+		NET_DestroyStreamSocket(mClientSocket);
+		mClientSocket = nullptr;
+	}
+	if (mServerSocket)
+	{
+		NET_DestroyServer(mServerSocket);
+		mServerSocket = nullptr;
+	}
 }
 
 GameNetworkManager* GameNetworkManager::GetInstance()
@@ -37,21 +49,6 @@ void GameNetworkManager::SetError(const std::string& theError)
 	mState = MultiplayerState::Error;
 }
 
-bool GameNetworkManager::EnsureSocketSet()
-{
-	if (mSocketSet)
-	{
-		return true;
-	}
-	mSocketSet = SDLNet_AllocSocketSet(1);
-	if (!mSocketSet)
-	{
-		SetError("Failed to allocate socket set");
-		return false;
-	}
-	return true;
-}
-
 void GameNetworkManager::HostGame(unsigned short thePort)
 {
 	if (mState != MultiplayerState::SinglePlayer)
@@ -59,17 +56,17 @@ void GameNetworkManager::HostGame(unsigned short thePort)
 		Disconnect();
 	}
 
-	if (!mSyncManager->Initialize())
+	if (!NET_Init())
 	{
-		const std::string& lastError = mSyncManager->GetLastError();
-		SetError(lastError.empty() ? "SDLNet init failed" : lastError);
+		SetError("SDL3_net init failed");
 		return;
 	}
 
-	if (!mSyncManager->StartServer(thePort))
+	// Create server socket
+	mServerSocket = NET_CreateServer(nullptr, thePort);
+	if (!mServerSocket)
 	{
-		const std::string& lastError = mSyncManager->GetLastError();
-		SetError(lastError.empty() ? "Start server failed" : lastError);
+		SetError("Failed to create server");
 		return;
 	}
 
@@ -84,30 +81,44 @@ void GameNetworkManager::JoinGame(const std::string& theHostIP, unsigned short t
 		Disconnect();
 	}
 
-	if (!mSyncManager->Initialize())
+	if (!NET_Init())
 	{
-		const std::string& lastError = mSyncManager->GetLastError();
-		SetError(lastError.empty() ? "SDLNet init failed" : lastError);
+		SetError("SDL3_net init failed");
 		return;
 	}
 
-	if (!mSyncManager->ConnectToServer(theHostIP.c_str(), thePort))
+	// Resolve hostname
+	NET_Address* serverAddress = NET_ResolveHostname(theHostIP.c_str());
+	if (!serverAddress)
 	{
-		const std::string& lastError = mSyncManager->GetLastError();
-		SetError(lastError.empty() ? "Connect failed" : lastError);
+		SetError("Failed to resolve hostname");
 		return;
 	}
 
-	if (!EnsureSocketSet())
+	// Create client socket
+	mClientSocket = NET_CreateClient(serverAddress, thePort);
+	NET_UnrefAddress(serverAddress);
+	
+	if (!mClientSocket)
 	{
+		SetError("Failed to create client connection");
 		return;
 	}
-	SDLNet_TCP_AddSocket(mSocketSet, mSyncManager->mClientSocket);
+
+	// Wait for connection to complete
+	NET_Status status = NET_WaitUntilConnected(mClientSocket, 5000); // 5 second timeout
+	if (status != NET_SUCCESS)
+	{
+		NET_DestroyStreamSocket(mClientSocket);
+		mClientSocket = nullptr;
+		SetError("Connection timeout or failed");
+		return;
+	}
 
 	NetworkSyncContext requestContext;
 	requestContext.mReading = false;
 	requestContext.mFailed = false;
-	requestContext.SendPacket(mSyncManager->mClientSocket, SyncPacketType::FULL_SYNC_REQUEST);
+	requestContext.SendPacket(mClientSocket, SyncPacketType::FULL_SYNC_REQUEST);
 
 	mLocalPlayerIndex = 1;
 	mState = MultiplayerState::Connected;
@@ -115,13 +126,17 @@ void GameNetworkManager::JoinGame(const std::string& theHostIP, unsigned short t
 
 void GameNetworkManager::Disconnect()
 {
-	if (mSocketSet)
+	if (mClientSocket)
 	{
-		SDLNet_FreeSocketSet(mSocketSet);
-		mSocketSet = nullptr;
+		NET_DestroyStreamSocket(mClientSocket);
+		mClientSocket = nullptr;
 	}
-	mSyncManager->Disconnect();
-	mSyncManager->StopServer();
+	if (mServerSocket)
+	{
+		NET_DestroyServer(mServerSocket);
+		mServerSocket = nullptr;
+	}
+	NET_Quit();
 	mState = MultiplayerState::SinglePlayer;
 	mLocalPlayerIndex = -1;
 	mLastSyncStateIncoming.reset();
@@ -130,7 +145,7 @@ void GameNetworkManager::Disconnect()
 
 bool GameNetworkManager::SendFullSync(Board* theBoard)
 {
-	if (!theBoard || !mSyncManager->mClientSocket)
+	if (!theBoard || !mClientSocket)
 	{
 		return false;
 	}
@@ -145,7 +160,7 @@ bool GameNetworkManager::SendFullSync(Board* theBoard)
 		return false;
 	}
 
-	bool result = syncContext.SendPacket(mSyncManager->mClientSocket, SyncPacketType::FULL_SYNC_RESPONSE);
+	bool result = syncContext.SendPacket(mClientSocket, SyncPacketType::FULL_SYNC_RESPONSE);
 	if (!result)
 	{
 		SetError(syncContext.GetLastError());
@@ -164,7 +179,7 @@ bool GameNetworkManager::SendFullSync(Board* theBoard)
 
 bool GameNetworkManager::SendDeltaSync(Board* theBoard)
 {
-	if (!theBoard || !mSyncManager->mClientSocket)
+	if (!theBoard || !mClientSocket)
 	{
 		return false;
 	}
@@ -196,7 +211,7 @@ bool GameNetworkManager::SendDeltaSync(Board* theBoard)
 		return true;
 	}
 
-	bool result = deltaContext.SendPacket(mSyncManager->mClientSocket, SyncPacketType::DELTA_SYNC);
+	bool result = deltaContext.SendPacket(mClientSocket, SyncPacketType::DELTA_SYNC);
 	if (!result)
 	{
 		SetError(deltaContext.GetLastError());
@@ -289,14 +304,10 @@ void GameNetworkManager::UpdateGameState(Board* theBoard)
 
 	if (mState == MultiplayerState::Hosting)
 	{
-		TCPsocket clientSocket = nullptr;
-		if (mSyncManager->AcceptClient(clientSocket))
+		NET_StreamSocket* clientSocket = nullptr;
+		if (NET_AcceptClient(mServerSocket, &clientSocket))
 		{
-			mSyncManager->mClientSocket = clientSocket;
-			if (EnsureSocketSet())
-			{
-				SDLNet_TCP_AddSocket(mSocketSet, mSyncManager->mClientSocket);
-			}
+			mClientSocket = clientSocket;
 			mState = MultiplayerState::Connected;
 			SendFullSync(theBoard);
 			if (gLawnApp)
@@ -337,45 +348,40 @@ void GameNetworkManager::ApplyRemoteGameChanges(Board* theBoard)
 		return;
 	}
 
-	if (!mSocketSet || !mSyncManager->mClientSocket)
+	if (!mClientSocket)
 	{
 		return;
 	}
 
-	int ready = SDLNet_CheckSockets(mSocketSet, 0);
-	if (ready <= 0)
+	// Check if there's data available to read
+	int available = 0;
+	if (NET_GetConnectionStatus(mClientSocket) == NET_SUCCESS)
 	{
-		return;
-	}
-
-	if (!SDLNet_SocketReady(mSyncManager->mClientSocket))
-	{
-		return;
-	}
-
-	NetworkSyncContext context;
-	context.mReading = true;
-	context.mFailed = false;
-	if (!context.ReceivePacket(mSyncManager->mClientSocket))
-	{
-		SetError(context.GetLastError());
-		return;
-	}
-
-	SyncPacketType packetType = context.GetLastPacketType();
-	if (packetType == SyncPacketType::FULL_SYNC_REQUEST)
-	{
-		if (mLocalPlayerIndex == 0)
+		// Try to read data from the socket
+		NetworkSyncContext context;
+		context.mReading = true;
+		context.mFailed = false;
+		if (!context.ReceivePacket(mClientSocket))
 		{
-			SendFullSync(theBoard);
+			SetError(context.GetLastError());
+			return;
 		}
-	}
-	else if (packetType == SyncPacketType::FULL_SYNC_RESPONSE)
-	{
-		ApplyFullSync(theBoard, context);
-	}
-	else if (packetType == SyncPacketType::DELTA_SYNC)
-	{
-		ApplyDeltaSync(theBoard, context);
+
+		SyncPacketType packetType = context.GetLastPacketType();
+		if (packetType == SyncPacketType::FULL_SYNC_REQUEST)
+		{
+			if (mLocalPlayerIndex == 0)
+			{
+				SendFullSync(theBoard);
+			}
+		}
+		else if (packetType == SyncPacketType::FULL_SYNC_RESPONSE)
+		{
+			ApplyFullSync(theBoard, context);
+		}
+		else if (packetType == SyncPacketType::DELTA_SYNC)
+		{
+			ApplyDeltaSync(theBoard, context);
+		}
 	}
 }

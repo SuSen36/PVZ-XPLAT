@@ -10,13 +10,13 @@
 #include <memory>
 #include <optional>
 #include <valarray>
-#include <SDL2/SDL_mutex.h>
+#include <SDL3/SDL_mutex.h>
 
 namespace Sexy {
 
 class SoundMutex {
 private:
-    SDL_mutex* mutex;
+    SDL_Mutex* mutex;
 public:
     SoundMutex() {
         mutex = SDL_CreateMutex();

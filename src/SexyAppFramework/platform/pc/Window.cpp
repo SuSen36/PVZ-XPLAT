@@ -1,4 +1,4 @@
-#include <SDL.h>
+#include "SDL3/SDL.h"
 
 #include "SexyAppFramework/SexyAppBase.h"
 #include "SexyAppFramework/graphics/GLInterface.h"
@@ -22,28 +22,26 @@ void SexyAppBase::MakeWindow()
 	{
 		SDL_Init(SDL_INIT_VIDEO);
 
-		// 线性缩放，避免拉伸锯齿
-		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
+		// 线性缩放，避免拉伸锯齿 - SDL3 中不再支持此提示
 
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 
-		Uint32 windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
+		Uint32 windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY;
 		if (!mIsWindowed)
-			windowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP; // 桌面全屏，按比例拉伸
+			windowFlags |= SDL_WINDOW_FULLSCREEN; // 桌面全屏，按比例拉伸
 
 		mWindow = (void*)SDL_CreateWindow(
 			SexyStringToStringFast(mTitle).c_str(),
-			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 			mWidth, mHeight,
-			windowFlags
+			(SDL_WindowFlags)windowFlags
 		);
 		// Load icon image
 		SDL_Surface* iconSurface = LoadWindowIcon("properties/icon.bmp");
 		if (iconSurface) {
 			SDL_SetWindowIcon(static_cast<SDL_Window *>(mWindow), iconSurface);
-			SDL_FreeSurface(iconSurface);
+			SDL_DestroySurface(iconSurface);
 		} else {
 			TodLog("Icon loading failed: ", SDL_GetError());
 		}

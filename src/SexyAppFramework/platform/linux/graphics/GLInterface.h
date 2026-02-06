@@ -10,7 +10,7 @@
 #include "SexyAppFramework/misc/SexyMatrix.h"
 
 
-#include <SDL.h>
+#include "SDL3/SDL.h"
 #include <GLES/gl.h>
 
 
