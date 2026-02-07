@@ -640,30 +640,24 @@ void TodSandImageIfNeeded(Image* theImage)
 //0x512650
 void TodBltMatrix(Graphics* g, Image* theImage, const SexyMatrix3& theTransform, const Rect& theClipRect, const Color& theColor, int theDrawMode, const Rect& theSrcRect)
 {
-	float aOffsetX = 0.0f;
-	float aOffsetY = 0.0f;
-	if (true)
-	{
-		aOffsetX -= 0.5f;
-		aOffsetY -= 0.5f;
-	}
+    if (theImage == nullptr || g->mDestImage == nullptr) return;
 
-	TodSandImageIfNeeded(theImage);
+    float aOffsetX = 0.0f;
+    float aOffsetY = 0.0f;
 
-	if (theClipRect.mX != 0 || theClipRect.mY != 0 || theClipRect.mWidth != BOARD_WIDTH || theClipRect.mHeight != BOARD_HEIGHT)
-	{
-		g->mDestImage->BltMatrix(theImage, aOffsetX, aOffsetY, theTransform, theClipRect, theColor, theDrawMode, theSrcRect, g->mLinearBlend);
-	}
-	else if (SDLImage::Check3D(g->mDestImage))
-	{
-		theImage->mDrawn = true;
-		g->mDestImage->BltMatrix(theImage, aOffsetX, aOffsetY, theTransform, theClipRect, theColor, theDrawMode, theSrcRect, g->mLinearBlend);
-	}
-	else
-	{
-		Rect aBufFixClipRect(0, 0, BOARD_WIDTH + 1, BOARD_HEIGHT + 1);
-		g->mDestImage->BltMatrix(theImage, aOffsetX, aOffsetY, theTransform, aBufFixClipRect, theColor, theDrawMode, theSrcRect, g->mLinearBlend);
-	}
+    theImage->mDrawn = true;
+
+    g->mDestImage->BltMatrix(
+            theImage,
+            aOffsetX,
+            aOffsetY,
+            theTransform,
+            theClipRect,
+            theColor,
+            theDrawMode,
+            theSrcRect,
+            g->mLinearBlend
+    );
 }
 
 //0x5127C0
