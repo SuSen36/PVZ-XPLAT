@@ -2,6 +2,7 @@
 #include "TodDebug.h"
 #include "TodCommon.h"
 #include "SexyAppFramework/sound/SoundManager.h"
+#include "SexyAppFramework/SexyAppBase.h"
 
 int gFoleyParamArraySize;        //[0x6A9F04]
 FoleyParams* gFoleyParamArray;   //[0x6A9F00]

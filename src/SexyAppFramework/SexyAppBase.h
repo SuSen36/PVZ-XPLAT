@@ -1,6 +1,7 @@
 #ifndef __SEXYAPPBASE_H__
 #define __SEXYAPPBASE_H__
 
+#include <memory>
 #include "Common.h"
 #include "SexyAppFramework/misc/Rect.h"
 #include "SexyAppFramework/graphics/Color.h"
@@ -10,6 +11,7 @@
 #include "SexyAppFramework/misc/CritSect.h"
 #include "SexyAppFramework/graphics/SharedImage.h"
 #include "SexyAppFramework/misc/Ratio.h"
+#include "SexyAppFramework/misc/ResourceManager.h"
 
 namespace ImageLib
 {
@@ -29,7 +31,6 @@ class MusicInterface;
 class SDLImage;
 class HTTPTransfer;
 class Dialog;
-
 class ResourceManager;
 
 class WidgetSafeDeleteInfo
@@ -265,8 +266,6 @@ public:
 	StringStringVectorMap	mStringVectorProperties;
 	ResourceManager*		mResourceManager;
 
-	LONG					mOldWndProc;
-
 protected:	
 	void					RehupFocus();
 	void					ClearKeysDown();
@@ -361,6 +360,7 @@ public:
 	int						GetCursor();
 	void					EnableCustomCursors(bool enabled);	
 	virtual SDLImage*		GetImage(const std::string& theFileName, bool commitBits = true);
+    virtual std::unique_ptr<SDLImage>	GetImage(const ResourceManager::ImageRes& theRes);
 	virtual SharedImageRef	SetSharedImage(const std::string& theFileName, const std::string& theVariant, SDLImage* theImage, bool* isNew);
 	virtual SharedImageRef	GetSharedImage(const std::string& theFileName, const std::string& theVariant = "", bool* isNew = NULL);
 

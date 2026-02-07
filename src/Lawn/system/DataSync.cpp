@@ -1,5 +1,5 @@
 #include "DataSync.h"
-#include "SexyAppFramework/fcaseopen/fcaseopen.h"
+#include "SexyAppFramework/misc/fcaseopen.h"
 
 DataReader::DataReader()
 {

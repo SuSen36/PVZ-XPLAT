@@ -3,6 +3,7 @@
 #include "TodStringFile.h"
 #include "SexyAppFramework/paklib/PakInterface.h"
 #include "SexyAppFramework/graphics/Font.h"
+#include "SexyAppFramework/SexyAppBase.h"
 
 int gTodStringFormatCount;               //[0x69DE4C]
 TodStringListFormat* gTodStringFormats;  //[0x69DA34]

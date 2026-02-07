@@ -5,7 +5,7 @@
 #include "SDLImage.h"
 #include "SexyAppFramework/graphics/SDLImage.h"
 #include "../misc/AutoCrit.h"
-#include "SexyAppFramework/fcaseopen/fcaseopen.h"
+#include "SexyAppFramework/misc/fcaseopen.h"
 
 using namespace Sexy;
 

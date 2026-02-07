@@ -35,11 +35,12 @@
 #include "SexyAppFramework/misc/AutoCrit.h"
 #include "SexyAppFramework/paklib/PakInterface.h"
 #include "sound/DummyMusicInterface.h"
-#include "SexyAppFramework/fcaseopen/fcaseopen.h"
+#include "SexyAppFramework/misc/fcaseopen.h"
 
 #include <unordered_set>
 
 #include "SexyAppFramework/misc/RegEmu.h"
+#include "SexyAppFramework/misc/fcaseopen.h"
 
 #include <filesystem>
 
@@ -172,7 +173,6 @@ SexyAppBase::SexyAppBase()
 	mScreenBltTime = 0;
 	mAlphaDisabled = false;
 	mDebugKeysEnabled = false;
-	mOldWndProc = 0;
 	mNoSoundNeeded = false;
 	mWantFMod = false;
 
@@ -2281,18 +2281,32 @@ void SexyAppBase::EnableCustomCursors(bool enabled)
 
 Sexy::SDLImage* SexyAppBase::GetImage(const std::string& theFileName, bool commitBits)
 {
-	ImageLib::Image* aLoadedImage = ImageLib::GetImage(theFileName, true);
+	std::unique_ptr<ImageLib::Image> aLoadedImage = ImageLib::GetAnImage(theFileName);
 
-	if (aLoadedImage == NULL)
-		return NULL;
+	if (aLoadedImage == nullptr)
+		return nullptr;
 
 	SDLImage* anImage = new SDLImage();
 	anImage->mFilePath = theFileName;
-	anImage->SetBits(aLoadedImage->GetBits(), aLoadedImage->GetWidth(), aLoadedImage->GetHeight(), commitBits);
+	anImage->SetBits(aLoadedImage->mBits.get(), aLoadedImage->mWidth, aLoadedImage->mHeight, commitBits);
 	anImage->mFilePath = theFileName;
-	delete aLoadedImage;
 
 	return anImage;
+}
+
+std::unique_ptr<Sexy::SDLImage> SexyAppBase::GetImage(const ResourceManager::ImageRes& theRes)
+{
+	// printf("new image to load: %s\n", theRes.mPath.c_str());
+	std::unique_ptr<ImageLib::Image> aLoadedImage = ImageLib::GetImage(theRes, true);
+
+	if (aLoadedImage == nullptr)
+		return nullptr;
+
+	auto ret = std::make_unique<SDLImage>();
+	ret->mFilePath = theRes.mPath;
+	ret->SetBits(aLoadedImage->mBits.get(), aLoadedImage->mWidth, aLoadedImage->mHeight, true);
+	
+	return ret;
 }
 
 Sexy::SDLImage* SexyAppBase::CreateCrossfadeImage(Sexy::Image* theImage1, const Rect& theRect1, Sexy::Image* theImage2, const Rect& theRect2, double theFadeFactor)

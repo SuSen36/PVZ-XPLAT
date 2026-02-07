@@ -3,7 +3,7 @@
 #include <SDL.h>
 #include "../Common.h"
 #include "PakInterface.h"
-#include "SexyAppFramework/fcaseopen/fcaseopen.h"
+#include "SexyAppFramework/misc/fcaseopen.h"
 
 enum
 {

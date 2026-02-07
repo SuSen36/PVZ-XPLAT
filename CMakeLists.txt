@@ -20,17 +20,15 @@ file(GLOB SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/graphics/*.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/imagelib/*.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/misc/*.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/misc/*.c
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/paklib/*.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/sound/*.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/widget/*.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/fcaseopen/*.c
 		${CMAKE_CURRENT_SOURCE_DIR}/src/Sexy.TodLib/*.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/Lawn/*.cpp
 		${CMAKE_CURRENT_SOURCE_DIR}/src/Lawn/widgets/*.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Lawn/system/*.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/imagelib/png/*.c
-		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/imagelib/jpeg/*.c
-		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/imagelib/zlib/*.c
+		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/zlib/*.c
 )
 
 # these files are included and must not be built in the project
@@ -73,6 +71,7 @@ endif()
 # For Emscripten, SDL is usually handled by the toolchain itself
 add_subdirectory(Libs/SDL3)
 add_subdirectory(Libs/SDL3_net)
+add_subdirectory(Libs/SDL3_image)
 
 include(FetchContent)
 
@@ -161,6 +160,7 @@ target_include_directories(xp-plants-vs-zombies PRIVATE
 	${PROJECT_SOURCE_DIR}/src
 	${PROJECT_SOURCE_DIR}/Libs/SDL3/include/SDL3
 	${PROJECT_SOURCE_DIR}/Libs/SDL3_net/include/SDL3_net
+	${PROJECT_SOURCE_DIR}/Libs/SDL3_image/include/SDL3_image
 	${PLAT_INCLUDES}
 	${bass_SOURCE_DIR}/${BASS_INCLUDE}
 )
@@ -168,7 +168,7 @@ target_include_directories(xp-plants-vs-zombies PRIVATE
 #target_compile_definitions(xp-plants-vs-zombies PRIVATE _DEBUG)
 
 if (NOT EMSCRIPTEN)
-    target_link_libraries(xp-plants-vs-zombies SDL3::SDL3 SDL3_net::SDL3_net-shared bass)
+    target_link_libraries(xp-plants-vs-zombies SDL3::SDL3 SDL3_net::SDL3_net-shared SDL3_image::SDL3_image-shared bass)
 else()
     target_link_libraries(xp-plants-vs-zombies SDL3) # Emscripten provides its own SDL3
 endif()
@@ -180,6 +180,9 @@ if (WIN32)
     if(EXISTS "${CMAKE_BINARY_DIR}/Libs/SDL3_net/SDL3_net.dll")
         file(COPY ${CMAKE_BINARY_DIR}/Libs/SDL3_net/SDL3_net.dll DESTINATION ${CMAKE_BINARY_DIR})
     endif()
+	if(EXISTS "${CMAKE_BINARY_DIR}/Libs/SDL3_image/SDL3_image.dll")
+		file(COPY ${CMAKE_BINARY_DIR}/Libs/SDL3_image/SDL3_image.dll DESTINATION ${CMAKE_BINARY_DIR})
+	endif()
 
 	target_link_options(xp-plants-vs-zombies PRIVATE -static -static-libgcc -static-libstdc++)
 	target_link_libraries(xp-plants-vs-zombies opengl32)

@@ -3,7 +3,7 @@
 
 #include "../Common.h"
 #include "SexyAppFramework/graphics/Image.h"
-#include "../SexyAppBase.h"
+#include "SexyAppFramework/graphics/SharedImage.h"
 #include <string>
 #include <map>
 

@@ -631,28 +631,7 @@ bool ResourceManager::LoadAlphaGridImage(ImageRes *theRes, SDLImage *theImage)
 ///////////////////////////////////////////////////////////////////////////////
 bool ResourceManager::LoadAlphaImage(ImageRes *theRes, SDLImage *theImage)
 {
-    //即将弃用
-	ImageLib::Image* anAlphaImage = ImageLib::GetImage(theRes->mAlphaImage,true);
-
-	if (anAlphaImage==nullptr)
-		return Fail(StrFormat("Failed to load image: %s",theRes->mAlphaImage.c_str()));
-
-	std::unique_ptr<ImageLib::Image> aDelAlphaImage(anAlphaImage);
-
-	if (anAlphaImage->mWidth!=theImage->mWidth || anAlphaImage->mHeight!=theImage->mHeight)
-		return Fail(StrFormat("AlphaImage size mismatch between %s and %s",theRes->mPath.c_str(),theRes->mAlphaImage.c_str()));
-
-	uint32_t* aBits1 = theImage->mBits;
-	uint32_t* aBits2 = anAlphaImage->mBits;
-	int aSize = theImage->mWidth*theImage->mHeight;
-
-	for (int i = 0; i < aSize; i++)
-	{
-		*aBits1 = (*aBits1 & 0x00FFFFFF) | ((*aBits2 & 0xFF) << 24);
-		++aBits1;
-		++aBits2;
-	}
-
+    //已弃用
 	theImage->BitsChanged();
 	return true;
 }
